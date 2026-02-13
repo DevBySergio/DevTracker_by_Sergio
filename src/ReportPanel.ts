@@ -156,10 +156,10 @@ export class ReportPanel {
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
                 .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-                
-                /* Grid 2 columnas: izquierda ancha (gráficos lineales/tablas), derecha estrecha (tarta) */
                 .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
                 @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+                
+                .grid-full { width: 100%; margin-bottom: 20px; } /* Para el gráfico de horas */
 
                 .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
                 .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 5px; font-weight: 600; }
@@ -206,7 +206,6 @@ export class ReportPanel {
                         <div class="card"><div class="card-title">Lines Deleted</div><div class="metric-big" style="color:var(--red)" id="s-deleted">0</div></div>
                         <div class="card"><div class="card-title">Keystrokes</div><div class="metric-big" style="color:var(--orange)" id="s-keys">0</div></div>
                     </div>
-                    
                     <div class="grid-2">
                         <div class="card">
                             <div class="card-title">Languages Used (Session)</div>
@@ -249,6 +248,7 @@ export class ReportPanel {
                         <div class="card"><div class="card-title">Total Projects</div><div class="metric-big" id="g-count">--</div></div>
                         <div class="card"><div class="card-title">Total Keystrokes</div><div class="metric-big" style="color:var(--orange)" id="g-keys">--</div></div>
                     </div>
+                    
                     <div class="grid-2">
                         <div class="card">
                             <div class="card-title">Top Projects by Time</div>
@@ -259,6 +259,13 @@ export class ReportPanel {
                             <div class="chart-container"><canvas id="gLangChart"></canvas></div>
                         </div>
                     </div>
+                    
+                    <div class="grid-full">
+                         <div class="card">
+                            <div class="card-title">Peak Productivity Hours (Activity by Hour of Day)</div>
+                            <div class="chart-container" style="height:200px"><canvas id="gHourChart"></canvas></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -266,11 +273,9 @@ export class ReportPanel {
                 Chart.defaults.color = '#888';
                 Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
                 
-                // Variables para las instancias de Charts
-                let sChart = null; // Session Languages
-                let pChart = null; // Project Languages
-                let gChart = null; // Global Languages
-                let tChart = null; // Trend (Project)
+                let sChart = null, pChart = null, gChart = null; // Languages
+                let tChart = null; // Trend
+                let hChart = null; // Hours (New)
 
                 let currentTab = 'session';
                 let currentRange = 'week';
@@ -280,7 +285,6 @@ export class ReportPanel {
                 let rawAll = ${allDataJson};
                 let dailyGoal = ${goal};
 
-                // Colores para los gráficos circulares
                 const LANG_COLORS = ['#569cd6','#4ec9b0','#ce9178','#dcdcaa', '#9cdcfe', '#c586c0', '#4fc1ff', '#d16969', '#d7ba7d'];
 
                 render();
@@ -298,13 +302,10 @@ export class ReportPanel {
 
                 function switchTab(tab) {
                     currentTab = tab;
-                    
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     event.target.classList.add('active');
-                    
                     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                     document.getElementById('view-'+tab).classList.add('active');
-
                     document.getElementById('filter-bar').style.display = (tab === 'session') ? 'none' : 'flex';
                     render();
                 }
@@ -323,9 +324,20 @@ export class ReportPanel {
                     document.getElementById('s-deleted').innerText = '-' + rawSession.linesDeleted;
                     document.getElementById('s-keys').innerText = rawSession.keystrokes;
                     
+                    // FIXED: Daily Goal Logic (Uses Global Today Accumulation)
                     const targetSeconds = dailyGoal > 0 ? dailyGoal : 14400; 
-                    const pct = Math.min(100, Math.round((rawSession.seconds / targetSeconds) * 100));
+                    const todayKey = new Date().toISOString().split('T')[0];
+                    let globalTodaySeconds = 0;
                     
+                    if (rawAll && Array.isArray(rawAll)) {
+                        rawAll.forEach(p => {
+                            if (p.days && p.days[todayKey]) {
+                                globalTodaySeconds += p.days[todayKey].seconds;
+                            }
+                        });
+                    }
+                    
+                    const pct = Math.min(100, Math.round((globalTodaySeconds / targetSeconds) * 100));
                     const gel = document.getElementById('s-goal');
                     gel.innerText = pct + '%';
                     
@@ -334,18 +346,16 @@ export class ReportPanel {
                         document.getElementById('s-goal-txt').innerText = 'Daily goal reached! 🔥';
                     } else {
                         gel.style.color = 'var(--fg)';
-                        document.getElementById('s-goal-txt').innerText = 'of your daily target';
+                        document.getElementById('s-goal-txt').innerText = fmt(globalTodaySeconds) + ' today';
                     }
                     document.getElementById('s-goal-target').innerText = 'Target: ' + fmt(targetSeconds);
                     
-                    // Renderizamos gráfico de Sesión usando la nueva función helper
                     sChart = renderDoughnut(document.getElementById('sLangChart'), sChart, rawSession.languages);
 
                     if (currentTab === 'project') renderProject();
                     if (currentTab === 'global') renderGlobal();
                 }
 
-                // --- Helper para filtrar días según rango ---
                 function getFilteredDays(daysArr) {
                     const now = new Date();
                     now.setHours(0,0,0,0);
@@ -365,19 +375,17 @@ export class ReportPanel {
                     });
                 }
 
-                // --- RENDER PROJECT ---
                 function renderProject() {
                     document.getElementById('p-name').innerText = rawProject.name;
                     const days = getFilteredDays(Object.values(rawProject.days));
                     
                     let sec=0, add=0, del=0, key=0, trend={};
-                    let langStats = {}; // Acumulador de lenguajes
+                    let langStats = {}; 
 
                     days.forEach(d => {
                         sec+=d.seconds; add+=d.linesAdded; del+=d.linesDeleted; key+=(d.keystrokes||0);
                         trend[d.date] = (trend[d.date] || 0) + d.seconds;
                         
-                        // Sumar lenguajes del histórico
                         if (d.languages) {
                             Object.values(d.languages).forEach(l => {
                                 langStats[l.name] = (langStats[l.name] || 0) + l.seconds;
@@ -391,26 +399,34 @@ export class ReportPanel {
                     document.getElementById('p-keys').innerText = key;
 
                     renderTrendChart(trend);
-                    // Renderizar el nuevo gráfico de lenguajes del proyecto
                     pChart = renderDoughnut(document.getElementById('pLangChart'), pChart, langStats);
                 }
 
-                // --- RENDER GLOBAL ---
                 function renderGlobal() {
                     let allDays = [];
                     rawAll.forEach(p => allDays.push(...Object.values(p.days)));
                     const days = getFilteredDays(allDays);
 
                     let sec=0, add=0, key=0;
-                    let langStats = {}; // Acumulador de lenguajes global
+                    let langStats = {}; 
+                    let hourStats = new Array(24).fill(0); // 0-23
 
                     days.forEach(d => { 
                         sec+=d.seconds; add+=d.linesAdded; key+=(d.keystrokes||0);
                         
-                        // Sumar lenguajes globalmente
                         if (d.languages) {
                             Object.values(d.languages).forEach(l => {
                                 langStats[l.name] = (langStats[l.name] || 0) + l.seconds;
+                            });
+                        }
+
+                        // Aggregate Hours
+                        if (d.hours) {
+                            Object.keys(d.hours).forEach(h => {
+                                const hourIndex = parseInt(h);
+                                if(hourIndex >=0 && hourIndex < 24) {
+                                    hourStats[hourIndex] += d.hours[h];
+                                }
                             });
                         }
                     });
@@ -420,7 +436,6 @@ export class ReportPanel {
                     document.getElementById('g-keys').innerText = key;
                     document.getElementById('g-count').innerText = rawAll.length;
 
-                    // Top Projects Logic
                     let projStats = rawAll.map(p => {
                         const pDays = getFilteredDays(Object.values(p.days));
                         const pSec = pDays.reduce((a,b)=>a+b.seconds, 0);
@@ -433,11 +448,12 @@ export class ReportPanel {
                     });
                     document.getElementById('top-table').innerHTML = html || '<tr><td>No activity in this range</td></tr>';
 
-                    // Renderizar el nuevo gráfico de lenguajes global
                     gChart = renderDoughnut(document.getElementById('gLangChart'), gChart, langStats);
+                    renderHourChart(hourStats);
                 }
 
-                // --- HELPER: Renderizado Genérico de Doughnut (Tarta) ---
+                // --- CHARTS HELPERS ---
+
                 function renderDoughnut(canvas, chartInstance, dataMap) {
                     const lbls = Object.keys(dataMap);
                     const vals = Object.values(dataMap);
@@ -461,18 +477,12 @@ export class ReportPanel {
                             options: { 
                                 responsive: true, 
                                 maintainAspectRatio: false, 
-                                plugins: { 
-                                    legend: { 
-                                        position: 'right', 
-                                        labels: { boxWidth: 10, color: '#888', font: {size: 10} } 
-                                    } 
-                                } 
+                                plugins: { legend: { position: 'right', labels: { boxWidth: 10, color: '#888', font: {size: 10} } } } 
                             } 
                         });
                     }
                 }
 
-                // --- Helper: Renderizado Trend (Línea) ---
                 function renderTrendChart(trendMap) {
                     const ctx = document.getElementById('trendChart');
                     const lbls = Object.keys(trendMap).sort();
@@ -487,20 +497,45 @@ export class ReportPanel {
                             type: 'line', 
                             data: { 
                                 labels: lbls.map(d=>d.slice(5)), 
-                                datasets: [{ 
-                                    label:'Hours', 
-                                    data: vals, 
-                                    borderColor: '#4fc1ff', 
-                                    backgroundColor: 'rgba(79,193,255,0.1)', 
-                                    fill:true, 
-                                    tension:0.4 
-                                }] 
+                                datasets: [{ label:'Hours', data: vals, borderColor: '#4fc1ff', backgroundColor: 'rgba(79,193,255,0.1)', fill:true, tension:0.4 }] 
                             }, 
-                            options: { 
-                                responsive:true, 
-                                maintainAspectRatio:false, 
-                                scales:{ y:{ beginAtZero:true } } 
-                            } 
+                            options: { responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } } 
+                        });
+                    }
+                }
+
+                function renderHourChart(hourArray) {
+                    const ctx = document.getElementById('gHourChart');
+                    // Labels 00, 01... 23
+                    const lbls = hourArray.map((_, i) => i.toString().padStart(2, '0'));
+                    // Convert seconds to minutes for better readability in bar chart
+                    const vals = hourArray.map(s => (s/60).toFixed(0)); 
+
+                    if(hChart) {
+                        hChart.data.datasets[0].data = vals;
+                        hChart.update('none');
+                    } else {
+                        hChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: lbls,
+                                datasets: [{
+                                    label: 'Minutes Spent',
+                                    data: vals,
+                                    backgroundColor: 'rgba(78, 201, 176, 0.5)', // VS Code Greenish
+                                    borderColor: '#4ec9b0',
+                                    borderWidth: 1,
+                                    borderRadius: 3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                    x: { grid: { display: false } }
+                                }
+                            }
                         });
                     }
                 }

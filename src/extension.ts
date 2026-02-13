@@ -13,7 +13,6 @@ const INACTIVITY_THRESHOLD_SECONDS = 300;
 export function activate(context: vscode.ExtensionContext) {
   dataManager = new DataManager();
 
-  // Crear la barra CON prioridad alta (100) para que salga a la izquierda
   statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     100,
@@ -21,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   statusBarItem.command = "devtracker.showStats";
   context.subscriptions.push(statusBarItem);
 
+  // --- COMANDOS ---
   context.subscriptions.push(
     vscode.commands.registerCommand("devtracker.showStats", () => {
       openPanel(context.extensionUri);
@@ -45,10 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (input) {
         const minutes = parseInt(input, 10);
-        // Convertimos a horas para el DataManager
         const hours = minutes / 60;
 
-        // Verificamos que el método exista antes de llamar
         if (typeof dataManager.setDailyGoal === "function") {
           dataManager.setDailyGoal(hours);
           vscode.window.showInformationMessage(
@@ -57,7 +55,7 @@ export function activate(context: vscode.ExtensionContext) {
           updateState();
         } else {
           vscode.window.showErrorMessage(
-            "Error: Reinicia VS Code para aplicar los cambios en DataManager.",
+            "Error: DataManager no inicializado correctamente.",
           );
         }
       }
@@ -83,6 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
+  // --- EVENT LISTENERS ---
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection(onActivity),
   );
@@ -99,7 +98,6 @@ export function activate(context: vscode.ExtensionContext) {
     dataManager.saveData();
   }, 30000);
 
-  // Forzamos la primera actualización para que aparezca la barra INMEDIATAMENTE
   updateState();
 }
 
@@ -109,7 +107,7 @@ export function deactivate() {
   if (dataManager) dataManager.saveData();
 }
 
-// --- Funciones Auxiliares ---
+// --- FUNCIONES INTERNAS ---
 
 function onActivity() {
   lastActivityTime = Date.now();
@@ -170,65 +168,56 @@ function startTracking() {
   }, 1000);
 }
 
-// --- AQUÍ ESTÁ EL ARREGLO PRINCIPAL ---
 function updateState() {
-  // 1. Obtener datos básicos (esto no suele fallar)
   const sData = dataManager.getSessionState();
-  const totalSeconds = sData.seconds;
 
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+  // 1. Formateo del tiempo de SESIÓN ACTUAL (visual)
+  const sessionSeconds = sData.seconds;
+  const h = Math.floor(sessionSeconds / 3600);
+  const m = Math.floor((sessionSeconds % 3600) / 60);
+  const s = sessionSeconds % 60;
+  const formatted = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 
-  const formatted =
-    `${hours.toString().padStart(2, "0")}:` +
-    `${minutes.toString().padStart(2, "0")}:` +
-    `${seconds.toString().padStart(2, "0")}`;
-
-  // 2. Cálculo seguro de la meta (evita crashes si DataManager no está listo)
+  // 2. Cálculo del PROGRESO DIARIO (usando tiempo acumulado real)
   let progressPercent = 0;
   let goalSeconds = 14400; // Default 4h
+  let todayTotalSeconds = 0;
 
   try {
-    // Verificamos si existe el método para evitar error "not a function"
-    if (typeof dataManager.getDailyGoal === "function") {
+    if (typeof dataManager.getDailyGoal === "function")
       goalSeconds = dataManager.getDailyGoal();
+    if (typeof dataManager.getTodayTotalSeconds === "function") {
+      todayTotalSeconds = dataManager.getTodayTotalSeconds();
+    } else {
+      todayTotalSeconds = sessionSeconds; // Fallback
     }
 
-    // Evitar división por cero o NaN
     if (!goalSeconds || goalSeconds <= 0) goalSeconds = 14400;
-
     progressPercent = Math.min(
       100,
-      Math.floor((totalSeconds / goalSeconds) * 100),
+      Math.floor((todayTotalSeconds / goalSeconds) * 100),
     );
   } catch (e) {
     console.error("Error calculando meta:", e);
-    progressPercent = 0; // Fallback seguro
   }
 
-  // 3. Renderizado de la barra
   const icon = progressPercent >= 100 ? "$(check)" : "$(watch)";
 
   statusBarItem.text = `${icon} ${formatted}`;
-  statusBarItem.tooltip = `Sesión: ${formatted}\nMeta diaria: ${progressPercent}%`;
-
-  // IMPORTANTE: Llamar siempre a show()
+  statusBarItem.tooltip = `Sesión actual: ${formatted}\nTotal hoy: ${Math.floor(todayTotalSeconds / 60)} min\nMeta diaria: ${progressPercent}%`;
   statusBarItem.show();
 
-  // 4. Actualizar panel web si existe
   if (ReportPanel.currentPanel && lastKnownProject) {
     ReportPanel.currentPanel.sendUpdate(
       sData,
       dataManager.getProjectData(lastKnownProject),
       dataManager.getAllProjects(),
-      goalSeconds, // Pasamos el valor seguro
+      goalSeconds,
     );
   }
 }
 
 function openPanel(extensionUri: vscode.Uri) {
-  // Intentar obtener meta segura
   let goalSafe = 14400;
   try {
     goalSafe = dataManager.getDailyGoal ? dataManager.getDailyGoal() : 14400;
