@@ -17,7 +17,8 @@ export interface DayData {
   linesAdded: number;
   linesDeleted: number;
   languages: { [key: string]: LanguageData };
-  hours: { [hour: string]: number }; // <--- ESTO YA LO TENÍAS, LO VAMOS A USAR
+  hours: { [hour: string]: number };
+  files: { [filePath: string]: number }; // <--- NUEVA MÉTRICA: Archivos individuales
 }
 
 export interface ProjectData {
@@ -28,7 +29,7 @@ export interface ProjectData {
 
 export interface GlobalData {
   projects: { [path: string]: ProjectData };
-  dailyGoal: number; // Meta en SEGUNDOS
+  dailyGoal: number;
 }
 
 export interface SessionState {
@@ -109,7 +110,15 @@ export class DataManager {
 
   // --- TRACKING ---
 
-  public addTime(projectPath: string, languageId: string, seconds: number) {
+  /**
+   * Ahora acepta 'relativeFilePath' para trackear archivos específicos
+   */
+  public addTime(
+    projectPath: string,
+    languageId: string,
+    relativeFilePath: string,
+    seconds: number,
+  ) {
     // 1. Session
     this.sessionState.seconds += seconds;
     this.sessionState.languages[languageId] =
@@ -119,14 +128,20 @@ export class DataManager {
     const day = this.getTodayPersistentData(projectPath);
     day.seconds += seconds;
 
-    // Registrar hora del día (0-23)
+    // Hora
     const h = new Date().getHours().toString();
     day.hours[h] = (day.hours[h] || 0) + seconds;
 
+    // Lenguaje
     if (!day.languages[languageId]) {
       day.languages[languageId] = { name: languageId, seconds: 0 };
     }
     day.languages[languageId].seconds += seconds;
+
+    // Archivo (NUEVO)
+    // Si el archivo no existe en el registro de hoy, inicializarlo
+    if (!day.files) day.files = {};
+    day.files[relativeFilePath] = (day.files[relativeFilePath] || 0) + seconds;
   }
 
   public addKeystrokes(projectPath: string, count: number) {
@@ -156,20 +171,14 @@ export class DataManager {
     return this.currentData.dailyGoal || 14400;
   }
 
-  /**
-   * NUEVO: Calcula el tiempo total acumulado HOY en todos los proyectos.
-   * Esencial para que la barra de estado no empiece de 0 al reiniciar.
-   */
   public getTodayTotalSeconds(): number {
     const today = new Date().toISOString().split("T")[0];
     let total = 0;
-
     Object.values(this.currentData.projects).forEach((p) => {
       if (p.days[today]) {
         total += p.days[today].seconds;
       }
     });
-
     return total;
   }
 
@@ -208,10 +217,13 @@ export class DataManager {
         linesDeleted: 0,
         languages: {},
         hours: {},
+        files: {}, // Inicializamos el mapa de archivos
       };
     }
+    // Safety checks para datos antiguos
     if (!project.days[today].hours) project.days[today].hours = {};
     if (!project.days[today].languages) project.days[today].languages = {};
+    if (!project.days[today].files) project.days[today].files = {};
 
     return project.days[today];
   }

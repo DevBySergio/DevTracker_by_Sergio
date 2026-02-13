@@ -20,7 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
   statusBarItem.command = "devtracker.showStats";
   context.subscriptions.push(statusBarItem);
 
-  // --- COMANDOS ---
   context.subscriptions.push(
     vscode.commands.registerCommand("devtracker.showStats", () => {
       openPanel(context.extensionUri);
@@ -81,7 +80,6 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  // --- EVENT LISTENERS ---
   context.subscriptions.push(
     vscode.window.onDidChangeTextEditorSelection(onActivity),
   );
@@ -106,8 +104,6 @@ export function deactivate() {
   if (saveInterval) clearInterval(saveInterval);
   if (dataManager) dataManager.saveData();
 }
-
-// --- FUNCIONES INTERNAS ---
 
 function onActivity() {
   lastActivityTime = Date.now();
@@ -150,18 +146,26 @@ function startTracking() {
       const editor = vscode.window.activeTextEditor;
       let projectToTrack: string | undefined = undefined;
       let lang = "unknown";
+      let relativeFile = "unknown";
 
       if (editor && editor.document.uri.scheme === "file") {
         const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
         if (folder) {
           projectToTrack = folder.uri.fsPath;
           lang = editor.document.languageId;
+
+          // NUEVO: Obtener ruta relativa del archivo para que sea legible
+          relativeFile = vscode.workspace.asRelativePath(
+            editor.document.uri,
+            false,
+          );
         }
       }
 
       if (projectToTrack) {
         lastKnownProject = projectToTrack;
-        dataManager.addTime(projectToTrack, lang, 1);
+        // Pasamos el nombre del archivo al DataManager
+        dataManager.addTime(projectToTrack, lang, relativeFile, 1);
       }
       updateState();
     }
@@ -171,16 +175,14 @@ function startTracking() {
 function updateState() {
   const sData = dataManager.getSessionState();
 
-  // 1. Formateo del tiempo de SESIÓN ACTUAL (visual)
   const sessionSeconds = sData.seconds;
   const h = Math.floor(sessionSeconds / 3600);
   const m = Math.floor((sessionSeconds % 3600) / 60);
   const s = sessionSeconds % 60;
   const formatted = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 
-  // 2. Cálculo del PROGRESO DIARIO (usando tiempo acumulado real)
   let progressPercent = 0;
-  let goalSeconds = 14400; // Default 4h
+  let goalSeconds = 14400;
   let todayTotalSeconds = 0;
 
   try {
@@ -189,7 +191,7 @@ function updateState() {
     if (typeof dataManager.getTodayTotalSeconds === "function") {
       todayTotalSeconds = dataManager.getTodayTotalSeconds();
     } else {
-      todayTotalSeconds = sessionSeconds; // Fallback
+      todayTotalSeconds = sessionSeconds;
     }
 
     if (!goalSeconds || goalSeconds <= 0) goalSeconds = 14400;

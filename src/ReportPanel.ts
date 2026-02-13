@@ -135,7 +135,6 @@ export class ReportPanel {
                 }
                 body { font-family: var(--vscode-font-family); background: var(--bg); color: var(--fg); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
                 
-                /* NAVBAR */
                 .navbar { padding: 10px 20px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; }
                 .brand { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; display:flex; align-items:center; gap:10px;}
                 
@@ -144,22 +143,21 @@ export class ReportPanel {
                 .tab-btn:hover { opacity: 1; background: rgba(255,255,255,0.05); }
                 .tab-btn.active { background: var(--accent); color: #fff; opacity: 1; font-weight: 600; }
 
-                /* FILTERS */
                 .filters { display: flex; gap: 5px; margin-top: 15px; margin-bottom: 15px; justify-content: flex-end; }
                 .filter-btn { background: transparent; border: 1px solid var(--border); color: var(--fg); padding: 4px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; opacity: 0.6; }
                 .filter-btn.active { border-color: var(--accent); color: var(--accent); opacity: 1; font-weight: bold; }
 
-                /* LAYOUT */
                 .container { padding: 20px; overflow-y: auto; flex: 1; }
                 .view-section { display: none; }
                 .view-section.active { display: block; animation: fadeIn 0.3s; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
                 .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+                
                 .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
                 @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
                 
-                .grid-full { width: 100%; margin-bottom: 20px; } /* Para el gráfico de horas */
+                .grid-full { width: 100%; margin-bottom: 20px; }
 
                 .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: center; }
                 .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 5px; font-weight: 600; }
@@ -170,19 +168,16 @@ export class ReportPanel {
                 table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
                 td, th { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
                 .text-right { text-align: right; }
+                .file-row td { padding: 6px 10px; font-family: monospace; font-size: 0.85rem; }
                 
                 #filter-bar { display: none; } 
-                
-                /* GOAL CIRCLE */
                 .goal-wrapper { text-align: center; }
                 .goal-percent { font-size: 3.5rem; font-weight: 800; line-height: 1; }
             </style>
         </head>
         <body>
             <div class="navbar">
-                <div class="brand">
-                    <span>DevTracker</span>
-                </div>
+                <div class="brand"><span>DevTracker</span></div>
                 <div class="tabs">
                     <button class="tab-btn active" onclick="switchTab('session')">Current Session</button>
                     <button class="tab-btn" onclick="switchTab('project')">Project History</button>
@@ -238,6 +233,12 @@ export class ReportPanel {
                             <div class="chart-container"><canvas id="pLangChart"></canvas></div>
                         </div>
                     </div>
+                    <div class="grid-full">
+                        <div class="card">
+                            <div class="card-title">Most Active Files (Top 10)</div>
+                            <table id="p-files-table"></table>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="view-global" class="view-section">
@@ -262,7 +263,7 @@ export class ReportPanel {
                     
                     <div class="grid-full">
                          <div class="card">
-                            <div class="card-title">Peak Productivity Hours (Activity by Hour of Day)</div>
+                            <div class="card-title">Peak Productivity Hours</div>
                             <div class="chart-container" style="height:200px"><canvas id="gHourChart"></canvas></div>
                         </div>
                     </div>
@@ -273,9 +274,9 @@ export class ReportPanel {
                 Chart.defaults.color = '#888';
                 Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
                 
-                let sChart = null, pChart = null, gChart = null; // Languages
-                let tChart = null; // Trend
-                let hChart = null; // Hours (New)
+                let sChart = null, pChart = null, gChart = null; 
+                let tChart = null; 
+                let hChart = null; 
 
                 let currentTab = 'session';
                 let currentRange = 'week';
@@ -318,13 +319,12 @@ export class ReportPanel {
                 }
 
                 function render() {
-                    // --- SESSION RENDER ---
+                    // SESSION
                     document.getElementById('s-time').innerText = fmt(rawSession.seconds);
                     document.getElementById('s-added').innerText = '+' + rawSession.linesAdded;
                     document.getElementById('s-deleted').innerText = '-' + rawSession.linesDeleted;
                     document.getElementById('s-keys').innerText = rawSession.keystrokes;
                     
-                    // FIXED: Daily Goal Logic (Uses Global Today Accumulation)
                     const targetSeconds = dailyGoal > 0 ? dailyGoal : 14400; 
                     const todayKey = new Date().toISOString().split('T')[0];
                     let globalTodaySeconds = 0;
@@ -337,7 +337,7 @@ export class ReportPanel {
                         });
                     }
                     
-                    const pct = Math.min(100, Math.round((globalTodaySeconds / targetSeconds) * 100));
+                    const pct = Math.min(100, Math.floor((globalTodaySeconds / targetSeconds) * 100));
                     const gel = document.getElementById('s-goal');
                     gel.innerText = pct + '%';
                     
@@ -380,7 +380,8 @@ export class ReportPanel {
                     const days = getFilteredDays(Object.values(rawProject.days));
                     
                     let sec=0, add=0, del=0, key=0, trend={};
-                    let langStats = {}; 
+                    let langStats = {};
+                    let fileStats = {}; // NEW: File Stats
 
                     days.forEach(d => {
                         sec+=d.seconds; add+=d.linesAdded; del+=d.linesDeleted; key+=(d.keystrokes||0);
@@ -389,6 +390,12 @@ export class ReportPanel {
                         if (d.languages) {
                             Object.values(d.languages).forEach(l => {
                                 langStats[l.name] = (langStats[l.name] || 0) + l.seconds;
+                            });
+                        }
+                        // AGGREGATE FILES
+                        if (d.files) {
+                            Object.keys(d.files).forEach(f => {
+                                fileStats[f] = (fileStats[f] || 0) + d.files[f];
                             });
                         }
                     });
@@ -400,6 +407,18 @@ export class ReportPanel {
 
                     renderTrendChart(trend);
                     pChart = renderDoughnut(document.getElementById('pLangChart'), pChart, langStats);
+                    
+                    // RENDER TOP FILES TABLE
+                    let sortedFiles = Object.keys(fileStats)
+                        .map(f => ({ name: f, sec: fileStats[f] }))
+                        .sort((a,b) => b.sec - a.sec)
+                        .slice(0, 10);
+                        
+                    let fileHtml = '';
+                    sortedFiles.forEach(f => {
+                        fileHtml += \`<tr class="file-row"><td>\${f.name}</td><td class="text-right">\${fmt(f.sec)}</td></tr>\`;
+                    });
+                    document.getElementById('p-files-table').innerHTML = fileHtml || '<tr><td>No file activity recorded yet</td></tr>';
                 }
 
                 function renderGlobal() {
@@ -409,7 +428,7 @@ export class ReportPanel {
 
                     let sec=0, add=0, key=0;
                     let langStats = {}; 
-                    let hourStats = new Array(24).fill(0); // 0-23
+                    let hourStats = new Array(24).fill(0); 
 
                     days.forEach(d => { 
                         sec+=d.seconds; add+=d.linesAdded; key+=(d.keystrokes||0);
@@ -419,14 +438,10 @@ export class ReportPanel {
                                 langStats[l.name] = (langStats[l.name] || 0) + l.seconds;
                             });
                         }
-
-                        // Aggregate Hours
                         if (d.hours) {
                             Object.keys(d.hours).forEach(h => {
                                 const hourIndex = parseInt(h);
-                                if(hourIndex >=0 && hourIndex < 24) {
-                                    hourStats[hourIndex] += d.hours[h];
-                                }
+                                if(hourIndex >=0 && hourIndex < 24) hourStats[hourIndex] += d.hours[h];
                             });
                         }
                     });
@@ -452,8 +467,7 @@ export class ReportPanel {
                     renderHourChart(hourStats);
                 }
 
-                // --- CHARTS HELPERS ---
-
+                // CHARTS HELPERS
                 function renderDoughnut(canvas, chartInstance, dataMap) {
                     const lbls = Object.keys(dataMap);
                     const vals = Object.values(dataMap);
@@ -506,9 +520,7 @@ export class ReportPanel {
 
                 function renderHourChart(hourArray) {
                     const ctx = document.getElementById('gHourChart');
-                    // Labels 00, 01... 23
                     const lbls = hourArray.map((_, i) => i.toString().padStart(2, '0'));
-                    // Convert seconds to minutes for better readability in bar chart
                     const vals = hourArray.map(s => (s/60).toFixed(0)); 
 
                     if(hChart) {
@@ -522,7 +534,7 @@ export class ReportPanel {
                                 datasets: [{
                                     label: 'Minutes Spent',
                                     data: vals,
-                                    backgroundColor: 'rgba(78, 201, 176, 0.5)', // VS Code Greenish
+                                    backgroundColor: 'rgba(78, 201, 176, 0.5)', 
                                     borderColor: '#4ec9b0',
                                     borderWidth: 1,
                                     borderRadius: 3
