@@ -11,7 +11,7 @@ Unlike other tracking tools, **DevTracker works 100% locally**. Your coding data
 Visualize key metrics with a clean, professional design divided into three strategic views:
 
 - **Current Session:** Volatile metrics that reset when you close VS Code. Perfect for measuring work sprints.
-- **Project History:** Analyze the evolution of your current project with range filters (7 Days, 30 Days, Month, All Time).
+- **Project History:** Analyze the evolution of your current project with range filters (7 Days, 30 Days, All Time).
 - **Global Stats:** A complete overview of your "coding life" aggregating data across all your projects.
 
 ### 2. 📈 Detailed Metrics
