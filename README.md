@@ -61,17 +61,6 @@ Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`) and type:
 
 ---
 
-## ⚙️ Configuration
-
-DevTracker is designed as a "Zero Config" tool, but handles smart defaults:
-
-- **Inactivity Threshold:** The extension stops counting time after **5 minutes** of no keyboard/mouse activity to ensure accuracy.
-- **Data Storage:**
-  - Mac/Linux: `~/.devtracker/data.json`
-  - Windows: `%USERPROFILE%\.devtracker\data.json`
-
----
-
 ## 🛡️ Privacy Policy
 
 Your data is yours.

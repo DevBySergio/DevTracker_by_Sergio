@@ -3,8 +3,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
-// --- INTERFACES DE DATOS ---
-
 export interface LanguageData {
   name: string;
   seconds: number;
@@ -18,7 +16,7 @@ export interface DayData {
   linesDeleted: number;
   languages: { [key: string]: LanguageData };
   hours: { [hour: string]: number };
-  files: { [filePath: string]: number }; // <--- NUEVA MÉTRICA: Archivos individuales
+  files: { [filePath: string]: number };
 }
 
 export interface ProjectData {
@@ -40,8 +38,6 @@ export interface SessionState {
   linesDeleted: number;
   languages: { [key: string]: number };
 }
-
-// --- CLASE DATAMANAGER ---
 
 export class DataManager {
   private dataPath: string;
@@ -108,38 +104,27 @@ export class DataManager {
     return path.normalize(p).toLowerCase();
   }
 
-  // --- TRACKING ---
-
-  /**
-   * Ahora acepta 'relativeFilePath' para trackear archivos específicos
-   */
   public addTime(
     projectPath: string,
     languageId: string,
     relativeFilePath: string,
     seconds: number,
   ) {
-    // 1. Session
     this.sessionState.seconds += seconds;
     this.sessionState.languages[languageId] =
       (this.sessionState.languages[languageId] || 0) + seconds;
 
-    // 2. Persistent
     const day = this.getTodayPersistentData(projectPath);
     day.seconds += seconds;
 
-    // Hora
     const h = new Date().getHours().toString();
     day.hours[h] = (day.hours[h] || 0) + seconds;
 
-    // Lenguaje
     if (!day.languages[languageId]) {
       day.languages[languageId] = { name: languageId, seconds: 0 };
     }
     day.languages[languageId].seconds += seconds;
 
-    // Archivo (NUEVO)
-    // Si el archivo no existe en el registro de hoy, inicializarlo
     if (!day.files) day.files = {};
     day.files[relativeFilePath] = (day.files[relativeFilePath] || 0) + seconds;
   }
@@ -159,8 +144,6 @@ export class DataManager {
     day.linesAdded += added;
     day.linesDeleted += deleted;
   }
-
-  // --- GETTERS / SETTERS ---
 
   public setDailyGoal(hours: number) {
     this.currentData.dailyGoal = Math.floor(hours * 3600);
@@ -202,8 +185,6 @@ export class DataManager {
     return this.currentData.projects[key];
   }
 
-  // --- UTILIDADES ---
-
   private getTodayPersistentData(projectPath: string): DayData {
     const project = this.getProjectData(projectPath);
     const today = new Date().toISOString().split("T")[0];
@@ -217,10 +198,9 @@ export class DataManager {
         linesDeleted: 0,
         languages: {},
         hours: {},
-        files: {}, // Inicializamos el mapa de archivos
+        files: {},
       };
     }
-    // Safety checks para datos antiguos
     if (!project.days[today].hours) project.days[today].hours = {};
     if (!project.days[today].languages) project.days[today].languages = {};
     if (!project.days[today].files) project.days[today].files = {};

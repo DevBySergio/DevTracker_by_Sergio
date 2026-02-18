@@ -30,14 +30,13 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("devtracker.setDailyGoal", async () => {
       const input = await vscode.window.showInputBox({
         title: "DevTracker: Meta Diaria",
-        prompt:
-          "Introduce tu objetivo diario en minutos (ej: 240 para 4 horas).",
+        prompt: "Enter your daily goal in minutes (e.g: 240 for 4 hours).",
         placeHolder: "240",
         ignoreFocusOut: true,
         validateInput: (text) => {
           const num = Number(text);
           return isNaN(num) || num <= 0
-            ? "Por favor, introduce un número válido mayor a 0."
+            ? "Please enter a valid number greater than 0."
             : null;
         },
       });
@@ -49,12 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
         if (typeof dataManager.setDailyGoal === "function") {
           dataManager.setDailyGoal(hours);
           vscode.window.showInformationMessage(
-            `Meta diaria actualizada a ${minutes} minutos.`,
+            `Daily goal updated to ${minutes} minutes.`,
           );
           updateState();
         } else {
           vscode.window.showErrorMessage(
-            "Error: DataManager no inicializado correctamente.",
+            "Error: DataManager not initialized correctly.",
           );
         }
       }
@@ -65,14 +64,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("devtracker.exportCSV", async () => {
       const uri = await vscode.window.showSaveDialog({
         filters: { CSV: ["csv"] },
-        saveLabel: "Exportar DevTracker Data",
+        saveLabel: "Export DevTracker Data",
       });
       if (uri) {
         try {
           require("fs").writeFileSync(uri.fsPath, dataManager.generateCSV());
-          vscode.window.showInformationMessage(
-            `Datos exportados: ${uri.fsPath}`,
-          );
+          vscode.window.showInformationMessage(`Exported data: ${uri.fsPath}`);
         } catch (error: any) {
           vscode.window.showErrorMessage(`Error: ${error.message}`);
         }
@@ -154,7 +151,6 @@ function startTracking() {
           projectToTrack = folder.uri.fsPath;
           lang = editor.document.languageId;
 
-          // NUEVO: Obtener ruta relativa del archivo para que sea legible
           relativeFile = vscode.workspace.asRelativePath(
             editor.document.uri,
             false,
@@ -164,7 +160,6 @@ function startTracking() {
 
       if (projectToTrack) {
         lastKnownProject = projectToTrack;
-        // Pasamos el nombre del archivo al DataManager
         dataManager.addTime(projectToTrack, lang, relativeFile, 1);
       }
       updateState();
@@ -200,13 +195,13 @@ function updateState() {
       Math.floor((todayTotalSeconds / goalSeconds) * 100),
     );
   } catch (e) {
-    console.error("Error calculando meta:", e);
+    console.error("Error calculating goal:", e);
   }
 
   const icon = progressPercent >= 100 ? "$(check)" : "$(watch)";
 
   statusBarItem.text = `${icon} ${formatted}`;
-  statusBarItem.tooltip = `Sesión actual: ${formatted}\nTotal hoy: ${Math.floor(todayTotalSeconds / 60)} min\nMeta diaria: ${progressPercent}%`;
+  statusBarItem.tooltip = `Current session: ${formatted}\nTotal today: ${Math.floor(todayTotalSeconds / 60)} min\nDaily goal: ${progressPercent}%`;
   statusBarItem.show();
 
   if (ReportPanel.currentPanel && lastKnownProject) {
@@ -236,7 +231,7 @@ function openPanel(extensionUri: vscode.Uri) {
     );
   } else {
     vscode.window.showWarningMessage(
-      "DevTracker: Empieza a programar para ver datos.",
+      "DevTracker: Start programming to view data.",
     );
   }
 }
