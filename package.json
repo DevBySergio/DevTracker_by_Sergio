@@ -1,14 +1,14 @@
 {
   "name": "devtracker",
   "displayName": "DevTracker by Sergio",
-  "description": "Dashboard de analítica profesional para desarrolladores.",
-  "version": "1.0.0",
+  "description": "Professional analytics dashboard for developers.",
+  "version": "1.3.1",
   "publisher": "DevBySergio",
-  "icon": "icon.png",
+  "icon": "media/icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tu-usuario/devtracker"
+    "url": "https://github.com/DevBySergio/DevTracker_by_Sergio"
   },
   "engines": {
     "vscode": "^1.80.0"
