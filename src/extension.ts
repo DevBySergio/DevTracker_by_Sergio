@@ -1,14 +1,23 @@
 import * as vscode from "vscode";
-import { DataManager } from "./DataManager";
+import * as fs from "fs";
+import { DataManager, DiagnosticsBySeverity } from "./DataManager";
 import { ReportPanel } from "./ReportPanel";
 
 let dataManager: DataManager;
 let statusBarItem: vscode.StatusBarItem;
 let trackingInterval: NodeJS.Timeout | undefined;
 let saveInterval: NodeJS.Timeout | undefined;
-let lastActivityTime: number = Date.now();
+let lastActivityTime = 0;
 let lastKnownProject: string | undefined;
+let lastActiveDocumentKey: string | undefined;
+let isWindowFocused = true;
+let isDebugging = false;
+let currentGitBranch = "No branch";
+let currentGitDirtyFiles = 0;
+let lastGitRefresh = 0;
 const INACTIVITY_THRESHOLD_SECONDS = 300;
+const PASTE_CHARACTER_THRESHOLD = 80;
+const GIT_REFRESH_INTERVAL_MS = 5000;
 
 export function activate(context: vscode.ExtensionContext) {
   dataManager = new DataManager();
@@ -68,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
       if (uri) {
         try {
-          require("fs").writeFileSync(uri.fsPath, dataManager.generateCSV());
+          fs.writeFileSync(uri.fsPath, dataManager.generateCSV());
           vscode.window.showInformationMessage(`Exported data: ${uri.fsPath}`);
         } catch (error: any) {
           vscode.window.showErrorMessage(`Error: ${error.message}`);
@@ -81,10 +90,39 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.onDidChangeTextEditorSelection(onActivity),
   );
   context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(onActivity),
+    vscode.window.onDidChangeActiveTextEditor(onActiveTextEditorChanged),
   );
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(onDocumentChange),
+  );
+  context.subscriptions.push(
+    vscode.workspace.onDidSaveTextDocument(onDocumentSave),
+  );
+  context.subscriptions.push(
+    vscode.window.onDidChangeWindowState((state) => {
+      isWindowFocused = state.focused;
+      if (state.focused) {
+        onActivity();
+      }
+      updateState();
+    }),
+  );
+  context.subscriptions.push(
+    vscode.languages.onDidChangeDiagnostics((event) => {
+      updateDiagnosticsFromUris(event.uris);
+    }),
+  );
+  context.subscriptions.push(
+    vscode.debug.onDidStartDebugSession(() => {
+      isDebugging = true;
+      updateState();
+    }),
+  );
+  context.subscriptions.push(
+    vscode.debug.onDidTerminateDebugSession(() => {
+      isDebugging = false;
+      updateState();
+    }),
   );
 
   startTracking();
@@ -94,39 +132,106 @@ export function activate(context: vscode.ExtensionContext) {
   }, 30000);
 
   updateState();
+  onActiveTextEditorChanged(vscode.window.activeTextEditor);
 }
 
 export function deactivate() {
-  if (trackingInterval) clearInterval(trackingInterval);
-  if (saveInterval) clearInterval(saveInterval);
-  if (dataManager) dataManager.saveData();
+  if (trackingInterval) {
+    clearInterval(trackingInterval);
+  }
+  if (saveInterval) {
+    clearInterval(saveInterval);
+  }
+  if (dataManager) {
+    dataManager.saveData();
+  }
 }
 
 function onActivity() {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor || editor.document.uri.scheme !== "file") {
+    return;
+  }
+
+  const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+  if (!folder) {
+    return;
+  }
+
   lastActivityTime = Date.now();
+  lastKnownProject = folder.uri.fsPath;
+}
+
+function onActiveTextEditorChanged(editor: vscode.TextEditor | undefined) {
+  if (!editor || editor.document.uri.scheme !== "file") {
+    return;
+  }
+
+  const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+  if (!folder) {
+    return;
+  }
+
+  const documentKey = editor.document.uri.toString();
+  if (lastActiveDocumentKey && lastActiveDocumentKey !== documentKey) {
+    dataManager.addContextSwitch(folder.uri.fsPath);
+  }
+
+  lastActiveDocumentKey = documentKey;
+  lastActivityTime = Date.now();
+  lastKnownProject = folder.uri.fsPath;
+  updateDiagnosticsForProject(folder.uri.fsPath);
+  void refreshGitState(folder.uri.fsPath);
+  updateState();
 }
 
 function onDocumentChange(event: vscode.TextDocumentChangeEvent) {
-  onActivity();
-  if (event.document.uri.scheme !== "file") return;
+  if (event.document.uri.scheme !== "file") {
+    return;
+  }
 
   const folder = vscode.workspace.getWorkspaceFolder(event.document.uri);
-  if (!folder) return;
+  if (!folder) {
+    return;
+  }
+
+  lastActivityTime = Date.now();
+  lastKnownProject = folder.uri.fsPath;
 
   const pPath = folder.uri.fsPath;
+  const relativeFile = vscode.workspace.asRelativePath(event.document.uri, false);
 
   if (event.contentChanges.length > 0) {
-    dataManager.addKeystrokes(pPath, 1);
+    const changedCharacters = event.contentChanges.reduce((total, change) => {
+      return total + Math.max(change.text.length, change.rangeLength);
+    }, 0);
+    const isPaste = event.contentChanges.some((change) => {
+      const insertedLines = change.text.split("\n").length - 1;
+      return (
+        change.text.length >= PASTE_CHARACTER_THRESHOLD || insertedLines >= 4
+      );
+    });
+
+    dataManager.addEditActivity(
+      pPath,
+      Math.max(1, changedCharacters),
+      relativeFile,
+      isPaste,
+    );
   }
 
   let added = 0,
     deleted = 0;
   for (const change of event.contentChanges) {
     const newLines = change.text.split("\n").length - 1;
-    if (newLines > 0) added += newLines;
+    if (newLines > 0) {
+      added += newLines;
+    }
 
     const rangeLines = change.range.end.line - change.range.start.line;
-    if (rangeLines > 0) deleted += rangeLines;
+    if (rangeLines > 0) {
+      deleted += rangeLines;
+    }
   }
 
   if (added > 0 || deleted > 0) {
@@ -136,10 +241,32 @@ function onDocumentChange(event: vscode.TextDocumentChangeEvent) {
   updateState();
 }
 
+function onDocumentSave(document: vscode.TextDocument) {
+  if (document.uri.scheme !== "file") {
+    return;
+  }
+
+  const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+  if (!folder) {
+    return;
+  }
+
+  lastActivityTime = Date.now();
+  lastKnownProject = folder.uri.fsPath;
+  dataManager.addSave(folder.uri.fsPath);
+  updateDiagnosticsForProject(folder.uri.fsPath);
+  void refreshGitState(folder.uri.fsPath);
+  updateState();
+}
+
 function startTracking() {
   trackingInterval = setInterval(() => {
     const now = Date.now();
-    if ((now - lastActivityTime) / 1000 < INACTIVITY_THRESHOLD_SECONDS) {
+    if (
+      lastActivityTime > 0 &&
+      isWindowFocused &&
+      (now - lastActivityTime) / 1000 < INACTIVITY_THRESHOLD_SECONDS
+    ) {
       const editor = vscode.window.activeTextEditor;
       let projectToTrack: string | undefined = undefined;
       let lang = "unknown";
@@ -160,11 +287,130 @@ function startTracking() {
 
       if (projectToTrack) {
         lastKnownProject = projectToTrack;
-        dataManager.addTime(projectToTrack, lang, relativeFile, 1);
+        maybeRefreshGitState(projectToTrack);
+        dataManager.addTime(
+          projectToTrack,
+          lang,
+          relativeFile,
+          1,
+          currentGitBranch,
+        );
+        dataManager.setGitDirtyFiles(projectToTrack, currentGitDirtyFiles);
+        if (isDebugging) {
+          dataManager.addDebugSeconds(projectToTrack, 1);
+        }
       }
+      updateState();
+    } else if (lastKnownProject && !isWindowFocused) {
+      dataManager.addIdleSeconds(lastKnownProject, 1);
       updateState();
     }
   }, 1000);
+}
+
+function maybeRefreshGitState(projectPath: string) {
+  const now = Date.now();
+  if (now - lastGitRefresh < GIT_REFRESH_INTERVAL_MS) {
+    return;
+  }
+
+  lastGitRefresh = now;
+  void refreshGitState(projectPath);
+}
+
+async function refreshGitState(projectPath: string): Promise<void> {
+  try {
+    const gitExtension = vscode.extensions.getExtension("vscode.git");
+    if (!gitExtension) {
+      currentGitBranch = "Git unavailable";
+      currentGitDirtyFiles = 0;
+      dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
+      return;
+    }
+
+    const extensionApi = gitExtension.isActive
+      ? gitExtension.exports
+      : await gitExtension.activate();
+    const git = extensionApi.getAPI(1);
+    const repository = git.repositories.find((repo: any) => {
+      return repo.rootUri?.fsPath === projectPath;
+    });
+
+    if (!repository) {
+      currentGitBranch = "No repository";
+      currentGitDirtyFiles = 0;
+      dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
+      return;
+    }
+
+    currentGitBranch = repository.state.HEAD?.name || "Detached HEAD";
+    currentGitDirtyFiles =
+      repository.state.workingTreeChanges.length +
+      repository.state.indexChanges.length +
+      repository.state.untrackedChanges.length;
+    dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
+  } catch {
+    currentGitBranch = "Git unavailable";
+    currentGitDirtyFiles = 0;
+    dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
+  }
+}
+
+function updateDiagnosticsFromUris(uris: readonly vscode.Uri[]) {
+  const projectPaths = new Set<string>();
+
+  uris.forEach((uri) => {
+    if (uri.scheme !== "file") {
+      return;
+    }
+
+    const folder = vscode.workspace.getWorkspaceFolder(uri);
+    if (folder) {
+      projectPaths.add(folder.uri.fsPath);
+    }
+  });
+
+  projectPaths.forEach((projectPath) => updateDiagnosticsForProject(projectPath));
+  updateState();
+}
+
+function updateDiagnosticsForProject(projectPath: string) {
+  const diagnostics: DiagnosticsBySeverity = {
+    error: 0,
+    warning: 0,
+    info: 0,
+    hint: 0,
+  };
+
+  vscode.languages.getDiagnostics().forEach(([uri, entries]) => {
+    if (uri.scheme !== "file") {
+      return;
+    }
+
+    const folder = vscode.workspace.getWorkspaceFolder(uri);
+    if (!folder || folder.uri.fsPath !== projectPath) {
+      return;
+    }
+
+    entries.forEach((diagnostic) => {
+      switch (diagnostic.severity) {
+        case vscode.DiagnosticSeverity.Error:
+          diagnostics.error += 1;
+          break;
+        case vscode.DiagnosticSeverity.Warning:
+          diagnostics.warning += 1;
+          break;
+        case vscode.DiagnosticSeverity.Information:
+          diagnostics.info += 1;
+          break;
+        case vscode.DiagnosticSeverity.Hint:
+          diagnostics.hint += 1;
+          break;
+      }
+    });
+  });
+
+  dataManager.setDiagnostics(projectPath, diagnostics);
 }
 
 function updateState() {
@@ -181,15 +427,18 @@ function updateState() {
   let todayTotalSeconds = 0;
 
   try {
-    if (typeof dataManager.getDailyGoal === "function")
+    if (typeof dataManager.getDailyGoal === "function") {
       goalSeconds = dataManager.getDailyGoal();
+    }
     if (typeof dataManager.getTodayTotalSeconds === "function") {
       todayTotalSeconds = dataManager.getTodayTotalSeconds();
     } else {
       todayTotalSeconds = sessionSeconds;
     }
 
-    if (!goalSeconds || goalSeconds <= 0) goalSeconds = 14400;
+    if (!goalSeconds || goalSeconds <= 0) {
+      goalSeconds = 14400;
+    }
     progressPercent = Math.min(
       100,
       Math.floor((todayTotalSeconds / goalSeconds) * 100),
