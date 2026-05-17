@@ -130,20 +130,26 @@ export class ReportPanel {
           :root {
             --bg: var(--vscode-editor-background);
             --fg: var(--vscode-editor-foreground);
-            --card-bg: var(--vscode-sideBar-background);
-            --card-border: var(--vscode-widget-border);
+            --surface: var(--vscode-sideBar-background);
+            --surface-raised: var(--vscode-editorWidget-background);
+            --card-bg: color-mix(in srgb, var(--surface) 88%, var(--fg) 12%);
+            --card-border: color-mix(in srgb, var(--vscode-widget-border) 82%, var(--fg) 18%);
             --accent: var(--vscode-textLink-foreground);
+            --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
             --text-secondary: var(--vscode-descriptionForeground);
             --muted: var(--vscode-disabledForeground);
-            --green: #4ec9b0;
-            --red: #f14c4c;
-            --blue: #569cd6;
-            --orange: #ce9178;
-            --yellow: #dcdcaa;
-            --purple: #c586c0;
+            --focus-ring: var(--vscode-focusBorder);
+            --button-fg: var(--vscode-button-foreground);
+            --success: #2aa876;
+            --danger: #d85c57;
+            --info: #4b8fd6;
+            --warning: #c69026;
+            --yellow: #b99f2f;
+            --purple: #a970d8;
           }
 
           * { box-sizing: border-box; }
+          html { font-size: 15px; }
           body {
             background: var(--bg);
             color: var(--fg);
@@ -153,29 +159,61 @@ export class ReportPanel {
             height: 100vh;
             margin: 0;
           }
+          .skip-link {
+            background: var(--accent);
+            color: var(--button-fg);
+            left: 12px;
+            padding: 8px 12px;
+            position: fixed;
+            top: 8px;
+            transform: translateY(-140%);
+            z-index: 20;
+          }
+          .skip-link:focus { transform: translateY(0); }
+          .sr-only {
+            border: 0;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+          }
           .navbar {
             align-items: center;
+            background: color-mix(in srgb, var(--surface) 90%, transparent);
             border-bottom: 1px solid var(--card-border);
             display: flex;
             gap: 16px;
             justify-content: space-between;
-            padding: 10px 18px;
+            padding: 12px 18px;
           }
           .brand {
-            font-size: 1rem;
+            align-items: center;
+            display: flex;
+            font-size: 1.05rem;
             font-weight: 700;
+            gap: 10px;
             white-space: nowrap;
+          }
+          .brand-mark {
+            background: var(--accent);
+            border-radius: 6px;
+            display: inline-block;
+            height: 18px;
+            width: 6px;
           }
           .tabs, .filters {
             align-items: center;
             display: flex;
-            gap: 4px;
+            gap: 6px;
           }
           .tabs {
-            background: var(--card-bg);
+            background: color-mix(in srgb, var(--surface) 82%, var(--fg) 8%);
             border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 3px;
+            border-radius: 8px;
+            padding: 4px;
           }
           button {
             background: transparent;
@@ -184,16 +222,24 @@ export class ReportPanel {
             cursor: pointer;
             font: inherit;
           }
-          .tab-btn, .filter-btn {
-            border-radius: 4px;
-            color: var(--fg);
-            opacity: 0.72;
-            padding: 6px 12px;
+          button:focus-visible, .skip-link:focus-visible {
+            outline: 2px solid var(--focus-ring);
+            outline-offset: 2px;
           }
-          .tab-btn:hover, .filter-btn:hover { opacity: 1; }
+          .tab-btn, .filter-btn {
+            border-radius: 6px;
+            color: var(--fg);
+            min-height: 34px;
+            opacity: 0.86;
+            padding: 7px 13px;
+          }
+          .tab-btn:hover, .filter-btn:hover {
+            background: color-mix(in srgb, var(--fg) 8%, transparent);
+            opacity: 1;
+          }
           .tab-btn.active, .filter-btn.active {
             background: var(--accent);
-            color: var(--vscode-button-foreground);
+            color: var(--button-fg);
             font-weight: 600;
             opacity: 1;
           }
@@ -202,7 +248,8 @@ export class ReportPanel {
             margin: 0 auto;
             max-width: 1280px;
             overflow-y: auto;
-            padding: 18px;
+            padding: 22px;
+            scroll-behavior: smooth;
             width: 100%;
           }
           .view-header {
@@ -210,18 +257,24 @@ export class ReportPanel {
             display: flex;
             gap: 12px;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
           }
           .page-title {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 650;
+            letter-spacing: 0;
             margin: 0;
+          }
+          .view-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4px;
           }
           .filters { display: none; }
           .filter-btn {
             border: 1px solid var(--card-border);
-            font-size: 0.82rem;
-            padding: 5px 10px;
+            font-size: 0.86rem;
+            padding: 6px 11px;
           }
           .view-section { display: none; }
           .view-section.active { display: block; }
@@ -252,32 +305,39 @@ export class ReportPanel {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 8px;
+            box-shadow: 0 1px 0 color-mix(in srgb, var(--fg) 5%, transparent);
             min-width: 0;
-            padding: 14px;
+            padding: 16px;
           }
           .metric-card {
+            border-left: 4px solid var(--accent);
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-height: 116px;
+            gap: 8px;
+            justify-content: space-between;
+            min-height: 126px;
           }
+          .metric-card.warning { border-left-color: var(--warning); }
+          .metric-card.danger { border-left-color: var(--danger); }
+          .metric-card.success { border-left-color: var(--success); }
           .card-title {
             color: var(--text-secondary);
-            font-size: 0.76rem;
+            font-size: 0.82rem;
             font-weight: 650;
             letter-spacing: 0;
-            text-transform: uppercase;
+            text-transform: none;
           }
           .metric-big {
-            font-size: 1.9rem;
+            color: var(--fg);
+            font-size: 2rem;
             font-weight: 750;
             line-height: 1.1;
             overflow-wrap: anywhere;
           }
           .metric-sub {
             color: var(--text-secondary);
-            font-size: 0.86rem;
-            line-height: 1.35;
+            font-size: 0.9rem;
+            line-height: 1.45;
           }
           .metric-row {
             align-items: baseline;
@@ -287,11 +347,11 @@ export class ReportPanel {
           }
           .delta {
             color: var(--text-secondary);
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             white-space: nowrap;
           }
-          .delta.good { color: var(--green); }
-          .delta.bad { color: var(--red); }
+          .delta.good { color: var(--success); }
+          .delta.bad { color: var(--danger); }
           .chart-container {
             height: 250px;
             position: relative;
@@ -312,7 +372,8 @@ export class ReportPanel {
           .bar-row {
             display: grid;
             gap: 8px;
-            grid-template-columns: minmax(0, 1fr) 70px;
+            grid-template-columns: minmax(0, 1fr) 86px;
+            padding: 4px 0;
           }
           .bar-label {
             overflow: hidden;
@@ -320,10 +381,10 @@ export class ReportPanel {
             white-space: nowrap;
           }
           .bar-track {
-            background: color-mix(in srgb, var(--fg) 8%, transparent);
-            border-radius: 4px;
+            background: color-mix(in srgb, var(--fg) 13%, transparent);
+            border-radius: 999px;
             grid-column: 1 / 3;
-            height: 6px;
+            height: 9px;
             overflow: hidden;
           }
           .bar-fill {
@@ -336,24 +397,34 @@ export class ReportPanel {
             font-variant-numeric: tabular-nums;
             text-align: right;
           }
-          .table-wrapper { max-height: 330px; overflow-y: auto; }
+          .table-wrapper {
+            border: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent);
+            border-radius: 6px;
+            max-height: 330px;
+            overflow: auto;
+          }
           table {
             border-collapse: collapse;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             width: 100%;
           }
           th {
+            background: color-mix(in srgb, var(--surface) 82%, var(--fg) 6%);
             border-bottom: 1px solid var(--card-border);
             color: var(--text-secondary);
             font-weight: 650;
             padding: 8px;
             text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 1;
           }
           td {
             border-bottom: 1px solid color-mix(in srgb, var(--card-border) 65%, transparent);
-            padding: 8px;
+            padding: 9px 8px;
             vertical-align: middle;
           }
+          tr:hover td { background: color-mix(in srgb, var(--fg) 5%, transparent); }
           tr:last-child td { border-bottom: 0; }
           .file-name {
             color: var(--accent);
@@ -382,19 +453,19 @@ export class ReportPanel {
           .heatmap {
             display: grid;
             gap: 4px;
-            grid-template-columns: 42px repeat(24, minmax(16px, 1fr));
+            grid-template-columns: 44px repeat(24, minmax(20px, 1fr));
             overflow-x: auto;
           }
           .heat-label, .heat-cell {
             align-items: center;
             display: flex;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             justify-content: center;
-            min-height: 22px;
+            min-height: 24px;
           }
           .heat-label { color: var(--text-secondary); }
           .heat-cell {
-            background: color-mix(in srgb, var(--accent) calc(var(--heat) * 1%), transparent);
+            background: color-mix(in srgb, var(--accent) calc(var(--heat) * 1%), var(--bg));
             border: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
             border-radius: 4px;
           }
@@ -402,24 +473,36 @@ export class ReportPanel {
             color: var(--text-secondary);
             padding: 14px 0;
           }
+          @media (prefers-reduced-motion: reduce) {
+            .container { scroll-behavior: auto; }
+            *, *::before, *::after {
+              animation-duration: 0.001ms !important;
+              scroll-behavior: auto !important;
+              transition-duration: 0.001ms !important;
+            }
+          }
         </style>
       </head>
       <body>
+        <a class="skip-link" href="#dashboard-content">Skip to dashboard</a>
         <script id="initial-data" nonce="${nonce}" type="application/json">${initialData}</script>
-        <div class="navbar">
-          <div class="brand">DevTracker</div>
-          <div class="tabs">
-            <button class="tab-btn active" data-tab="today">Today</button>
-            <button class="tab-btn" data-tab="project">Project</button>
-            <button class="tab-btn" data-tab="quality">Quality</button>
-            <button class="tab-btn" data-tab="global">Global</button>
+        <header class="navbar">
+          <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>DevTracker</span></div>
+          <div class="tabs" role="tablist" aria-label="Dashboard views">
+            <button class="tab-btn active" data-tab="today" id="tab-today" role="tab" aria-selected="true" aria-controls="view-today">Today</button>
+            <button class="tab-btn" data-tab="project" id="tab-project" role="tab" aria-selected="false" aria-controls="view-project">Project</button>
+            <button class="tab-btn" data-tab="quality" id="tab-quality" role="tab" aria-selected="false" aria-controls="view-quality">Quality</button>
+            <button class="tab-btn" data-tab="global" id="tab-global" role="tab" aria-selected="false" aria-controls="view-global">Global</button>
           </div>
-        </div>
+        </header>
 
-        <div class="container">
+        <main id="dashboard-content" class="container" tabindex="-1">
           <div class="view-header">
-            <h2 id="page-title" class="page-title">Today</h2>
-            <div id="filter-bar" class="filters">
+            <div>
+              <h1 id="page-title" class="page-title">Today</h1>
+              <div id="page-subtitle" class="view-subtitle">Live view of your current coding rhythm.</div>
+            </div>
+            <div id="filter-bar" class="filters" role="group" aria-label="Date range">
               <button class="filter-btn" data-range="today" id="btn-today">Today</button>
               <button class="filter-btn active" data-range="week" id="btn-week">Last Week</button>
               <button class="filter-btn" data-range="month" id="btn-month">Last Month</button>
@@ -427,23 +510,23 @@ export class ReportPanel {
             </div>
           </div>
 
-          <div id="view-today" class="view-section active">
+          <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-today">
             <div class="grid-4">
-              <div class="card metric-card"><div class="card-title">Active Today</div><div class="metric-big" id="t-active">0m</div><div class="metric-sub" id="t-active-sub">Session 0m</div></div>
-              <div class="card metric-card"><div class="card-title">Daily Goal</div><div class="metric-big" id="t-goal">0%</div><div class="metric-sub" id="t-goal-sub">Target 0m</div></div>
-              <div class="card metric-card"><div class="card-title">Focus Score</div><div class="metric-big" id="t-focus">0</div><div class="metric-sub" id="t-focus-sub">No activity yet</div></div>
-              <div class="card metric-card"><div class="card-title">Current Flow</div><div class="metric-big" id="t-flow">0m</div><div class="metric-sub" id="t-flow-sub">Longest 0m</div></div>
+              <div class="card metric-card success" aria-label="Active time today"><div class="card-title">Active Today</div><div class="metric-big" id="t-active" aria-live="polite">0m</div><div class="metric-sub" id="t-active-sub">Session 0m</div></div>
+              <div class="card metric-card" aria-label="Daily goal progress"><div class="card-title">Daily Goal</div><div class="metric-big" id="t-goal" aria-live="polite">0%</div><div class="metric-sub" id="t-goal-sub">Target 0m</div></div>
+              <div class="card metric-card" aria-label="Focus score"><div class="card-title">Focus Score</div><div class="metric-big" id="t-focus" aria-live="polite">0</div><div class="metric-sub" id="t-focus-sub">No activity yet</div></div>
+              <div class="card metric-card" aria-label="Current flow block"><div class="card-title">Current Flow</div><div class="metric-big" id="t-flow" aria-live="polite">0m</div><div class="metric-sub" id="t-flow-sub">Longest 0m</div></div>
             </div>
             <div class="grid-4">
-              <div class="card metric-card"><div class="card-title">Edit Volume</div><div class="metric-big" id="t-edit">0</div><div class="metric-sub" id="t-edit-sub">0 edit events</div></div>
-              <div class="card metric-card"><div class="card-title">Code Churn</div><div class="metric-big" id="t-churn">0</div><div class="metric-sub" id="t-churn-sub">Net 0 lines</div></div>
-              <div class="card metric-card"><div class="card-title">Quality Pressure</div><div class="metric-big" id="t-quality">0</div><div class="metric-sub" id="t-quality-sub">0 warnings</div></div>
-              <div class="card metric-card"><div class="card-title">Git Context</div><div class="metric-big" id="t-git">0</div><div class="metric-sub" id="t-git-sub">Git unavailable</div></div>
+              <div class="card metric-card" aria-label="Edit volume"><div class="card-title">Edit Volume</div><div class="metric-big" id="t-edit">0</div><div class="metric-sub" id="t-edit-sub">0 edit events</div></div>
+              <div class="card metric-card warning" aria-label="Code churn"><div class="card-title">Code Churn</div><div class="metric-big" id="t-churn">0</div><div class="metric-sub" id="t-churn-sub">Net 0 lines</div></div>
+              <div class="card metric-card danger" aria-label="Quality pressure"><div class="card-title">Quality Pressure</div><div class="metric-big" id="t-quality">0</div><div class="metric-sub" id="t-quality-sub">0 warnings</div></div>
+              <div class="card metric-card" aria-label="Git context"><div class="card-title">Git Context</div><div class="metric-big" id="t-git">0</div><div class="metric-sub" id="t-git-sub">Git unavailable</div></div>
             </div>
             <div class="grid-2">
               <div class="card">
                 <div class="metric-row"><div class="card-title">Today Timeline</div><span class="delta" id="t-save-rhythm">0 saves/hour</span></div>
-                <div class="chart-container chart-short"><canvas id="todayTrendChart"></canvas></div>
+                <div class="chart-container chart-short"><canvas id="todayTrendChart" role="img" aria-label="Bar chart of active hours today"></canvas></div>
               </div>
               <div class="card">
                 <div class="card-title">Session Languages</div>
@@ -454,9 +537,9 @@ export class ReportPanel {
               <div class="card-title">Active Files</div>
               <div class="table-wrapper"><table id="today-files-table"></table></div>
             </div>
-          </div>
+          </section>
 
-          <div id="view-project" class="view-section">
+          <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-project" hidden>
             <div class="grid-4">
               <div class="card metric-card"><div class="card-title">Project Time</div><div class="metric-row"><div class="metric-big" id="p-time">0m</div><span class="delta" id="p-time-delta">0%</span></div><div class="metric-sub" id="p-time-sub">Selected range</div></div>
               <div class="card metric-card"><div class="card-title">Focus Score</div><div class="metric-big" id="p-focus">0</div><div class="metric-sub" id="p-focus-sub">Context switches 0</div></div>
@@ -464,27 +547,27 @@ export class ReportPanel {
               <div class="card metric-card"><div class="card-title">Churn Ratio</div><div class="metric-big" id="p-churn">0%</div><div class="metric-sub" id="p-churn-sub">0 changed lines</div></div>
             </div>
             <div class="grid-2">
-              <div class="card"><div class="card-title">Activity Trend</div><div class="chart-container"><canvas id="projectTrendChart"></canvas></div></div>
+              <div class="card"><div class="card-title">Activity Trend</div><div class="chart-container"><canvas id="projectTrendChart" role="img" aria-label="Bar chart of project active hours"></canvas></div></div>
               <div class="card"><div class="card-title">Languages</div><div class="list" id="project-language-list"></div></div>
             </div>
             <div class="card"><div class="card-title">Most Active Files</div><div class="table-wrapper"><table id="project-files-table"></table></div></div>
-          </div>
+          </section>
 
-          <div id="view-quality" class="view-section">
+          <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-quality" hidden>
             <div class="grid-4">
-              <div class="card metric-card"><div class="card-title">Errors</div><div class="metric-big" style="color:var(--red)" id="q-errors">0</div><div class="metric-sub">Current snapshot</div></div>
-              <div class="card metric-card"><div class="card-title">Warnings</div><div class="metric-big" style="color:var(--orange)" id="q-warnings">0</div><div class="metric-sub">Current snapshot</div></div>
+              <div class="card metric-card danger"><div class="card-title">Errors</div><div class="metric-big" style="color:var(--danger)" id="q-errors">0</div><div class="metric-sub">Current snapshot</div></div>
+              <div class="card metric-card warning"><div class="card-title">Warnings</div><div class="metric-big" style="color:var(--warning)" id="q-warnings">0</div><div class="metric-sub">Current snapshot</div></div>
               <div class="card metric-card"><div class="card-title">Saves</div><div class="metric-big" id="q-saves">0</div><div class="metric-sub" id="q-saves-sub">0 saves/hour</div></div>
               <div class="card metric-card"><div class="card-title">Debug Time</div><div class="metric-big" id="q-debug">0m</div><div class="metric-sub">Selected range</div></div>
             </div>
             <div class="grid-2">
-              <div class="card"><div class="card-title">Diagnostics Trend</div><div class="chart-container"><canvas id="qualityTrendChart"></canvas></div></div>
+              <div class="card"><div class="card-title">Diagnostics Trend</div><div class="chart-container"><canvas id="qualityTrendChart" role="img" aria-label="Stacked chart of diagnostics by severity"></canvas></div></div>
               <div class="card"><div class="card-title">Branch Mix</div><div class="list" id="branch-list"></div></div>
             </div>
             <div class="card"><div class="card-title">Quality Breakdown</div><div class="list" id="quality-breakdown"></div></div>
-          </div>
+          </section>
 
-          <div id="view-global" class="view-section">
+          <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-global" hidden>
             <div class="grid-4">
               <div class="card metric-card"><div class="card-title">Lifetime Code</div><div class="metric-big" id="g-time">0m</div><div class="metric-sub">All tracked work</div></div>
               <div class="card metric-card"><div class="card-title">Projects</div><div class="metric-big" id="g-projects">0</div><div class="metric-sub">With activity</div></div>
@@ -496,8 +579,8 @@ export class ReportPanel {
               <div class="card"><div class="card-title">Top Projects</div><div class="table-wrapper"><table id="global-projects-table"></table></div></div>
             </div>
             <div class="card"><div class="card-title">Global Languages</div><div class="list" id="global-language-list"></div></div>
-          </div>
-        </div>
+          </section>
+        </main>
 
         <script nonce="${nonce}">
           Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') || '#999';
@@ -540,10 +623,19 @@ export class ReportPanel {
 
           function switchTab(tab, button) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(item => {
+              item.classList.remove('active');
+              item.setAttribute('aria-selected', 'false');
+            });
             button.classList.add('active');
-            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
-            document.getElementById('view-' + tab).classList.add('active');
+            button.setAttribute('aria-selected', 'true');
+            document.querySelectorAll('.view-section').forEach(section => {
+              section.classList.remove('active');
+              section.hidden = true;
+            });
+            const activeSection = document.getElementById('view-' + tab);
+            activeSection.classList.add('active');
+            activeSection.hidden = false;
             document.getElementById('filter-bar').style.display = tab === 'today' ? 'none' : 'flex';
             render();
           }
@@ -565,11 +657,24 @@ export class ReportPanel {
 
           function updateHeader() {
             const title = document.getElementById('page-title');
+            const subtitle = document.getElementById('page-subtitle');
             const projectName = rawProject && rawProject.name ? rawProject.name : 'Current Project';
-            if (currentTab === 'today') { title.textContent = 'Today'; }
-            if (currentTab === 'project') { title.textContent = 'Project: ' + projectName; }
-            if (currentTab === 'quality') { title.textContent = 'Quality: ' + projectName; }
-            if (currentTab === 'global') { title.textContent = 'Global'; }
+            if (currentTab === 'today') {
+              title.textContent = 'Today';
+              subtitle.textContent = 'Live view of your current coding rhythm.';
+            }
+            if (currentTab === 'project') {
+              title.textContent = 'Project: ' + projectName;
+              subtitle.textContent = 'Range-based focus, churn, intensity, languages, and active files.';
+            }
+            if (currentTab === 'quality') {
+              title.textContent = 'Quality: ' + projectName;
+              subtitle.textContent = 'Diagnostics, saves, debug time, and Git branch context.';
+            }
+            if (currentTab === 'global') {
+              title.textContent = 'Global';
+              subtitle.textContent = 'Your long-term work patterns across tracked projects.';
+            }
           }
 
           function normalizeSession(session) {
@@ -995,6 +1100,7 @@ export class ReportPanel {
             rows.forEach((row, index) => {
               const item = document.createElement('div');
               item.className = 'bar-row';
+              item.setAttribute('aria-label', row.name + ': ' + formatter(row.value));
               const label = document.createElement('div');
               label.className = 'bar-label';
               label.textContent = row.name;
@@ -1008,6 +1114,7 @@ export class ReportPanel {
               fill.className = 'bar-fill';
               fill.style.width = Math.max(4, Math.round((row.value / max) * 100)) + '%';
               fill.style.background = colors[index % colors.length];
+              fill.setAttribute('aria-hidden', 'true');
               track.append(fill);
               item.append(label, value, track);
               target.append(item);
@@ -1030,6 +1137,7 @@ export class ReportPanel {
             const header = document.createElement('tr');
             ['File', 'Time', 'Touches'].forEach(text => {
               const th = document.createElement('th');
+              th.scope = 'col';
               th.textContent = text;
               if (text !== 'File') { th.className = 'text-right'; }
               header.append(th);
@@ -1072,6 +1180,7 @@ export class ReportPanel {
             const header = document.createElement('tr');
             ['Project','Time','Focus'].forEach(text => {
               const th = document.createElement('th');
+              th.scope = 'col';
               th.textContent = text;
               if (text !== 'Project') { th.className = 'text-right'; }
               header.append(th);
