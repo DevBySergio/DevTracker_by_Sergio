@@ -437,7 +437,7 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786134243935,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x37m-d4gueuhr-status": {
     "id": "task-task-msj9x37m-d4gueuhr-status",
@@ -447,6 +447,26 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786134243935,
+    "resolved": true
+  },
+  "task-task-msj9x37n-yfekzejt-status": {
+    "id": "task-task-msj9x37n-yfekzejt-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37n-yfekzejt",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786134362580,
+    "resolved": false
+  },
+  "task-task-msj9x37v-g89au2qf-status": {
+    "id": "task-task-msj9x37v-g89au2qf-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37v-g89au2qf",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786134362580,
     "resolved": false
   }
 }
