@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjg6oz5-c18done9",
+  "type": "task_moved",
+  "message": "Moved \"T18 — Implement lossless JSON and safe CSV exports\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786137559025,
+  "taskId": "task-msj9x37u-dedvppu8",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
