@@ -484,29 +484,29 @@
     "entityType": "task",
     "entityId": "task-msj9x37s-g1nkw3gb",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786136282993,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786137724175,
+    "resolved": false
   },
   "task-task-msj9x37t-hjrr7puw-status": {
     "id": "task-task-msj9x37t-hjrr7puw-status",
     "entityType": "task",
     "entityId": "task-msj9x37t-hjrr7puw",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786136282993,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786137724175,
+    "resolved": false
   },
   "task-task-msj9x37u-dedvppu8-status": {
     "id": "task-task-msj9x37u-dedvppu8-status",
     "entityType": "task",
     "entityId": "task-msj9x37u-dedvppu8",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786136282993,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786137724175,
+    "resolved": false
   }
 }

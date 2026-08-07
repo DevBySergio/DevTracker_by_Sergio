@@ -2,7 +2,7 @@
   "id": "task-msj9x37t-hjrr7puw",
   "title": "T17 — Replace full-history webview updates with a typed protocol",
   "description": "## Objective\n\nAvoid continuously sending and reprocessing the complete history by using small snapshots and deltas.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T17.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033491,
-  "updatedAt": 1786136212589,
+  "updatedAt": 1786137559016,
   "position": 1786127033491,
   "labelIds": [
     "label-msj9x376-atwveebr",
@@ -28,58 +28,58 @@
     {
       "id": "check-msj9x3f8-t66a214y",
       "text": "Define discriminated request and response messages",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033492,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559008
     },
     {
       "id": "check-msj9x3f9-pgeybhcz",
       "text": "Send only the requested view model",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033493,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559009
     },
     {
       "id": "check-msj9x3fa-twcs58l8",
       "text": "Separate the initial snapshot from live deltas",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033494,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559010
     },
     {
       "id": "check-msj9x3fb-gtbfmu9p",
       "text": "Limit live updates to one per second",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033495,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559011
     },
     {
       "id": "check-msj9x3fc-o7kive66",
       "text": "Suspend updates while the panel is hidden",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033496,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559012
     },
     {
       "id": "check-msj9x3fd-ty6r18ls",
       "text": "Validate every message",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033497,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559013
     },
     {
       "id": "check-msj9x3fe-torekm9h",
       "text": "Keep the initial payload below 100 KB",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033498,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559014
     },
     {
       "id": "check-msj9x3ff-2td35nyf",
       "text": "Keep deltas below 10 KB",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033499,
-      "updatedAt": 1786127326656
+      "updatedAt": 1786137559015
     }
   ],
   "relations": [

@@ -2,7 +2,7 @@
   "id": "task-msj9x37u-dedvppu8",
   "title": "T18 — Implement lossless JSON and safe CSV exports",
   "description": "## Objective\n\nProvide a complete backup and a safe tabular summary with clearly communicated limits and units.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T18.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033505,
-  "updatedAt": 1786136212590,
+  "updatedAt": 1786137559025,
   "position": 1786127033505,
   "labelIds": [
     "feat",
@@ -29,58 +29,58 @@
     {
       "id": "check-msj9x3fm-m8ww84p4",
       "text": "Add complete, versioned JSON export",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033506,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559017
     },
     {
       "id": "check-msj9x3fn-h6quv0fj",
       "text": "Redefine CSV as a daily summary",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033507,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559018
     },
     {
       "id": "check-msj9x3fo-c878bmdi",
       "text": "Sort projects and dates",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033508,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559019
     },
     {
       "id": "check-msj9x3fp-z53u7ook",
       "text": "Include unambiguous names and units",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033509,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559020
     },
     {
       "id": "check-msj9x3fq-8ac1np1y",
       "text": "Add a UTF-8 BOM",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033510,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559021
     },
     {
       "id": "check-msj9x3fr-cd3cm04y",
       "text": "Neutralize spreadsheet formulas",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033511,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559022
     },
     {
       "id": "check-msj9x3fs-zr4ezxxz",
       "text": "Allow exporting the selected range or complete history",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033512,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559023
     },
     {
       "id": "check-msj9x3ft-m8cj51ks",
       "text": "Keep a compatible alias for devtracker.exportCSV",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033513,
-      "updatedAt": 1786127326658
+      "updatedAt": 1786137559024
     }
   ],
   "relations": [
