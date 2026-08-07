@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjb7l71-4jpr2s7j",
+  "type": "checklist_updated",
+  "message": "Completed \"Use realpath when possible\" in \"T07 — Implement URI-safe project and document identity\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786129202701,
+  "taskId": "task-msj9x37j-5tii1xj9"
+}

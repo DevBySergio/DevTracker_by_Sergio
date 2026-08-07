@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjb7l72-flw2x3nj",
+  "type": "checklist_updated",
+  "message": "Completed \"Normalize drive letters only on Windows\" in \"T07 — Implement URI-safe project and document identity\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786129202702,
+  "taskId": "task-msj9x37j-5tii1xj9"
+}

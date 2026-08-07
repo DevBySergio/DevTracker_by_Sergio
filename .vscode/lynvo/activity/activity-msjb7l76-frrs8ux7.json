@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjb7l76-frrs8ux7",
+  "type": "task_moved",
+  "message": "Moved \"T07 — Implement URI-safe project and document identity\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786129202706,
+  "taskId": "task-msj9x37j-5tii1xj9",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

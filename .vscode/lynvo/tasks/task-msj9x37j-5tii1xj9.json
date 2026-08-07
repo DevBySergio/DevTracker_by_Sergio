@@ -2,7 +2,7 @@
   "id": "task-msj9x37j-5tii1xj9",
   "title": "T07 — Implement URI-safe project and document identity",
   "description": "## Objective\n\nPrevent path collisions and support multi-root, remote, and same-named projects correctly.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T07.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033343,
-  "updatedAt": 1786128891268,
+  "updatedAt": 1786129202706,
   "position": 1786127033343,
   "labelIds": [
     "bug",
@@ -28,51 +28,51 @@
     {
       "id": "check-msj9x3b4-ztrmlt1a",
       "text": "Remove the universal toLowerCase conversion",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033344,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202699
     },
     {
       "id": "check-msj9x3b5-kviawxym",
       "text": "Create stable IDs from canonical URIs",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033345,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202700
     },
     {
       "id": "check-msj9x3b6-1f3kaozy",
       "text": "Use realpath when possible",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033346,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202701
     },
     {
       "id": "check-msj9x3b7-is3mel2v",
       "text": "Normalize drive letters only on Windows",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033347,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202702
     },
     {
       "id": "check-msj9x3b8-fv81vb4g",
       "text": "Support projects with the same basename",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033348,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202703
     },
     {
       "id": "check-msj9x3b9-iqvq0kpf",
       "text": "Cover compatible remote, multi-root, and virtual workspaces",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033349,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202704
     },
     {
       "id": "check-msj9x3ba-t9veigvh",
       "text": "Avoid storing absolute paths in analytical rollups",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033350,
-      "updatedAt": 1786127326636
+      "updatedAt": 1786129202705
     }
   ],
   "relations": [
