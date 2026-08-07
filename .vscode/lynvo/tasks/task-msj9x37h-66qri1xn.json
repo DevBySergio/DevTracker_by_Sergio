@@ -2,7 +2,7 @@
   "id": "task-msj9x37h-66qri1xn",
   "title": "T05 — Replace blocking persistence with asynchronous per-session writes",
   "description": "## Objective\n\nRemove global synchronous writes and blocking waits without losing pending deltas when persistence fails.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T05.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033314,
-  "updatedAt": 1786130013570,
+  "updatedAt": 1786130685764,
   "position": 1786127033314,
   "labelIds": [
     "label-msj9x376-atwveebr",
@@ -29,58 +29,58 @@
     {
       "id": "check-msj9x3ab-rapiwg4u",
       "text": "Remove Atomics.wait and blocking locks",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033315,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685754
     },
     {
       "id": "check-msj9x3ac-8xmlzvqe",
       "text": "Use asynchronous atomic writes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033316,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685756
     },
     {
       "id": "check-msj9x3ad-r1urdlry",
       "text": "Serialize mutations through a write queue",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033317,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685757
     },
     {
       "id": "check-msj9x3ae-p75o6mpm",
       "text": "Apply a ten-second debounced flush",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033318,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685759
     },
     {
       "id": "check-msj9x3af-9ocpnesf",
       "text": "Force a flush when pausing, losing focus, and deactivating",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033319,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685760
     },
     {
       "id": "check-msj9x3ag-9lxo12yh",
       "text": "Avoid rewriting the complete history",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033320,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685761
     },
     {
       "id": "check-msj9x3ah-9jsfncte",
       "text": "Keep deltas when a write fails",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033321,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685762
     },
     {
       "id": "check-msj9x3ai-726mttpm",
       "text": "Expose persistence health status",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033322,
-      "updatedAt": 1786127326632
+      "updatedAt": 1786130685763
     }
   ],
   "relations": [

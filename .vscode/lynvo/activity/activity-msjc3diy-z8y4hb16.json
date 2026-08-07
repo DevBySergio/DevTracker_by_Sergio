@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjc3diy-z8y4hb16",
+  "type": "checklist_updated",
+  "message": "Completed checklist item in \"T05 — Replace blocking persistence with asynchronous per-session writes\"",
+  "createdAt": 1786130685754,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37h-66qri1xn",
+  "metadata": {
+    "checklistItemId": "check-msj9x3ab-rapiwg4u",
+    "done": true
+  }
+}
