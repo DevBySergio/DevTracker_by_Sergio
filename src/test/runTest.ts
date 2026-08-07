@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as path from "path";
 import Mocha = require("mocha");
 
@@ -7,7 +8,10 @@ async function main() {
     color: true,
   });
 
-  mocha.addFile(path.resolve(__dirname, "extension.test.js"));
+  fs.readdirSync(__dirname)
+    .filter((fileName) => fileName.endsWith(".test.js"))
+    .sort()
+    .forEach((fileName) => mocha.addFile(path.resolve(__dirname, fileName)));
 
   const failures = await new Promise<number>((resolve) => {
     mocha.run((failureCount) => resolve(failureCount));

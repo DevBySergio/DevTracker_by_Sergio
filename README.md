@@ -1,6 +1,6 @@
 # DevTracker 📊
 
-**DevTracker** is a professional analytics dashboard designed for developers who want to understand their coding habits, optimize their workflow, and stay motivated.
+**DevTracker** is a local analytics dashboard for developers who want to understand their editor activity and review their work patterns over time.
 
 Unlike other tracking tools, **DevTracker works 100% locally**. Your coding data never leaves your machine.
 
@@ -8,36 +8,40 @@ Unlike other tracking tools, **DevTracker works 100% locally**. Your coding data
 
 ### 1. ⏱️ Real-Time Analytics Dashboard
 
-Visualize key metrics with a clean, professional design divided into four strategic views:
+Visualize descriptive activity metrics in four views:
 
-- **Today:** Your daily command center with active time, goal progress, focus score, current flow, edit volume, code churn, quality pressure, and Git context.
+- **Today:** Review active time, goal progress, activity concentration, current flow, character edit volume, approximate line activity, diagnostics, and Git context.
 - **Project:** Analyze the evolution of your current project with range filters (Today, Last Week, Last Month, All Time).
-- **Quality:** Track diagnostics, save rhythm, debug time, branch mix, and dirty files without leaving the IDE.
-- **Global:** A complete overview of your "coding life" aggregating data across all your projects, including a weekly productivity heatmap.
+- **Workflow:** Track diagnostics, save rhythm, debug time, branch mix, and dirty files without leaving the IDE.
+- **Global:** Review tracked activity across all projects, including a weekly activity heatmap.
 
 ### 2. 📈 Detailed Metrics
 
-We don't just count time. DevTracker dives deep into your activity:
+DevTracker describes observed editor activity without rating productivity, code quality, or developer performance:
 
-- **Active Time:** Smart timer that pauses automatically after inactivity.
-- **Line Churn:** Differentiates between **Lines Added** (New Value), **Lines Deleted** (Refactoring), net change, and deletion ratio.
-- **Edit Volume:** Measures changed characters and edit events, including large paste/import events.
-- **Focus Score:** Estimates how concentrated your work is by combining active files and context switches.
-- **Flow Blocks:** Tracks continuous blocks of activity and highlights the current and longest block.
-- **Quality Pressure:** Captures VS Code diagnostics by severity for the active project.
+- **Active Time:** A sampled duration that stops after five minutes without an observed interaction.
+- **Approximate Line Activity:** Counts inserted and removed line breaks from editor changes; it is not a Git diff or a measure of value or refactoring.
+- **Character Edit Volume:** Measures changed UTF-16 code units and edit events, including events classified as large by a size heuristic.
+- **Top-3 File Share:** Shows how much tracked time belongs to the three most active files as a descriptive concentration metric.
+- **Flow Blocks:** Groups continuous observed activity using a two-minute gap; it is not a psychological assessment.
+- **Diagnostics Snapshot:** Shows VS Code diagnostics by severity without interpreting them as code quality.
 - **Save Rhythm:** Shows saves per active hour to reveal working cadence.
-- **Git Context:** Displays branch activity and dirty file counts when VS Code's built-in Git extension is available.
+- **Git Context:** Displays branch activity and dirty file counts only after the Git integration is enabled.
 - **Languages & Files:** Shows language distribution and most active files with dense, scannable bars and tables.
+
+The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
 
 ### 3. 🎯 Gamification & Goals
 
-- **Daily Goal Progress:** Set a daily hour target and visualize your progress in real-time.
-- **Visual Feedback:** Semantic color indicators to evaluate your performance at a glance.
+- **Daily and Weekly Goals:** Keep the daily target and optionally configure a calendar-week target. Completion is shown descriptively and capped at 100%.
+- **Visual Feedback:** Semantic color indicators show goal completion and metric state at a glance.
 
 ### 4. 🔒 Total Privacy & Data Freedom
 
-- **100% Offline:** Your data is stored in a local JSON file in your user folder (`~/.devtracker/data.json`).
-- **CSV Export:** Export your entire history to **CSV** with a single click to perform your own analysis in Excel, Python, or Notion.
+- **100% Offline:** Current data is stored under VS Code's private extension storage. A legacy `~/.devtracker/data.json` file is read only for migration and is never replaced.
+- **Data Export:** Export a selected range or complete retained history as versioned JSON, or generate a daily CSV summary with explicit units, a UTF-8 BOM, and spreadsheet-formula neutralization.
+- **Collection controls:** Pause or resume tracking, exclude projects or documents with globs, choose relative, profile-salted hashed, or no file identity, and configure detailed-session retention.
+- **Reversible reset:** Open the exact local data folder or create a complete local backup before resetting extension data.
 
 ---
 
@@ -51,7 +55,19 @@ Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`) and type:
 
 - `DevTracker: Open Dashboard`: Opens the main analytics panel.
 - `DevTracker: Set Daily Goal`: Configures your daily hour target (Default: 4 hours).
-- `DevTracker: Export Data (CSV)`: Generates a `.csv` file with your full history.
+- `DevTracker: Set or Clear Weekly Goal`: Configures an optional calendar-week target in minutes.
+- `DevTracker: Export Data (JSON)`: Generates a versioned JSON export for a selected range or all retained history.
+- `DevTracker: Export Daily Summary (CSV)`: Generates a safe day-level summary. The legacy `devtracker.exportCSV` command ID remains compatible.
+- `DevTracker: Pause Tracking` / `DevTracker: Resume Tracking`: Explicitly control activity collection.
+- `DevTracker: Open Data Folder`: Opens the current VS Code extension-storage folder.
+- `DevTracker: Back Up and Reset Data`: Requires confirmation, creates a complete timestamped backup, resets active data, and reloads VS Code.
+
+### Privacy settings
+
+- `devtracker.projectExclusionGlobs` and `devtracker.documentExclusionGlobs`: Paths matching these globs contribute no tracking data.
+- `devtracker.detailedDataRetentionDays`: Retains completed session detail for 30 days by default; aggregate daily rollups remain available.
+- `devtracker.fileIdentityMode`: Stores project-relative identities by default, profile-salted hashes in `hashed` mode, or no document detail in `none` mode.
+- `devtracker.gitTrackingEnabled`, `devtracker.debugTrackingEnabled`, and `devtracker.taskTrackingEnabled`: Independent opt-ins that are all disabled by default.
 
 ---
 
@@ -73,6 +89,7 @@ Your data is yours.
 
 - **No Telemetry:** This extension does **NOT** send any data to external servers.
 - **Local Storage:** All metrics are calculated and stored locally on your machine.
+- **Data minimization:** Diagnostics persist counts and timestamps only—never messages, source content, terminal content, commands, or launch configurations.
 
 ---
 

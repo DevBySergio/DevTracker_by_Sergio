@@ -11,7 +11,7 @@
     "url": "https://github.com/DevBySergio/DevTracker_by_Sergio"
   },
   "engines": {
-    "vscode": "^1.80.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Visualization"
@@ -39,10 +39,91 @@
         "title": "DevTracker: Set Daily Goal"
       },
       {
+        "command": "devtracker.setWeeklyGoal",
+        "title": "DevTracker: Set or Clear Weekly Goal"
+      },
+      {
         "command": "devtracker.exportCSV",
-        "title": "DevTracker: Export Data (CSV)"
+        "title": "DevTracker: Export Daily Summary (CSV)"
+      },
+      {
+        "command": "devtracker.exportJson",
+        "title": "DevTracker: Export Data (JSON)"
+      },
+      {
+        "command": "devtracker.exportDailyCsv",
+        "title": "DevTracker: Export Daily Summary (CSV)"
+      },
+      {
+        "command": "devtracker.pauseTracking",
+        "title": "DevTracker: Pause Tracking"
+      },
+      {
+        "command": "devtracker.resumeTracking",
+        "title": "DevTracker: Resume Tracking"
+      },
+      {
+        "command": "devtracker.openDataFolder",
+        "title": "DevTracker: Open Data Folder"
+      },
+      {
+        "command": "devtracker.resetData",
+        "title": "DevTracker: Back Up and Reset Data"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "DevTracker",
+      "properties": {
+        "devtracker.projectExclusionGlobs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Project path globs that DevTracker must not track."
+        },
+        "devtracker.documentExclusionGlobs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Project-relative document globs that DevTracker must not track."
+        },
+        "devtracker.detailedDataRetentionDays": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3650,
+          "default": 30,
+          "description": "Days to retain completed session detail. Daily aggregate rollups are retained."
+        },
+        "devtracker.fileIdentityMode": {
+          "type": "string",
+          "enum": [
+            "relative",
+            "hashed",
+            "none"
+          ],
+          "default": "relative",
+          "description": "How document identities are stored: project-relative paths, profile-salted hashes, or no document detail."
+        },
+        "devtracker.gitTrackingEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Collect local Git branch and dirty-file aggregates."
+        },
+        "devtracker.debugTrackingEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Collect debug-session active-time aggregates."
+        },
+        "devtracker.taskTrackingEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Collect task lifecycle aggregates when task tracking is available."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

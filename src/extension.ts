@@ -1,486 +1,247 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import { DataManager, DiagnosticsBySeverity } from "./DataManager";
-import { ReportPanel } from "./ReportPanel";
+import * as os from "os";
+import * as path from "path";
+import { DataManager } from "./DataManager";
+import { DataManagementService, DataResetError } from "./persistence/DataManagementService";
+import { VscodeGitIntegration } from "./integrations/GitIntegration";
+import { VscodePrivacySettings } from "./integrations/VscodePrivacySettings";
+import { UriIdentityService } from "./identity/UriIdentityService";
+import { WorkspaceIdentityRegistrar } from "./integrations/WorkspaceIdentityRegistrar";
+import {
+  nodeFileSystem,
+  systemClock,
+  systemIntervalScheduler,
+} from "./platform/ports";
+import { SessionStoreV2 } from "./persistence/SessionStoreV2";
+import { SessionActivityRecorder } from "./persistence/SessionActivityRecorder";
+import { SessionDiagnosticsRecorder } from "./persistence/SessionDiagnosticsRecorder";
+import {
+  LegacyMigration,
+  LegacyMigrationResult,
+} from "./persistence/LegacyMigration";
+import { DashboardPresenter } from "./presentation/DashboardPresenter";
+import { DevTrackerQueries } from "./queries/DevTrackerQueries";
+import { RangeQueryEngine } from "./queries/RangeQueryEngine";
+import { RangeQueryService } from "./queries/RangeQueryService";
+import { TrackingController } from "./tracking/TrackingController";
+import { DiagnosticsTracker } from "./tracking/DiagnosticsTracker";
+import { detailedDataCutoffMs } from "./privacy";
+import { ExportService } from "./export/ExportService";
+import { RangeExportDataSource } from "./export/RangeExportDataSource";
+import { VscodeExportCommands } from "./export/VscodeExportCommands";
 
-let dataManager: DataManager;
-let statusBarItem: vscode.StatusBarItem;
-let trackingInterval: NodeJS.Timeout | undefined;
-let saveInterval: NodeJS.Timeout | undefined;
-let lastActivityTime = 0;
-let lastKnownProject: string | undefined;
-let lastActiveDocumentKey: string | undefined;
-let isWindowFocused = true;
-let isDebugging = false;
-let currentGitBranch = "No branch";
-let currentGitDirtyFiles = 0;
-let lastGitRefresh = 0;
-const INACTIVITY_THRESHOLD_SECONDS = 300;
-const PASTE_CHARACTER_THRESHOLD = 80;
-const GIT_REFRESH_INTERVAL_MS = 5000;
+let deactivateExtension: (() => Promise<void>) | undefined;
 
-export function activate(context: vscode.ExtensionContext) {
-  dataManager = new DataManager();
-
-  statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Left,
-    100,
-  );
-  statusBarItem.command = "devtracker.showStats";
-  context.subscriptions.push(statusBarItem);
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("devtracker.showStats", () => {
-      openPanel(context.extensionUri);
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("devtracker.setDailyGoal", async () => {
-      const input = await vscode.window.showInputBox({
-        title: "DevTracker: Meta Diaria",
-        prompt: "Enter your daily goal in minutes (e.g: 240 for 4 hours).",
-        placeHolder: "240",
-        ignoreFocusOut: true,
-        validateInput: (text) => {
-          const num = Number(text);
-          return isNaN(num) || num <= 0
-            ? "Please enter a valid number greater than 0."
-            : null;
-        },
-      });
-
-      if (input) {
-        const minutes = parseInt(input, 10);
-        const hours = minutes / 60;
-
-        if (typeof dataManager.setDailyGoal === "function") {
-          dataManager.setDailyGoal(hours);
-          vscode.window.showInformationMessage(
-            `Daily goal updated to ${minutes} minutes.`,
-          );
-          updateState();
-        } else {
-          vscode.window.showErrorMessage(
-            "Error: DataManager not initialized correctly.",
-          );
-        }
-      }
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("devtracker.exportCSV", async () => {
-      const uri = await vscode.window.showSaveDialog({
-        filters: { CSV: ["csv"] },
-        saveLabel: "Export DevTracker Data",
-      });
-      if (uri) {
-        try {
-          fs.writeFileSync(uri.fsPath, dataManager.generateCSV());
-          vscode.window.showInformationMessage(`Exported data: ${uri.fsPath}`);
-        } catch (error: any) {
-          vscode.window.showErrorMessage(`Error: ${error.message}`);
-        }
-      }
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.window.onDidChangeTextEditorSelection(onActivity),
-  );
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(onActiveTextEditorChanged),
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument(onDocumentChange),
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidSaveTextDocument(onDocumentSave),
-  );
-  context.subscriptions.push(
-    vscode.window.onDidChangeWindowState((state) => {
-      isWindowFocused = state.focused;
-      if (state.focused) {
-        onActivity();
-      }
-      updateState();
-    }),
-  );
-  context.subscriptions.push(
-    vscode.languages.onDidChangeDiagnostics((event) => {
-      updateDiagnosticsFromUris(event.uris);
-    }),
-  );
-  context.subscriptions.push(
-    vscode.debug.onDidStartDebugSession(() => {
-      isDebugging = true;
-      updateState();
-    }),
-  );
-  context.subscriptions.push(
-    vscode.debug.onDidTerminateDebugSession(() => {
-      isDebugging = false;
-      updateState();
-    }),
-  );
-
-  startTracking();
-
-  saveInterval = setInterval(() => {
-    dataManager.saveData();
-  }, 30000);
-
-  updateState();
-  onActiveTextEditorChanged(vscode.window.activeTextEditor);
-}
-
-export function deactivate() {
-  if (trackingInterval) {
-    clearInterval(trackingInterval);
-  }
-  if (saveInterval) {
-    clearInterval(saveInterval);
-  }
-  if (dataManager) {
-    dataManager.saveData();
-  }
-}
-
-function onActivity() {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor || editor.document.uri.scheme !== "file") {
-    return;
-  }
-
-  const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
-  if (!folder) {
-    return;
-  }
-
-  lastActivityTime = Date.now();
-  lastKnownProject = folder.uri.fsPath;
-}
-
-function onActiveTextEditorChanged(editor: vscode.TextEditor | undefined) {
-  if (!editor || editor.document.uri.scheme !== "file") {
-    return;
-  }
-
-  const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
-  if (!folder) {
-    return;
-  }
-
-  const documentKey = editor.document.uri.toString();
-  if (lastActiveDocumentKey && lastActiveDocumentKey !== documentKey) {
-    dataManager.addContextSwitch(folder.uri.fsPath);
-  }
-
-  lastActiveDocumentKey = documentKey;
-  lastActivityTime = Date.now();
-  lastKnownProject = folder.uri.fsPath;
-  updateDiagnosticsForProject(folder.uri.fsPath);
-  void refreshGitState(folder.uri.fsPath);
-  updateState();
-}
-
-function onDocumentChange(event: vscode.TextDocumentChangeEvent) {
-  if (event.document.uri.scheme !== "file") {
-    return;
-  }
-
-  const folder = vscode.workspace.getWorkspaceFolder(event.document.uri);
-  if (!folder) {
-    return;
-  }
-
-  lastActivityTime = Date.now();
-  lastKnownProject = folder.uri.fsPath;
-
-  const pPath = folder.uri.fsPath;
-  const relativeFile = vscode.workspace.asRelativePath(event.document.uri, false);
-
-  if (event.contentChanges.length > 0) {
-    const changedCharacters = event.contentChanges.reduce((total, change) => {
-      return total + Math.max(change.text.length, change.rangeLength);
-    }, 0);
-    const isPaste = event.contentChanges.some((change) => {
-      const insertedLines = change.text.split("\n").length - 1;
-      return (
-        change.text.length >= PASTE_CHARACTER_THRESHOLD || insertedLines >= 4
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
+  const storagePath = vscode.Uri.joinPath(context.globalStorageUri, "v2").fsPath;
+  const sessionStore = new SessionStoreV2({
+    storagePath,
+    clock: systemClock,
+    fileSystem: nodeFileSystem,
+  });
+  await sessionStore.initialize();
+  const privacy = await VscodePrivacySettings.create(context.secrets);
+  const identityService = new UriIdentityService({
+    clock: systemClock,
+    fileSystem: nodeFileSystem,
+  });
+  const migration = new LegacyMigration({
+    legacyDataPath: path.join(os.homedir(), ".devtracker", "data.json"),
+    backupDirectory: path.join(storagePath, "backups"),
+    clock: systemClock,
+    fileSystem: nodeFileSystem,
+    target: sessionStore,
+    createProjectIdentity: async ({ path: projectPath, displayName }) => {
+      const uri = {
+        scheme: "file",
+        authority: "",
+        path: projectPath,
+        fsPath: projectPath,
+      };
+      const candidate = identityService.createProjectIdentity(uri, displayName);
+      const existing = await sessionStore.getProjectIdentity(candidate.id);
+      return identityService.createProjectIdentity(uri, displayName, existing);
+    },
+  });
+  let migrationResult: LegacyMigrationResult | undefined;
+  try {
+    migrationResult = await migration.migrate();
+    if (migrationResult.status === "recovered") {
+      void vscode.window.showWarningMessage(
+        "DevTracker recovered v1 history from a validated local backup. The original corrupt file was left unchanged.",
       );
-    });
-
-    dataManager.addEditActivity(
-      pPath,
-      Math.max(1, changedCharacters),
-      relativeFile,
-      isPaste,
+    }
+  } catch (error) {
+    console.error("DevTracker v1 migration failed:", error);
+    void vscode.window.showErrorMessage(
+      "DevTracker could not migrate the existing v1 history. The original file was left unchanged; new activity will use separate extension storage.",
     );
   }
 
-  let added = 0,
-    deleted = 0;
-  for (const change of event.contentChanges) {
-    const newLines = change.text.split("\n").length - 1;
-    if (newLines > 0) {
-      added += newLines;
-    }
-
-    const rangeLines = change.range.end.line - change.range.start.line;
-    if (rangeLines > 0) {
-      deleted += rangeLines;
-    }
-  }
-
-  if (added > 0 || deleted > 0) {
-    dataManager.addLines(pPath, added, deleted);
-  }
-
-  updateState();
-}
-
-function onDocumentSave(document: vscode.TextDocument) {
-  if (document.uri.scheme !== "file") {
-    return;
-  }
-
-  const folder = vscode.workspace.getWorkspaceFolder(document.uri);
-  if (!folder) {
-    return;
-  }
-
-  lastActivityTime = Date.now();
-  lastKnownProject = folder.uri.fsPath;
-  dataManager.addSave(folder.uri.fsPath);
-  updateDiagnosticsForProject(folder.uri.fsPath);
-  void refreshGitState(folder.uri.fsPath);
-  updateState();
-}
-
-function startTracking() {
-  trackingInterval = setInterval(() => {
-    const now = Date.now();
-    if (
-      lastActivityTime > 0 &&
-      isWindowFocused &&
-      (now - lastActivityTime) / 1000 < INACTIVITY_THRESHOLD_SECONDS
-    ) {
-      const editor = vscode.window.activeTextEditor;
-      let projectToTrack: string | undefined = undefined;
-      let lang = "unknown";
-      let relativeFile = "unknown";
-
-      if (editor && editor.document.uri.scheme === "file") {
-        const folder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
-        if (folder) {
-          projectToTrack = folder.uri.fsPath;
-          lang = editor.document.languageId;
-
-          relativeFile = vscode.workspace.asRelativePath(
-            editor.document.uri,
-            false,
-          );
-        }
-      }
-
-      if (projectToTrack) {
-        lastKnownProject = projectToTrack;
-        maybeRefreshGitState(projectToTrack);
-        dataManager.addTime(
-          projectToTrack,
-          lang,
-          relativeFile,
-          1,
-          currentGitBranch,
-        );
-        dataManager.setGitDirtyFiles(projectToTrack, currentGitDirtyFiles);
-        if (isDebugging) {
-          dataManager.addDebugSeconds(projectToTrack, 1);
-        }
-      }
-      updateState();
-    } else if (lastKnownProject && !isWindowFocused) {
-      dataManager.addIdleSeconds(lastKnownProject, 1);
-      updateState();
-    }
-  }, 1000);
-}
-
-function maybeRefreshGitState(projectPath: string) {
-  const now = Date.now();
-  if (now - lastGitRefresh < GIT_REFRESH_INTERVAL_MS) {
-    return;
-  }
-
-  lastGitRefresh = now;
-  void refreshGitState(projectPath);
-}
-
-async function refreshGitState(projectPath: string): Promise<void> {
+  const compactDetailedSessionData = async (): Promise<void> => {
+    const cutoff = Math.max(
+      0,
+      detailedDataCutoffMs(
+        systemClock.nowMs(),
+        privacy.getDetailedDataRetentionDays(),
+      ),
+    );
+    await sessionStore.compactCompletedSessions(cutoff);
+    await sessionStore.flush();
+  };
   try {
-    const gitExtension = vscode.extensions.getExtension("vscode.git");
-    if (!gitExtension) {
-      currentGitBranch = "Git unavailable";
-      currentGitDirtyFiles = 0;
-      dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
-      return;
-    }
-
-    const extensionApi = gitExtension.isActive
-      ? gitExtension.exports
-      : await gitExtension.activate();
-    const git = extensionApi.getAPI(1);
-    const repository = git.repositories.find((repo: any) => {
-      return repo.rootUri?.fsPath === projectPath;
-    });
-
-    if (!repository) {
-      currentGitBranch = "No repository";
-      currentGitDirtyFiles = 0;
-      dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
-      return;
-    }
-
-    currentGitBranch = repository.state.HEAD?.name || "Detached HEAD";
-    currentGitDirtyFiles =
-      repository.state.workingTreeChanges.length +
-      repository.state.indexChanges.length +
-      repository.state.untrackedChanges.length;
-    dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
-  } catch {
-    currentGitBranch = "Git unavailable";
-    currentGitDirtyFiles = 0;
-    dataManager.setGitDirtyFiles(projectPath, currentGitDirtyFiles);
+    await compactDetailedSessionData();
+  } catch (error) {
+    console.error("DevTracker detailed-data retention failed:", error);
+    void vscode.window.showWarningMessage(
+      "DevTracker could not compact expired session detail. Existing local data was left unchanged.",
+    );
   }
-}
 
-function updateDiagnosticsFromUris(uris: readonly vscode.Uri[]) {
-  const projectPaths = new Set<string>();
-
-  uris.forEach((uri) => {
-    if (uri.scheme !== "file") {
-      return;
-    }
-
-    const folder = vscode.workspace.getWorkspaceFolder(uri);
-    if (folder) {
-      projectPaths.add(folder.uri.fsPath);
-    }
+  const store = new DataManager({
+    dataPath: path.join(storagePath, "compatibility", "data.json"),
+    initialData: migrationResult?.normalizedData,
+    clock: systemClock,
+    fileSystem: nodeFileSystem,
+  });
+  const queries = new DevTrackerQueries(store);
+  const rangeQueries = new RangeQueryService(
+    sessionStore,
+    new RangeQueryEngine(systemClock),
+  );
+  const git = new VscodeGitIntegration(systemClock);
+  const presentation = new DashboardPresenter({
+    extensionUri: context.extensionUri,
+    rangeQueries,
+    clock: systemClock,
+    resolveProjectId: (projectPath) => {
+      const folder = vscode.workspace.workspaceFolders?.find(
+        (candidate) => candidate.uri.fsPath === projectPath,
+      );
+      if (!folder) {
+        return undefined;
+      }
+      return identityService.createProjectIdentity(
+        {
+          scheme: folder.uri.scheme,
+          authority: folder.uri.authority,
+          path: folder.uri.path,
+          fsPath: folder.uri.fsPath,
+        },
+        folder.name,
+      ).id;
+    },
+  });
+  const activeSession = await sessionStore.startSession();
+  const activityIntervals = new SessionActivityRecorder({
+    store: sessionStore,
+    sessionId: activeSession.id,
+  });
+  const diagnostics = new DiagnosticsTracker({ clock: systemClock });
+  const diagnosticBuckets = new SessionDiagnosticsRecorder(sessionStore);
+  const controller = new TrackingController({
+    store,
+    queries,
+    git,
+    presentation,
+    clock: systemClock,
+    scheduler: systemIntervalScheduler,
+    identityService,
+    activityIntervals,
+    diagnostics,
+    diagnosticBuckets,
+    privacy,
   });
 
-  projectPaths.forEach((projectPath) => updateDiagnosticsForProject(projectPath));
-  updateState();
-}
+  const workspaceIdentities = new WorkspaceIdentityRegistrar(
+    identityService,
+    sessionStore,
+    privacy,
+  );
 
-function updateDiagnosticsForProject(projectPath: string) {
-  const diagnostics: DiagnosticsBySeverity = {
-    error: 0,
-    warning: 0,
-    info: 0,
-    hint: 0,
+  await workspaceIdentities.register(context);
+  controller.start(context);
+  new VscodeExportCommands(
+    new ExportService(
+      new RangeExportDataSource(rangeQueries, sessionStore, systemClock),
+    ),
+  ).register(context);
+
+  let shutdownPromise: Promise<void> | undefined;
+  const shutdown = (): Promise<void> => {
+    if (!shutdownPromise) {
+      shutdownPromise = (async () => {
+        controller.dispose();
+        await controller.flush();
+        await sessionStore.completeSession(activeSession.id);
+        await sessionStore.flush();
+      })();
+    }
+    return shutdownPromise;
   };
 
-  vscode.languages.getDiagnostics().forEach(([uri, entries]) => {
-    if (uri.scheme !== "file") {
-      return;
-    }
-
-    const folder = vscode.workspace.getWorkspaceFolder(uri);
-    if (!folder || folder.uri.fsPath !== projectPath) {
-      return;
-    }
-
-    entries.forEach((diagnostic) => {
-      switch (diagnostic.severity) {
-        case vscode.DiagnosticSeverity.Error:
-          diagnostics.error += 1;
-          break;
-        case vscode.DiagnosticSeverity.Warning:
-          diagnostics.warning += 1;
-          break;
-        case vscode.DiagnosticSeverity.Information:
-          diagnostics.info += 1;
-          break;
-        case vscode.DiagnosticSeverity.Hint:
-          diagnostics.hint += 1;
-          break;
-      }
-    });
+  deactivateExtension = shutdown;
+  const dataManagement = new DataManagementService({
+    dataFolderPath: context.globalStorageUri.fsPath,
   });
+  context.subscriptions.push(
+    vscode.commands.registerCommand("devtracker.openDataFolder", async () => {
+      await vscode.env.openExternal(
+        vscode.Uri.file(dataManagement.getDataFolderPath()),
+      );
+    }),
+    vscode.commands.registerCommand("devtracker.resetData", async () => {
+      const choice = await vscode.window.showWarningMessage(
+        "Back up all DevTracker data, then reset the extension's local data? VS Code will reload after a successful reset.",
+        { modal: true },
+        "Back Up and Reset",
+      );
+      if (choice !== "Back Up and Reset") {
+        return;
+      }
 
-  dataManager.setDiagnostics(projectPath, diagnostics);
+      try {
+        await shutdown();
+        const result = await dataManagement.resetConfirmedData();
+        await vscode.window.showInformationMessage(
+          `DevTracker data reset. Backup saved at ${result.backupPath}.`,
+        );
+        await vscode.commands.executeCommand("workbench.action.reloadWindow");
+      } catch (error) {
+        const backup =
+          error instanceof DataResetError && error.backupPath
+            ? ` Complete backup: ${error.backupPath}.`
+            : "";
+        void vscode.window.showErrorMessage(
+          `DevTracker data reset failed: ${error instanceof Error ? error.message : String(error)}.${backup}`,
+        );
+      }
+    }),
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (!event.affectsConfiguration("devtracker")) {
+        return;
+      }
+      privacy.reload();
+      controller.refreshPrivacy();
+      void compactDetailedSessionData().catch((error) => {
+        console.error("DevTracker retention update failed:", error);
+        void vscode.window.showWarningMessage(
+          "DevTracker could not apply the updated detailed-data retention setting.",
+        );
+      });
+    }),
+    {
+      dispose: () => {
+        void shutdown().catch((error) => {
+          console.error("DevTracker shutdown flush failed:", error);
+        });
+      },
+    },
+  );
 }
 
-function updateState() {
-  const sData = dataManager.getSessionState();
-
-  const sessionSeconds = sData.seconds;
-  const h = Math.floor(sessionSeconds / 3600);
-  const m = Math.floor((sessionSeconds % 3600) / 60);
-  const s = sessionSeconds % 60;
-  const formatted = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-
-  let progressPercent = 0;
-  let goalSeconds = 14400;
-  let todayTotalSeconds = 0;
-
-  try {
-    if (typeof dataManager.getDailyGoal === "function") {
-      goalSeconds = dataManager.getDailyGoal();
-    }
-    if (typeof dataManager.getTodayTotalSeconds === "function") {
-      todayTotalSeconds = dataManager.getTodayTotalSeconds();
-    } else {
-      todayTotalSeconds = sessionSeconds;
-    }
-
-    if (!goalSeconds || goalSeconds <= 0) {
-      goalSeconds = 14400;
-    }
-    progressPercent = Math.min(
-      100,
-      Math.floor((todayTotalSeconds / goalSeconds) * 100),
-    );
-  } catch (e) {
-    console.error("Error calculating goal:", e);
-  }
-
-  const icon = progressPercent >= 100 ? "$(check)" : "$(watch)";
-
-  statusBarItem.text = `${icon} ${formatted}`;
-  statusBarItem.tooltip = `Current session: ${formatted}\nTotal today: ${Math.floor(todayTotalSeconds / 60)} min\nDaily goal: ${progressPercent}%`;
-  statusBarItem.show();
-
-  if (ReportPanel.currentPanel && lastKnownProject) {
-    ReportPanel.currentPanel.sendUpdate(
-      sData,
-      dataManager.getProjectData(lastKnownProject),
-      dataManager.getAllProjects(),
-      goalSeconds,
-    );
-  }
-}
-
-function openPanel(extensionUri: vscode.Uri) {
-  let goalSafe = 14400;
-  try {
-    goalSafe = dataManager.getDailyGoal ? dataManager.getDailyGoal() : 14400;
-  } catch {}
-
-  if (lastKnownProject) {
-    ReportPanel.createOrShow(
-      extensionUri,
-      dataManager.getSessionState(),
-      dataManager.getProjectData(lastKnownProject),
-      dataManager.getAllProjects(),
-      goalSafe,
-      lastKnownProject,
-    );
-  } else {
-    vscode.window.showWarningMessage(
-      "DevTracker: Start programming to view data.",
-    );
-  }
+export function deactivate(): Promise<void> | undefined {
+  const shutdown = deactivateExtension;
+  deactivateExtension = undefined;
+  return shutdown?.();
 }

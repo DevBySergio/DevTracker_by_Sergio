@@ -1,36 +1,44 @@
 import * as vscode from "vscode";
-import { SessionState, ProjectData } from "./DataManager";
+import { RangeAnalyticsQueryService } from "./application/ports";
+import { Clock } from "./platform/ports";
+import {
+  DASHBOARD_PROTOCOL_VERSION,
+  DashboardProtocolController,
+  projectDashboardViewModel,
+} from "./presentation/DashboardProtocol";
+
+export interface ReportPanelOptions {
+  extensionUri: vscode.Uri;
+  queryService: RangeAnalyticsQueryService;
+  clock: Clock;
+  currentProjectId: string;
+  dailyGoalSeconds: number;
+}
 
 export class ReportPanel {
   public static currentPanel: ReportPanel | undefined;
   public static readonly viewType = "devTrackerStats";
-  public readonly currentProjectPath: string;
+  public readonly currentProjectId: string;
 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
+  private readonly protocol: DashboardProtocolController;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(
-    extensionUri: vscode.Uri,
-    sessionData: SessionState,
-    projectData: ProjectData,
-    allProjects: ProjectData[],
-    dailyGoal: number,
-    projectPath: string,
-  ) {
+  public static createOrShow(options: ReportPanelOptions): void {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
     if (ReportPanel.currentPanel) {
-      ReportPanel.currentPanel._panel.reveal(column);
-      ReportPanel.currentPanel.sendUpdate(
-        sessionData,
-        projectData,
-        allProjects,
-        dailyGoal,
-      );
-      return;
+      if (
+        ReportPanel.currentPanel.currentProjectId === options.currentProjectId
+      ) {
+        ReportPanel.currentPanel._panel.reveal(column);
+        ReportPanel.currentPanel.notifyDataChanged();
+        return;
+      }
+      ReportPanel.currentPanel._panel.dispose();
     }
 
     const panel = vscode.window.createWebviewPanel(
@@ -39,62 +47,62 @@ export class ReportPanel {
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
+        localResourceRoots: [vscode.Uri.joinPath(options.extensionUri, "media")],
         retainContextWhenHidden: true,
       },
     );
 
-    ReportPanel.currentPanel = new ReportPanel(
-      panel,
-      extensionUri,
-      sessionData,
-      projectData,
-      allProjects,
-      dailyGoal,
-      projectPath,
-    );
+    ReportPanel.currentPanel = new ReportPanel(panel, options);
   }
 
   private constructor(
     panel: vscode.WebviewPanel,
-    extensionUri: vscode.Uri,
-    sData: SessionState,
-    pData: ProjectData,
-    allData: ProjectData[],
-    goal: number,
-    path: string,
+    options: ReportPanelOptions,
   ) {
     this._panel = panel;
-    this._extensionUri = extensionUri;
-    this.currentProjectPath = path;
+    this._extensionUri = options.extensionUri;
+    this.currentProjectId = options.currentProjectId;
+    this.protocol = new DashboardProtocolController({
+      query: async (request, view) =>
+        projectDashboardViewModel(
+          await options.queryService.query(request),
+          view,
+        ),
+      send: async (message) => {
+        await this._panel.webview.postMessage(message);
+      },
+      clock: options.clock,
+      initiallyVisible: panel.visible,
+    });
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
+    this._panel.onDidChangeViewState(
+      (event) => {
+        void this.protocol.setVisible(event.webviewPanel.visible);
+      },
+      null,
+      this._disposables,
+    );
+    this._panel.webview.onDidReceiveMessage(
+      (message: unknown) => {
+        void this.protocol.handleMessage(message);
+      },
+      null,
+      this._disposables,
+    );
     this._panel.webview.html = this._getWebviewContent(
-      sData,
-      pData,
-      allData,
-      goal,
+      options.currentProjectId,
+      options.dailyGoalSeconds,
     );
   }
 
-  public sendUpdate(
-    sData: SessionState,
-    pData: ProjectData,
-    allData: ProjectData[],
-    goal: number,
-  ) {
-    this._panel.webview.postMessage({
-      command: "update",
-      sData,
-      pData,
-      allData,
-      goal,
-    });
+  public notifyDataChanged(): void {
+    this.protocol.notifyDataChanged();
   }
 
   public dispose() {
     ReportPanel.currentPanel = undefined;
+    this.protocol.dispose();
     while (this._disposables.length) {
       const disposable = this._disposables.pop();
       if (disposable) {
@@ -104,19 +112,19 @@ export class ReportPanel {
   }
 
   private _getWebviewContent(
-    sData: SessionState,
-    pData: ProjectData,
-    allData: ProjectData[],
-    goal: number,
+    currentProjectId: string,
+    dailyGoalSeconds: number,
   ) {
     const webview = this._panel.webview;
     const nonce = getNonce();
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "chart.min.js"),
     );
-    const initialData = escapeHtml(
-      JSON.stringify({ sData, pData, allData, goal }),
-    );
+    const initialData = escapeHtml(JSON.stringify({
+      protocolVersion: DASHBOARD_PROTOCOL_VERSION,
+      currentProjectId,
+      dailyGoalSeconds,
+    }));
 
     return `<!DOCTYPE html>
       <html lang="en">
@@ -491,7 +499,7 @@ export class ReportPanel {
           <div class="tabs" role="tablist" aria-label="Dashboard views">
             <button class="tab-btn active" data-tab="today" id="tab-today" role="tab" aria-selected="true" aria-controls="view-today">Today</button>
             <button class="tab-btn" data-tab="project" id="tab-project" role="tab" aria-selected="false" aria-controls="view-project">Project</button>
-            <button class="tab-btn" data-tab="quality" id="tab-quality" role="tab" aria-selected="false" aria-controls="view-quality">Quality</button>
+            <button class="tab-btn" data-tab="quality" id="tab-quality" role="tab" aria-selected="false" aria-controls="view-quality">Workflow</button>
             <button class="tab-btn" data-tab="global" id="tab-global" role="tab" aria-selected="false" aria-controls="view-global">Global</button>
           </div>
         </header>
@@ -506,7 +514,7 @@ export class ReportPanel {
               <button class="filter-btn" data-range="today" id="btn-today">Today</button>
               <button class="filter-btn active" data-range="week" id="btn-week">Last Week</button>
               <button class="filter-btn" data-range="month" id="btn-month">Last Month</button>
-              <button class="filter-btn" data-range="all" id="btn-all">All Time</button>
+              <button class="filter-btn" data-range="all" id="btn-all">Last 90 Days</button>
             </div>
           </div>
 
@@ -514,13 +522,13 @@ export class ReportPanel {
             <div class="grid-4">
               <div class="card metric-card success" aria-label="Active time today"><div class="card-title">Active Today</div><div class="metric-big" id="t-active" aria-live="polite">0m</div><div class="metric-sub" id="t-active-sub">Session 0m</div></div>
               <div class="card metric-card" aria-label="Daily goal progress"><div class="card-title">Daily Goal</div><div class="metric-big" id="t-goal" aria-live="polite">0%</div><div class="metric-sub" id="t-goal-sub">Target 0m</div></div>
-              <div class="card metric-card" aria-label="Focus score"><div class="card-title">Focus Score</div><div class="metric-big" id="t-focus" aria-live="polite">0</div><div class="metric-sub" id="t-focus-sub">No activity yet</div></div>
+              <div class="card metric-card" aria-label="Top three file share"><div class="card-title">Top-3 File Share</div><div class="metric-big" id="t-focus" aria-live="polite">0%</div><div class="metric-sub" id="t-focus-sub">No activity yet</div></div>
               <div class="card metric-card" aria-label="Current flow block"><div class="card-title">Current Flow</div><div class="metric-big" id="t-flow" aria-live="polite">0m</div><div class="metric-sub" id="t-flow-sub">Longest 0m</div></div>
             </div>
             <div class="grid-4">
-              <div class="card metric-card" aria-label="Edit volume"><div class="card-title">Edit Volume</div><div class="metric-big" id="t-edit">0</div><div class="metric-sub" id="t-edit-sub">0 edit events</div></div>
-              <div class="card metric-card warning" aria-label="Code churn"><div class="card-title">Code Churn</div><div class="metric-big" id="t-churn">0</div><div class="metric-sub" id="t-churn-sub">Net 0 lines</div></div>
-              <div class="card metric-card danger" aria-label="Quality pressure"><div class="card-title">Quality Pressure</div><div class="metric-big" id="t-quality">0</div><div class="metric-sub" id="t-quality-sub">0 warnings</div></div>
+              <div class="card metric-card" aria-label="Character edit volume"><div class="card-title">Character Edit Volume</div><div class="metric-big" id="t-edit">0</div><div class="metric-sub" id="t-edit-sub">0 edit events</div></div>
+              <div class="card metric-card warning" aria-label="Approximate line activity"><div class="card-title">Approx. Line Activity</div><div class="metric-big" id="t-churn">0</div><div class="metric-sub" id="t-churn-sub">Approx. net 0 line breaks</div></div>
+              <div class="card metric-card danger" aria-label="Current diagnostics"><div class="card-title">Current Diagnostics</div><div class="metric-big" id="t-quality">0</div><div class="metric-sub" id="t-quality-sub">0 warnings</div></div>
               <div class="card metric-card" aria-label="Git context"><div class="card-title">Git Context</div><div class="metric-big" id="t-git">0</div><div class="metric-sub" id="t-git-sub">Git unavailable</div></div>
             </div>
             <div class="grid-2">
@@ -542,9 +550,9 @@ export class ReportPanel {
           <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-project" hidden>
             <div class="grid-4">
               <div class="card metric-card"><div class="card-title">Project Time</div><div class="metric-row"><div class="metric-big" id="p-time">0m</div><span class="delta" id="p-time-delta">0%</span></div><div class="metric-sub" id="p-time-sub">Selected range</div></div>
-              <div class="card metric-card"><div class="card-title">Focus Score</div><div class="metric-big" id="p-focus">0</div><div class="metric-sub" id="p-focus-sub">Context switches 0</div></div>
-              <div class="card metric-card"><div class="card-title">Edit Intensity</div><div class="metric-big" id="p-intensity">0</div><div class="metric-sub">Edit volume/hour</div></div>
-              <div class="card metric-card"><div class="card-title">Churn Ratio</div><div class="metric-big" id="p-churn">0%</div><div class="metric-sub" id="p-churn-sub">0 changed lines</div></div>
+              <div class="card metric-card"><div class="card-title">Top-3 File Share</div><div class="metric-big" id="p-focus">0%</div><div class="metric-sub" id="p-focus-sub">Observed editor transitions 0</div></div>
+              <div class="card metric-card"><div class="card-title">Character Edits / Active Hour</div><div class="metric-big" id="p-intensity">0</div><div class="metric-sub">Legacy v1 approximation</div></div>
+              <div class="card metric-card"><div class="card-title">Removal Share (Approx.)</div><div class="metric-big" id="p-churn">0%</div><div class="metric-sub" id="p-churn-sub">0 approximate line-break changes</div></div>
             </div>
             <div class="grid-2">
               <div class="card"><div class="card-title">Activity Trend</div><div class="chart-container"><canvas id="projectTrendChart" role="img" aria-label="Bar chart of project active hours"></canvas></div></div>
@@ -564,15 +572,15 @@ export class ReportPanel {
               <div class="card"><div class="card-title">Diagnostics Trend</div><div class="chart-container"><canvas id="qualityTrendChart" role="img" aria-label="Stacked chart of diagnostics by severity"></canvas></div></div>
               <div class="card"><div class="card-title">Branch Mix</div><div class="list" id="branch-list"></div></div>
             </div>
-            <div class="card"><div class="card-title">Quality Breakdown</div><div class="list" id="quality-breakdown"></div></div>
+            <div class="card"><div class="card-title">Current Signals</div><div class="list" id="quality-breakdown"></div></div>
           </section>
 
           <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-global" hidden>
             <div class="grid-4">
-              <div class="card metric-card"><div class="card-title">Lifetime Code</div><div class="metric-big" id="g-time">0m</div><div class="metric-sub">All tracked work</div></div>
+              <div class="card metric-card"><div class="card-title">Tracked Time</div><div class="metric-big" id="g-time">0m</div><div class="metric-sub">All tracked activity</div></div>
               <div class="card metric-card"><div class="card-title">Projects</div><div class="metric-big" id="g-projects">0</div><div class="metric-sub">With activity</div></div>
-              <div class="card metric-card"><div class="card-title">Best Hour</div><div class="metric-big" id="g-best-hour">--</div><div class="metric-sub" id="g-best-hour-sub">No activity</div></div>
-              <div class="card metric-card"><div class="card-title">Global Focus</div><div class="metric-big" id="g-focus">0</div><div class="metric-sub">Selected range</div></div>
+              <div class="card metric-card"><div class="card-title">Most Active Hour</div><div class="metric-big" id="g-best-hour">--</div><div class="metric-sub" id="g-best-hour-sub">No activity</div></div>
+              <div class="card metric-card"><div class="card-title">Top-3 File Share</div><div class="metric-big" id="g-focus">0%</div><div class="metric-sub">Selected range</div></div>
             </div>
             <div class="grid-2">
               <div class="card"><div class="card-title">Weekly Heatmap</div><div id="heatmap" class="heatmap"></div></div>
@@ -588,12 +596,18 @@ export class ReportPanel {
           Chart.defaults.font.family = 'Segoe UI, sans-serif';
 
           const initialData = JSON.parse(document.getElementById('initial-data').textContent);
+          const vscodeApi = acquireVsCodeApi();
           let currentTab = 'today';
           let currentRange = 'week';
-          let rawSession = normalizeSession(initialData.sData);
-          let rawProject = initialData.pData;
-          let rawAll = initialData.allData || [];
-          let dailyGoal = initialData.goal;
+          let requestSequence = 0;
+          let activeRequestId = '';
+          let dashboardData = null;
+          let rawSession = normalizeSession();
+          let rawProject = { name: 'Current Project', path: '', days: {} };
+          let rawComparisonProject = null;
+          let rawAll = [];
+          let rangeDays = [];
+          let dailyGoal = initialData.dailyGoalSeconds;
           let todayTrendChart = null;
           let projectTrendChart = null;
           let qualityTrendChart = null;
@@ -610,16 +624,25 @@ export class ReportPanel {
 
           window.addEventListener('message', event => {
             const msg = event.data;
-            if (msg.command === 'update') {
-              rawSession = normalizeSession(msg.sData);
-              rawProject = msg.pData;
-              rawAll = msg.allData || [];
-              dailyGoal = msg.goal;
+            if (!msg || msg.protocolVersion !== initialData.protocolVersion || msg.requestId !== activeRequestId || msg.view !== currentTab) {
+              return;
+            }
+            if (msg.type === 'dashboard/snapshot') {
+              dashboardData = msg.data;
+              adaptDashboardData();
               render();
+            }
+            if (msg.type === 'dashboard/live-delta' && dashboardData && dashboardData.revision === msg.baseRevision) {
+              applyViewModelDelta(dashboardData, msg.delta, msg.revision);
+              adaptDashboardData();
+              render();
+            }
+            if (msg.type === 'dashboard/error') {
+              document.getElementById('page-subtitle').textContent = 'Dashboard data is temporarily unavailable (' + msg.code + ').';
             }
           });
 
-          render();
+          requestView();
 
           function switchTab(tab, button) {
             currentTab = tab;
@@ -637,14 +660,40 @@ export class ReportPanel {
             activeSection.classList.add('active');
             activeSection.hidden = false;
             document.getElementById('filter-bar').style.display = tab === 'today' ? 'none' : 'flex';
-            render();
+            requestView();
           }
 
           function setRange(range) {
             currentRange = range;
             document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
             document.getElementById('btn-' + range).classList.add('active');
-            render();
+            requestView();
+          }
+
+          function requestView() {
+            activeRequestId = 'request-' + (++requestSequence);
+            dashboardData = null;
+            const projectId = currentTab === 'project' || currentTab === 'quality'
+              ? initialData.currentProjectId
+              : null;
+            vscodeApi.postMessage({
+              type: 'dashboard/request-view',
+              protocolVersion: initialData.protocolVersion,
+              requestId: activeRequestId,
+              view: currentTab,
+              range: {
+                preset: currentTab === 'today' ? 'today' : rangePreset(currentRange),
+                includeComparison: currentTab === 'project'
+              },
+              projectId
+            });
+          }
+
+          function rangePreset(range) {
+            if (range === 'today') { return 'today'; }
+            if (range === 'month') { return '30-days'; }
+            if (range === 'all') { return '90-days'; }
+            return '7-days';
           }
 
           function render() {
@@ -665,11 +714,11 @@ export class ReportPanel {
             }
             if (currentTab === 'project') {
               title.textContent = 'Project: ' + projectName;
-              subtitle.textContent = 'Range-based focus, churn, intensity, languages, and active files.';
+              subtitle.textContent = 'Range-based activity time, concentration, editor changes, languages, and active files.';
             }
             if (currentTab === 'quality') {
-              title.textContent = 'Quality: ' + projectName;
-              subtitle.textContent = 'Diagnostics, saves, debug time, and Git branch context.';
+              title.textContent = 'Workflow: ' + projectName;
+              subtitle.textContent = 'Descriptive diagnostics, saves, debug time, and Git branch context.';
             }
             if (currentTab === 'global') {
               title.textContent = 'Global';
@@ -677,18 +726,149 @@ export class ReportPanel {
             }
           }
 
+          function adaptDashboardData() {
+            const current = dashboardData.current;
+            rangeDays = periodDays(current, true);
+            rawSession = normalizeSession(metricsAsLegacy(current.metrics, current));
+            rawProject = periodAsLegacyProject(current);
+            rawComparisonProject = dashboardData.comparison
+              ? periodAsLegacyProject(dashboardData.comparison)
+              : null;
+            rawAll = current.projects.map(project => projectAsLegacy(project, current.range.endLocalDate));
+            if (currentTab === 'today') {
+              rawAll = [{ name: 'Today', path: '', days: Object.fromEntries(rangeDays.map(day => [day.date, day])) }];
+            }
+          }
+
+          function periodAsLegacyProject(period) {
+            const project = period.projects[0];
+            const days = periodDays(period, true);
+            return {
+              name: project ? project.project.displayName : 'Current Project',
+              path: project ? project.project.id : '',
+              days: Object.fromEntries(days.map(day => [day.date, day]))
+            };
+          }
+
+          function projectAsLegacy(project, localDate) {
+            const day = metricsAsLegacy(project.metrics, {
+              range: { localDates: [localDate] },
+              languages: project.languages,
+              files: project.files,
+              quarterHours: []
+            }, localDate);
+            return {
+              name: project.project.displayName,
+              path: project.project.id,
+              days: { [localDate]: day }
+            };
+          }
+
+          function periodDays(period, includeDistributions) {
+            const byDate = new Map(period.days.map(day => [day.localDate, day.metrics]));
+            const hoursByDate = {};
+            (period.quarterHours || []).forEach(bucket => {
+              const hour = String(bucket.label || '').slice(0, 2);
+              const target = hoursByDate[bucket.localDate] || (hoursByDate[bucket.localDate] = {});
+              target[hour] = (target[hour] || 0) + Number(bucket.activeTimeMs || 0) / 1000;
+            });
+            return period.range.localDates.map((localDate, index) => {
+              const day = metricsAsLegacy(byDate.get(localDate), period, localDate);
+              day.hours = hoursByDate[localDate] || {};
+              if (!includeDistributions || index !== 0) {
+                day.languages = {};
+                day.activeTimeByDocumentMs = {};
+              }
+              return day;
+            });
+          }
+
+          function metricsAsLegacy(metrics, period, localDate) {
+            const safe = metrics || emptyRangeMetrics();
+            const languages = Object.fromEntries((period.languages || []).map(item => [item.id, {
+              name: item.id,
+              seconds: Number(item.activeTimeMs || 0) / 1000
+            }]));
+            const files = Object.fromEntries((period.files || []).map(item => [item.id, Number(item.activeTimeMs || 0)]));
+            return {
+              date: localDate || (period.range && period.range.endLocalDate) || getLocalDateKey(),
+              seconds: Number(safe.activeTimeMs || 0) / 1000,
+              insertedCharacters: Number(safe.insertedCharacters || 0),
+              removedCharacters: Number(safe.removedCharacters || 0),
+              insertedLineBreaksApprox: Number(safe.insertedLineBreaksApprox || 0),
+              removedLineBreaksApprox: Number(safe.removedLineBreaksApprox || 0),
+              editEvents: Number(safe.editEvents || 0),
+              largeEditEvents: Number(safe.largeEditEvents || 0),
+              saves: Number(safe.saveEvents || 0),
+              contextSwitches: Number(safe.fileSwitchEvents || 0),
+              debugSeconds: Number(safe.debugActiveTimeMs || 0) / 1000,
+              diagnosticsBySeverity: normalizeDiagnostics(safe.diagnostics && safe.diagnostics.current),
+              flow: {
+                count: Number(safe.flowBlockCount || 0),
+                totalSeconds: Number(safe.flowActiveMs || 0) / 1000,
+                longestSeconds: Number(safe.longestFlowActiveMs || 0) / 1000,
+                currentSeconds: 0
+              },
+              languages,
+              activeTimeByDocumentMs: files,
+              branches: {},
+              gitDirtyFiles: 0,
+              hours: {}
+            };
+          }
+
+          function emptyRangeMetrics() {
+            return {
+              diagnostics: { current: {} }
+            };
+          }
+
+          function applyViewModelDelta(target, delta, revision) {
+            applyPeriodDelta(target.current, delta.current);
+            if (delta.comparison.kind === 'replace') {
+              target.comparison = delta.comparison.value;
+            }
+            if (delta.comparison.kind === 'patch' && target.comparison) {
+              applyPeriodDelta(target.comparison, delta.comparison.value);
+            }
+            if (delta.comparisonStatus !== null) {
+              target.comparisonStatus = delta.comparisonStatus;
+            }
+            target.revision = revision;
+          }
+
+          function applyPeriodDelta(target, delta) {
+            if (delta.range !== null) { target.range = delta.range; }
+            if (delta.metrics !== null) { target.metrics = delta.metrics; }
+            if (delta.days !== null) { target.days = patchCollection(target.days, delta.days, item => item.localDate); }
+            if (delta.projects !== null) { target.projects = patchCollection(target.projects, delta.projects, item => item.project.id); }
+            if (delta.languages !== null) { target.languages = patchCollection(target.languages, delta.languages, item => item.id); }
+            if (delta.files !== null) { target.files = patchCollection(target.files, delta.files, item => item.id); }
+            if (delta.quarterHours !== null) { target.quarterHours = patchCollection(target.quarterHours, delta.quarterHours, item => item.key); }
+          }
+
+          function patchCollection(current, delta, keyOf) {
+            const values = new Map(current.map(item => [keyOf(item), item]));
+            delta.remove.forEach(key => values.delete(key));
+            delta.upsert.forEach(item => values.set(keyOf(item), item));
+            return [...values.values()];
+          }
+
           function normalizeSession(session) {
             const safe = session || {};
             return {
               startTime: safe.startTime || Date.now(),
               seconds: safe.seconds || 0,
-              keystrokes: safe.keystrokes || 0,
-              linesAdded: safe.linesAdded || 0,
-              linesDeleted: safe.linesDeleted || 0,
+              insertedCharacters: safe.insertedCharacters || 0,
+              removedCharacters: safe.removedCharacters || 0,
+              insertedLineBreaksApprox: safe.insertedLineBreaksApprox || 0,
+              removedLineBreaksApprox: safe.removedLineBreaksApprox || 0,
               languages: safe.languages || {},
+              files: activeFileSeconds(safe),
+              activeFileCounts: activeFileCounts(safe),
               editEvents: safe.editEvents || 0,
-              pasteEvents: safe.pasteEvents || 0,
-              filesTouched: safe.filesTouched || {},
+              largeEditEvents: safe.largeEditEvents || 0,
+              activeTimeByDocumentMs: safe.activeTimeByDocumentMs || {},
               saves: safe.saves || 0,
               focusSeconds: safe.focusSeconds || safe.seconds || 0,
               idleSeconds: safe.idleSeconds || 0,
@@ -706,15 +886,17 @@ export class ReportPanel {
             return {
               date: safe.date || getLocalDateKey(),
               seconds: safe.seconds || 0,
-              keystrokes: safe.keystrokes || 0,
-              linesAdded: safe.linesAdded || 0,
-              linesDeleted: safe.linesDeleted || 0,
+              insertedCharacters: safe.insertedCharacters || 0,
+              removedCharacters: safe.removedCharacters || 0,
+              insertedLineBreaksApprox: safe.insertedLineBreaksApprox || 0,
+              removedLineBreaksApprox: safe.removedLineBreaksApprox || 0,
               languages: safe.languages || {},
               hours: safe.hours || {},
-              files: safe.files || {},
+              files: activeFileSeconds(safe),
+              activeFileCounts: activeFileCounts(safe),
               editEvents: safe.editEvents || 0,
-              pasteEvents: safe.pasteEvents || 0,
-              filesTouched: safe.filesTouched || {},
+              largeEditEvents: safe.largeEditEvents || 0,
+              activeTimeByDocumentMs: safe.activeTimeByDocumentMs || {},
               saves: safe.saves || 0,
               focusSeconds: safe.focusSeconds || safe.seconds || 0,
               idleSeconds: safe.idleSeconds || 0,
@@ -735,6 +917,19 @@ export class ReportPanel {
               info: safe.info || 0,
               hint: safe.hint || 0
             };
+          }
+
+          function activeFileSeconds(value) {
+            const safe = value || {};
+            const exact = safe.activeTimeByDocumentMs || {};
+            if (Object.keys(exact).length > 0) {
+              return Object.fromEntries(Object.entries(exact).map(([id, durationMs]) => [id, Number(durationMs || 0) / 1000]));
+            }
+            return safe.files || {};
+          }
+
+          function activeFileCounts(value) {
+            return Object.fromEntries(Object.keys(activeFileSeconds(value)).map(id => [id, 1]));
           }
 
           function normalizeFlow(value) {
@@ -808,11 +1003,12 @@ export class ReportPanel {
               agg.focusSeconds += day.focusSeconds;
               agg.idleSeconds += day.idleSeconds;
               agg.debugSeconds += day.debugSeconds;
-              agg.linesAdded += day.linesAdded;
-              agg.linesDeleted += day.linesDeleted;
-              agg.keystrokes += day.keystrokes;
+              agg.insertedCharacters += day.insertedCharacters;
+              agg.removedCharacters += day.removedCharacters;
+              agg.insertedLineBreaksApprox += day.insertedLineBreaksApprox;
+              agg.removedLineBreaksApprox += day.removedLineBreaksApprox;
               agg.editEvents += day.editEvents;
-              agg.pasteEvents += day.pasteEvents;
+              agg.largeEditEvents += day.largeEditEvents;
               agg.saves += day.saves;
               agg.contextSwitches += day.contextSwitches;
               agg.gitDirtyFiles = Math.max(agg.gitDirtyFiles, day.gitDirtyFiles);
@@ -821,7 +1017,8 @@ export class ReportPanel {
               agg.flow.longestSeconds = Math.max(agg.flow.longestSeconds, day.flow.longestSeconds);
               addMap(agg.languages, Object.fromEntries(Object.values(day.languages).map(language => [language.name, language.seconds])));
               addMap(agg.files, day.files);
-              addMap(agg.filesTouched, day.filesTouched);
+              addMap(agg.activeTimeByDocumentMs, day.activeTimeByDocumentMs);
+              addMap(agg.activeFileCounts, day.activeFileCounts);
               addMap(agg.branches, day.branches);
               addDiagnostics(agg.diagnosticsBySeverity, day.diagnosticsBySeverity);
               Object.entries(day.hours).forEach(([hour, seconds]) => {
@@ -837,11 +1034,12 @@ export class ReportPanel {
               focusSeconds: 0,
               idleSeconds: 0,
               debugSeconds: 0,
-              linesAdded: 0,
-              linesDeleted: 0,
-              keystrokes: 0,
+              insertedCharacters: 0,
+              removedCharacters: 0,
+              insertedLineBreaksApprox: 0,
+              removedLineBreaksApprox: 0,
               editEvents: 0,
-              pasteEvents: 0,
+              largeEditEvents: 0,
               saves: 0,
               contextSwitches: 0,
               gitDirtyFiles: 0,
@@ -849,7 +1047,8 @@ export class ReportPanel {
               flow: normalizeFlow(),
               languages: {},
               files: {},
-              filesTouched: {},
+              activeTimeByDocumentMs: {},
+              activeFileCounts: {},
               branches: {},
               hours: {}
             };
@@ -876,22 +1075,23 @@ export class ReportPanel {
             const sessionAgg = sessionAsAgg();
             const targetSeconds = dailyGoal > 0 ? dailyGoal : 14400;
             const pct = targetSeconds > 0 ? Math.min(100, Math.round((todayAgg.seconds / targetSeconds) * 100)) : 0;
-            const focus = focusScore(todayAgg);
-            const churn = todayAgg.linesAdded + todayAgg.linesDeleted;
+            const concentration = topThreeFileShare(todayAgg);
+            const changedCharacters = rawSession.insertedCharacters + rawSession.removedCharacters;
+            const lineActivity = todayAgg.insertedLineBreaksApprox + todayAgg.removedLineBreaksApprox;
             const quality = rawSession.diagnosticsBySeverity.error + rawSession.diagnosticsBySeverity.warning;
 
             setText('t-active', fmt(todayAgg.seconds));
             setText('t-active-sub', 'Session ' + fmt(rawSession.seconds));
             setText('t-goal', pct + '%');
             setText('t-goal-sub', fmt(todayAgg.seconds) + ' of ' + fmt(targetSeconds));
-            setText('t-focus', focus);
+            setText('t-focus', concentration + '%');
             setText('t-focus-sub', topLabel(todayAgg.files, 'No active file'));
             setText('t-flow', fmt(rawSession.flow.currentSeconds));
             setText('t-flow-sub', 'Longest ' + fmt(Math.max(rawSession.flow.longestSeconds, todayAgg.flow.longestSeconds)));
-            setText('t-edit', compact(rawSession.keystrokes));
-            setText('t-edit-sub', rawSession.editEvents + ' edit events, ' + rawSession.pasteEvents + ' paste events');
-            setText('t-churn', compact(churn));
-            setText('t-churn-sub', 'Net ' + compact(todayAgg.linesAdded - todayAgg.linesDeleted) + ' lines');
+            setText('t-edit', compact(changedCharacters));
+            setText('t-edit-sub', rawSession.editEvents + ' edit events, ' + rawSession.largeEditEvents + ' large edit events');
+            setText('t-churn', compact(lineActivity));
+            setText('t-churn-sub', compact(todayAgg.insertedLineBreaksApprox) + ' inserted, ' + compact(todayAgg.removedLineBreaksApprox) + ' removed line breaks (approx.)');
             setText('t-quality', quality);
             setText('t-quality-sub', rawSession.diagnosticsBySeverity.error + ' errors, ' + rawSession.diagnosticsBySeverity.warning + ' warnings');
             setText('t-git', rawSession.gitDirtyFiles);
@@ -900,28 +1100,30 @@ export class ReportPanel {
 
             renderTimeline(todayTrendChart, 'todayTrendChart', todayDays, chart => todayTrendChart = chart);
             renderBarList('today-language-list', sessionAgg.languages, fmt, 'No session languages yet');
-            renderFileTable('today-files-table', mapToRows(todayAgg.files).slice(0, 10), todayAgg.filesTouched, 'No active files today');
+            renderFileTable('today-files-table', mapToRows(todayAgg.files).slice(0, 10), todayAgg.activeFileCounts, 'No active files today');
           }
 
           function renderProject() {
             const projectDays = daysForProject(rawProject);
             const days = getFilteredDays(projectDays);
-            const previous = getPreviousRangeDays(projectDays);
+            const previous = rawComparisonProject
+              ? daysForProject(rawComparisonProject)
+              : [];
             const agg = aggregateDays(days);
             const prevAgg = aggregateDays(previous);
 
             setText('p-time', fmt(agg.seconds));
             setText('p-time-sub', days.length + ' tracked days');
             setDelta('p-time-delta', deltaPct(agg.seconds, prevAgg.seconds));
-            setText('p-focus', focusScore(agg));
-            setText('p-focus-sub', 'Context switches ' + agg.contextSwitches);
+            setText('p-focus', topThreeFileShare(agg) + '%');
+            setText('p-focus-sub', 'Observed editor transitions ' + agg.contextSwitches);
             setText('p-intensity', compact(editIntensity(agg)));
             setText('p-churn', churnRatio(agg) + '%');
-            setText('p-churn-sub', compact(agg.linesAdded + agg.linesDeleted) + ' changed lines');
+            setText('p-churn-sub', compact(agg.insertedLineBreaksApprox + agg.removedLineBreaksApprox) + ' approximate line-break changes');
 
             renderTimeline(projectTrendChart, 'projectTrendChart', days, chart => projectTrendChart = chart);
             renderBarList('project-language-list', agg.languages, fmt, 'No languages in this range');
-            renderFileTable('project-files-table', mapToRows(agg.files).slice(0, 15), agg.filesTouched, 'No activity in this range');
+            renderFileTable('project-files-table', mapToRows(agg.files).slice(0, 15), agg.activeFileCounts, 'No activity in this range');
           }
 
           function renderQuality() {
@@ -947,15 +1149,15 @@ export class ReportPanel {
           }
 
           function renderGlobal() {
-            const days = getFilteredDays(allDays());
+            const days = rangeDays;
             const agg = aggregateDays(days);
             const bestHour = bestHourFromDays(days);
 
             setText('g-time', fmt(agg.seconds));
-            setText('g-projects', rawAll.length);
+            setText('g-projects', dashboardData ? dashboardData.current.projects.length : 0);
             setText('g-best-hour', bestHour.label);
             setText('g-best-hour-sub', bestHour.value > 0 ? fmt(bestHour.value) + ' tracked' : 'No activity');
-            setText('g-focus', focusScore(agg));
+            setText('g-focus', topThreeFileShare(agg) + '%');
 
             renderHeatmap(days);
             renderProjectTable();
@@ -968,38 +1170,37 @@ export class ReportPanel {
             agg.focusSeconds = rawSession.focusSeconds;
             agg.idleSeconds = rawSession.idleSeconds;
             agg.debugSeconds = rawSession.debugSeconds;
-            agg.linesAdded = rawSession.linesAdded;
-            agg.linesDeleted = rawSession.linesDeleted;
-            agg.keystrokes = rawSession.keystrokes;
+            agg.insertedCharacters = rawSession.insertedCharacters;
+            agg.removedCharacters = rawSession.removedCharacters;
+            agg.insertedLineBreaksApprox = rawSession.insertedLineBreaksApprox;
+            agg.removedLineBreaksApprox = rawSession.removedLineBreaksApprox;
             agg.editEvents = rawSession.editEvents;
-            agg.pasteEvents = rawSession.pasteEvents;
+            agg.largeEditEvents = rawSession.largeEditEvents;
             agg.saves = rawSession.saves;
             agg.contextSwitches = rawSession.contextSwitches;
             agg.gitDirtyFiles = rawSession.gitDirtyFiles;
             agg.diagnosticsBySeverity = rawSession.diagnosticsBySeverity;
             agg.flow = rawSession.flow;
             agg.languages = rawSession.languages;
-            agg.filesTouched = rawSession.filesTouched;
+            agg.activeTimeByDocumentMs = rawSession.activeTimeByDocumentMs;
             agg.branches = rawSession.branches;
             return agg;
           }
 
-          function focusScore(agg) {
+          function topThreeFileShare(agg) {
             if (!agg.seconds) { return 0; }
             const topFiles = mapToRows(agg.files).slice(0, 3).reduce((total, item) => total + item.value, 0);
-            const concentration = topFiles / agg.seconds;
-            const switchPenalty = Math.min(35, agg.contextSwitches * 2);
-            return Math.max(0, Math.min(100, Math.round(concentration * 100 - switchPenalty)));
+            return Math.max(0, Math.min(100, Math.round((topFiles / agg.seconds) * 100)));
           }
 
           function editIntensity(agg) {
             const hours = agg.seconds / 3600;
-            return hours > 0 ? Math.round(agg.keystrokes / hours) : 0;
+            return hours > 0 ? Math.round((agg.insertedCharacters + agg.removedCharacters) / hours) : 0;
           }
 
           function churnRatio(agg) {
-            const churn = agg.linesAdded + agg.linesDeleted;
-            return churn > 0 ? Math.round((agg.linesDeleted / churn) * 100) : 0;
+            const lineActivity = agg.insertedLineBreaksApprox + agg.removedLineBreaksApprox;
+            return lineActivity > 0 ? Math.round((agg.removedLineBreaksApprox / lineActivity) * 100) : 0;
           }
 
           function saveRhythm(agg) {
@@ -1135,7 +1336,7 @@ export class ReportPanel {
               return;
             }
             const header = document.createElement('tr');
-            ['File', 'Time', 'Touches'].forEach(text => {
+            ['File', 'Time', 'Activity samples'].forEach(text => {
               const th = document.createElement('th');
               th.scope = 'col';
               th.textContent = text;
@@ -1164,7 +1365,7 @@ export class ReportPanel {
             const table = document.getElementById('global-projects-table');
             const rows = rawAll.map(project => {
               const agg = aggregateDays(getFilteredDays(daysForProject(project)));
-              return { name: project.name, value: agg.seconds, focus: focusScore(agg) };
+              return { name: project.name, value: agg.seconds, concentration: topThreeFileShare(agg) };
             }).filter(row => row.value > 0).sort((a,b) => b.value - a.value).slice(0, 12);
             table.replaceChildren();
             if (!rows.length) {
@@ -1178,7 +1379,7 @@ export class ReportPanel {
               return;
             }
             const header = document.createElement('tr');
-            ['Project','Time','Focus'].forEach(text => {
+            ['Project','Time','Top-3 share'].forEach(text => {
               const th = document.createElement('th');
               th.scope = 'col';
               th.textContent = text;
@@ -1193,10 +1394,10 @@ export class ReportPanel {
               const time = document.createElement('td');
               time.className = 'text-right';
               time.textContent = fmt(item.value);
-              const focus = document.createElement('td');
-              focus.className = 'text-right';
-              focus.textContent = item.focus;
-              row.append(name, time, focus);
+              const concentration = document.createElement('td');
+              concentration.className = 'text-right';
+              concentration.textContent = item.concentration + '%';
+              row.append(name, time, concentration);
               table.append(row);
             });
           }
