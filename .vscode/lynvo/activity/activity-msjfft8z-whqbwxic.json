@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjfft8z-whqbwxic",
+  "type": "relation_added",
+  "message": "Added T13 as a blocker for T27 concurrent-debug testing",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786136304851,
+  "taskId": "task-msj9x383-hzb03uu7",
+  "targetTaskId": "task-msj9x37p-o57jtvmi",
+  "metadata": {
+    "relationType": "blocked-by"
+  }
+}
