@@ -404,10 +404,10 @@
     "entityType": "task",
     "entityId": "task-msj9x37g-ci6435gv",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786130882990,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786132923298,
+    "resolved": false
   },
   "task-task-msj9x37k-zkyrq7to-status": {
     "id": "task-task-msj9x37k-zkyrq7to-status",
@@ -424,9 +424,9 @@
     "entityType": "task",
     "entityId": "task-msj9x37l-tywr6lgn",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786131723310,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786132923298,
+    "resolved": false
   }
 }

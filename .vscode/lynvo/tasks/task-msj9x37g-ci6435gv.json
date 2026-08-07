@@ -2,7 +2,7 @@
   "id": "task-msj9x37g-ci6435gv",
   "title": "T04 — Migrate v1 data with backup and corruption recovery",
   "description": "## Objective\n\nMigrate the existing history without data loss and prevent a corrupt JSON file from being silently replaced.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T04.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033300,
-  "updatedAt": 1786130801735,
+  "updatedAt": 1786132871571,
   "position": 1786127033300,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
@@ -29,58 +29,58 @@
     {
       "id": "check-msj9x39x-k099chxl",
       "text": "Automatically detect ~/.devtracker/data.json",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033301,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871555
     },
     {
       "id": "check-msj9x39y-le1u2jy6",
       "text": "Create a backup before any transformation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033302,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871556
     },
     {
       "id": "check-msj9x39z-ekfxi73s",
       "text": "Validate projects, days, maps, and numeric values",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033303,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871557
     },
     {
       "id": "check-msj9x3a0-8k6il8fr",
       "text": "Import rollups and mark non-reconstructable data as legacy",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033304,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871558
     },
     {
       "id": "check-msj9x3a1-rnriaq91",
       "text": "Quarantine corrupt files",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033305,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871559
     },
     {
       "id": "check-msj9x3a2-ca67dwmu",
       "text": "Recover the most recent valid backup",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033306,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871560
     },
     {
       "id": "check-msj9x3a3-ipxvj6cl",
       "text": "Keep the original v1 file unchanged",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033307,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871561
     },
     {
       "id": "check-msj9x3a4-xd8aosqi",
       "text": "Make the migration idempotent",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033308,
-      "updatedAt": 1786127326630
+      "updatedAt": 1786132871562
     }
   ],
   "relations": [
