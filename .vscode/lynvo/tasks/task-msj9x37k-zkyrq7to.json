@@ -2,7 +2,7 @@
   "id": "task-msj9x37k-zkyrq7to",
   "title": "T08 — Implement the activity state machine",
   "description": "## Objective\n\nReplace global counters and booleans with a state machine based on interactions and monotonic time.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T08.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033356,
-  "updatedAt": 1786127326638,
+  "updatedAt": 1786130801737,
   "position": 1786127033356,
   "labelIds": [
     "label-msj9x374-pzsygu7i",

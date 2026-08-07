@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjc5v0p-tl5hkrt3",
+  "type": "task_moved",
+  "message": "Moved \"T08 — Implement the activity state machine\" from Backlog to In Progress",
+  "createdAt": 1786130801737,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37k-zkyrq7to",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

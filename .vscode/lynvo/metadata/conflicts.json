@@ -397,6 +397,26 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786130762840,
+    "resolved": true
+  },
+  "task-task-msj9x37g-ci6435gv-status": {
+    "id": "task-task-msj9x37g-ci6435gv-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37g-ci6435gv",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786130882990,
+    "resolved": false
+  },
+  "task-task-msj9x37k-zkyrq7to-status": {
+    "id": "task-task-msj9x37k-zkyrq7to-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37k-zkyrq7to",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786130882990,
     "resolved": false
   }
 }

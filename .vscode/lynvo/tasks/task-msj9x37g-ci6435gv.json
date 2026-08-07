@@ -2,7 +2,7 @@
   "id": "task-msj9x37g-ci6435gv",
   "title": "T04 — Migrate v1 data with backup and corruption recovery",
   "description": "## Objective\n\nMigrate the existing history without data loss and prevent a corrupt JSON file from being silently replaced.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T04.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033300,
-  "updatedAt": 1786127326630,
+  "updatedAt": 1786130801735,
   "position": 1786127033300,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
