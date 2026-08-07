@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjasdk3-8kirqd6s",
+  "type": "task_moved",
+  "message": "Moved \"T03 — Implement schema v2 and session-based storage layout\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128492963,
+  "taskId": "task-msj9x37f-qywco9h4",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

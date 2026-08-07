@@ -2,7 +2,7 @@
   "id": "task-msj9x37e-tf45k1h7",
   "title": "T02 — Create typed domain boundaries and modular architecture",
   "description": "## Objective\n\nSeparate responsibilities and turn extension.ts into a small composition root with injectable dependencies.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T02.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033275,
-  "updatedAt": 1786127940737,
+  "updatedAt": 1786128492962,
   "position": 1786127033275,
   "labelIds": [
     "label-msj9x374-pzsygu7i"
@@ -27,44 +27,44 @@
     {
       "id": "check-msj9x398-c8tu4xcx",
       "text": "Separate tracking, domain, persistence, queries, integrations, and presentation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033276,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492956
     },
     {
       "id": "check-msj9x399-3y62e7nl",
       "text": "Define interfaces between the extension host and services",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033277,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492957
     },
     {
       "id": "check-msj9x39a-85sl3c30",
       "text": "Remove mutable global state from extension.ts",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033278,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492958
     },
     {
       "id": "check-msj9x39b-zyl22qx7",
       "text": "Add clock, filesystem, and adapter dependency injection",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033279,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492959
     },
     {
       "id": "check-msj9x39c-jr0rhsc3",
       "text": "Keep activate as a lightweight composition root",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033280,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492960
     },
     {
       "id": "check-msj9x39d-csrv4mo3",
       "text": "Document the allowed dependencies between modules",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033281,
-      "updatedAt": 1786127326626
+      "updatedAt": 1786128492961
     }
   ],
   "relations": [

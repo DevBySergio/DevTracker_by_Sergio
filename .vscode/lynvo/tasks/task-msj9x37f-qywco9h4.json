@@ -2,7 +2,7 @@
   "id": "task-msj9x37f-qywco9h4",
   "title": "T03 — Implement schema v2 and session-based storage layout",
   "description": "## Objective\n\nIntroduce a versioned session-based schema that supports concurrency, explicit migrations, and scalable queries.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T03.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033287,
-  "updatedAt": 1786127326628,
+  "updatedAt": 1786128492963,
   "position": 1786127033287,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",

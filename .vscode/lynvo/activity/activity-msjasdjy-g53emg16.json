@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjasdjy-g53emg16",
+  "type": "checklist_updated",
+  "message": "Completed \"Remove mutable global state from extension.ts\" in \"T02 — Create typed domain boundaries and modular architecture\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128492958,
+  "taskId": "task-msj9x37e-tf45k1h7"
+}

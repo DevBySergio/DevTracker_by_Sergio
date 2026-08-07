@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjasdk2-f71r2667",
+  "type": "task_moved",
+  "message": "Moved \"T02 — Create typed domain boundaries and modular architecture\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128492962,
+  "taskId": "task-msj9x37e-tf45k1h7",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
