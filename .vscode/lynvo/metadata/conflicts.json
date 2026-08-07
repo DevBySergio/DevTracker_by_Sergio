@@ -417,7 +417,7 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786131723310,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x37l-tywr6lgn-status": {
     "id": "task-task-msj9x37l-tywr6lgn-status",
@@ -427,6 +427,6 @@
     "localValue": "in-progress",
     "remoteValue": "backlog",
     "createdAt": 1786131723310,
-    "resolved": false
+    "resolved": true
   }
 }
