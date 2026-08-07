@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dlv-w0x4uczy",
+  "type": "task_updated",
+  "message": "Updated \"T02 — Create typed domain boundaries and modular architecture\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326627,
+  "taskId": "task-msj9x37e-tf45k1h7",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

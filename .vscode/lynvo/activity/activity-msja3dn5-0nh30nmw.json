@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dn5-0nh30nmw",
+  "type": "task_updated",
+  "message": "Updated \"T25 — Implement the Workflow view\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326673,
+  "taskId": "task-msj9x381-6pxtwmej",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

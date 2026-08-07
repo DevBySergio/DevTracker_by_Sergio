@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dm7-s6bqf4zz",
+  "type": "task_updated",
+  "message": "Updated \"T08 — Implement the activity state machine\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326639,
+  "taskId": "task-msj9x37k-zkyrq7to",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

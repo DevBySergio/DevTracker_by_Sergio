@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37l-tywr6lgn",
   "title": "T09 — Correct flow blocks and context-switch tracking",
-  "description": "## Objective\n\nHacer que flow y context switching dependan de eventos humanos y sean comparables entre periodos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T09.",
+  "description": "## Objective\n\nMake flow and context switching depend on human events and remain comparable across periods.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T09.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033369,
-  "updatedAt": 1786127033369,
+  "updatedAt": 1786127326640,
   "position": 1786127033369,
   "labelIds": [
     "bug",
@@ -27,52 +27,52 @@
   "checklist": [
     {
       "id": "check-msj9x3bu-1bz6scr4",
-      "text": "Iniciar flow únicamente con interacción significativa",
+      "text": "Start a flow block only after a meaningful interaction",
       "done": false,
       "createdAt": 1786127033370,
-      "updatedAt": 1786127033370
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3bv-xsj3uq92",
-      "text": "Finalizarlo tras 120 segundos sin interacción",
+      "text": "End it after 120 seconds without interaction",
       "done": false,
       "createdAt": 1786127033371,
-      "updatedAt": 1786127033371
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3bw-qse53a9j",
-      "text": "Mostrar cero cuando el flow actual expire",
+      "text": "Display zero when the current flow expires",
       "done": false,
       "createdAt": 1786127033372,
-      "updatedAt": 1786127033372
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3bx-rdjfkm05",
-      "text": "Contabilizar cambios de archivo solo tras cinco segundos estables",
+      "text": "Count file changes only after the new file remains active for five seconds",
       "done": false,
       "createdAt": 1786127033373,
-      "updatedAt": 1786127033373
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3by-z673vwy4",
-      "text": "Separar cambio de archivo y cambio de proyecto",
+      "text": "Separate file switches from project switches",
       "done": false,
       "createdAt": 1786127033374,
-      "updatedAt": 1786127033374
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3bz-4itdbd0g",
-      "text": "Calcular switches por hora activa",
+      "text": "Calculate switches per active hour",
       "done": false,
       "createdAt": 1786127033375,
-      "updatedAt": 1786127033375
+      "updatedAt": 1786127326640
     },
     {
       "id": "check-msj9x3c0-egcvaxhp",
-      "text": "Cubrir medianoche, pausa y reanudación",
+      "text": "Cover midnight, pause, and resume",
       "done": false,
       "createdAt": 1786127033376,
-      "updatedAt": 1786127033376
+      "updatedAt": 1786127326640
     }
   ],
   "relations": [

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmb-7cfm1fjj",
+  "type": "task_updated",
+  "message": "Updated \"T10 — Replace misleading edit metrics\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326643,
+  "taskId": "task-msj9x37m-d4gueuhr",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

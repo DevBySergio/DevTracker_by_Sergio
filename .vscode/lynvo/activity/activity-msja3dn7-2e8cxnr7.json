@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dn7-2e8cxnr7",
+  "type": "task_updated",
+  "message": "Updated \"T26 — Complete accessibility, responsiveness and theme support\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326675,
+  "taskId": "task-msj9x382-110rg3j5",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmh-o4s4w0bo",
+  "type": "task_updated",
+  "message": "Updated \"T13 — Track concurrent debug sessions\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326649,
+  "taskId": "task-msj9x37p-o57jtvmi",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

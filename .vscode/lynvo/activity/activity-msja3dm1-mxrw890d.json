@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dm1-mxrw890d",
+  "type": "task_updated",
+  "message": "Updated \"T05 — Replace blocking persistence with asynchronous per-session writes\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326633,
+  "taskId": "task-msj9x37h-66qri1xn",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dlx-x544a12r",
+  "type": "task_updated",
+  "message": "Updated \"T03 — Implement schema v2 and session-based storage layout\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326629,
+  "taskId": "task-msj9x37f-qywco9h4",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

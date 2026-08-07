@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dm3-m44qprd2",
+  "type": "task_updated",
+  "message": "Updated \"T06 — Deduplicate activity across VS Code windows\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326635,
+  "taskId": "task-msj9x37i-n3rlb67m",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmz-h3bw7o64",
+  "type": "task_updated",
+  "message": "Updated \"T22 — Implement the Overview view\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326667,
+  "taskId": "task-msj9x37y-gkp9ziqw",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

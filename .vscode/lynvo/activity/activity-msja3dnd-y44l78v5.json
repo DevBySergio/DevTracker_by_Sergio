@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnd-y44l78v5",
+  "type": "task_updated",
+  "message": "Updated \"T29 — Add VS Code Extension Host integration tests\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326681,
+  "taskId": "task-msj9x385-7c8657ra",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

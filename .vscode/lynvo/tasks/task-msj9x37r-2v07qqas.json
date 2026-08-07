@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37r-2v07qqas",
   "title": "T15 — Build the range-query and rollup engine",
-  "description": "## Objective\n\nMover agregaciones fuera del webview y ofrecer consultas rápidas, completas y tipadas por rango.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T15.",
+  "description": "## Objective\n\nMove aggregation out of the webview and provide fast, complete, typed range queries.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T15.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033454,
-  "updatedAt": 1786127033454,
+  "updatedAt": 1786127326652,
   "position": 1786127033454,
   "labelIds": [
     "label-msj9x374-pzsygu7i",
@@ -28,59 +28,59 @@
   "checklist": [
     {
       "id": "check-msj9x3e7-c9hza4e8",
-      "text": "Agregar por día, proyecto, lenguaje, archivo y bucket horario",
+      "text": "Aggregate by day, project, language, file, and hourly bucket",
       "done": false,
       "createdAt": 1786127033455,
-      "updatedAt": 1786127033455
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3e8-ntr0c4i5",
-      "text": "Rellenar días y buckets sin actividad",
+      "text": "Fill days and buckets with no activity",
       "done": false,
       "createdAt": 1786127033456,
-      "updatedAt": 1786127033456
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3e9-yrhfc8ia",
-      "text": "Excluir fechas futuras inválidas",
+      "text": "Exclude invalid future dates",
       "done": false,
       "createdAt": 1786127033457,
-      "updatedAt": 1786127033457
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3ea-jmasuthw",
-      "text": "Soportar today, 7, 30, 90 días, año y rango personalizado",
+      "text": "Support today, 7, 30, and 90 days, year, and custom ranges",
       "done": false,
       "createdAt": 1786127033458,
-      "updatedAt": 1786127033458
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3eb-hwxpli8j",
-      "text": "Comparar periodos completos equivalentes",
+      "text": "Compare equivalent complete periods",
       "done": false,
       "createdAt": 1786127033459,
-      "updatedAt": 1786127033459
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3ec-rhhf3bf2",
-      "text": "Añadir caché invalidable por delta",
+      "text": "Add a delta-invalidated cache",
       "done": false,
       "createdAt": 1786127033460,
-      "updatedAt": 1786127033460
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3ed-wz6cuopl",
-      "text": "Evitar recorrer todo el historial en cada actualización",
+      "text": "Avoid traversing the complete history on every update",
       "done": false,
       "createdAt": 1786127033461,
-      "updatedAt": 1786127033461
+      "updatedAt": 1786127326652
     },
     {
       "id": "check-msj9x3ee-twh5kt7w",
-      "text": "Devolver view-models tipados",
+      "text": "Return typed view models",
       "done": false,
       "createdAt": 1786127033462,
-      "updatedAt": 1786127033462
+      "updatedAt": 1786127326652
     }
   ],
   "relations": [

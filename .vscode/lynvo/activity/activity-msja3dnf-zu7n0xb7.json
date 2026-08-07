@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnf-zu7n0xb7",
+  "type": "task_updated",
+  "message": "Updated \"T30 — Add webview accessibility and visual regression tests\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326683,
+  "taskId": "task-msj9x386-phlzn1ks",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

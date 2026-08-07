@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37m-d4gueuhr",
   "title": "T10 — Replace misleading edit metrics",
-  "description": "## Objective\n\nReemplazar nombres engañosos por contadores descriptivos del comportamiento real del editor.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T10.",
+  "description": "## Objective\n\nReplace misleading names with counters that accurately describe editor behavior.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T10.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033382,
-  "updatedAt": 1786127033382,
+  "updatedAt": 1786127326642,
   "position": 1786127033382,
   "labelIds": [
     "bug",
@@ -27,52 +27,52 @@
   "checklist": [
     {
       "id": "check-msj9x3c7-ikzy6dj8",
-      "text": "Separar caracteres insertados y eliminados",
+      "text": "Separate inserted and removed characters",
       "done": false,
       "createdAt": 1786127033383,
-      "updatedAt": 1786127033383
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3c8-4jr6rsua",
-      "text": "Renombrar paste a large edit",
+      "text": "Rename paste to large edit",
       "done": false,
       "createdAt": 1786127033384,
-      "updatedAt": 1786127033384
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3c9-gm1am7pj",
-      "text": "Registrar eventos de edición sin llamarlos keystrokes",
+      "text": "Record edit events without calling them keystrokes",
       "done": false,
       "createdAt": 1786127033385,
-      "updatedAt": 1786127033385
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3ca-auar09wt",
-      "text": "Presentar line activity como aproximación del editor",
+      "text": "Present line activity as an editor approximation",
       "done": false,
       "createdAt": 1786127033386,
-      "updatedAt": 1786127033386
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3cb-3ycx6bad",
-      "text": "Separar tiempo activo por archivo y número de archivos únicos",
+      "text": "Separate active file time from the number of unique files",
       "done": false,
       "createdAt": 1786127033387,
-      "updatedAt": 1786127033387
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3cc-al1i2n33",
-      "text": "Evitar doble conteo entre ticks y ediciones",
+      "text": "Avoid double counting between ticks and edits",
       "done": false,
       "createdAt": 1786127033388,
-      "updatedAt": 1786127033388
+      "updatedAt": 1786127326642
     },
     {
       "id": "check-msj9x3cd-ly27rqtf",
-      "text": "Mantener compatibilidad de importación con campos v1",
+      "text": "Preserve import compatibility with v1 fields",
       "done": false,
       "createdAt": 1786127033389,
-      "updatedAt": 1786127033389
+      "updatedAt": 1786127326642
     }
   ],
   "relations": [

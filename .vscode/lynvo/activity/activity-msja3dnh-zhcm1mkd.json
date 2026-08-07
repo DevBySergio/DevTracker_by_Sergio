@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnh-zhcm1mkd",
+  "type": "task_updated",
+  "message": "Updated \"T31 — Add large-history performance fixtures and budgets\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326685,
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

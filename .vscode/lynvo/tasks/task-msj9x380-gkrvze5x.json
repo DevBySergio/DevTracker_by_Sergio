@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x380-gkrvze5x",
   "title": "T24 — Implement the Projects view",
-  "description": "## Objective\n\nHacer consultable cualquier proyecto histórico sin depender del editor activo.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T24.",
+  "description": "## Objective\n\nMake every historical project accessible without depending on the active editor.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T24.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033607,
-  "updatedAt": 1786127033607,
+  "updatedAt": 1786127326670,
   "position": 1786127033607,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
@@ -22,59 +22,59 @@
   "checklist": [
     {
       "id": "check-msj9x3ig-9qhhj2bf",
-      "text": "Crear lista buscable y ordenable",
+      "text": "Create a searchable and sortable list",
       "done": false,
       "createdAt": 1786127033608,
-      "updatedAt": 1786127033608
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3ih-u41jutiq",
-      "text": "Distinguir proyectos con el mismo nombre",
+      "text": "Distinguish projects with the same name",
       "done": false,
       "createdAt": 1786127033609,
-      "updatedAt": 1786127033609
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3ii-mrym19rp",
-      "text": "Mostrar active time, tendencia y última actividad",
+      "text": "Display active time, trend, and last activity",
       "done": false,
       "createdAt": 1786127033610,
-      "updatedAt": 1786127033610
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3ij-5xfomcg1",
-      "text": "Añadir detalle por proyecto",
+      "text": "Add a project detail view",
       "done": false,
       "createdAt": 1786127033611,
-      "updatedAt": 1786127033611
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3ik-wiuoq1mw",
-      "text": "Mostrar archivos, lenguajes y edit volume",
+      "text": "Display files, languages, and edit volume",
       "done": false,
       "createdAt": 1786127033612,
-      "updatedAt": 1786127033612
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3il-fla28gw2",
-      "text": "Permitir alias local",
+      "text": "Allow a local alias",
       "done": false,
       "createdAt": 1786127033613,
-      "updatedAt": 1786127033613
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3im-9bx0w7u3",
-      "text": "Permitir archivar o excluir sin borrar historial",
+      "text": "Allow archiving or excluding without deleting history",
       "done": false,
       "createdAt": 1786127033614,
-      "updatedAt": 1786127033614
+      "updatedAt": 1786127326670
     },
     {
       "id": "check-msj9x3in-u20vxt41",
-      "text": "Mantener la selección independiente del editor",
+      "text": "Keep selection independent from the active editor",
       "done": false,
       "createdAt": 1786127033615,
-      "updatedAt": 1786127033615
+      "updatedAt": 1786127326670
     }
   ],
   "relations": [

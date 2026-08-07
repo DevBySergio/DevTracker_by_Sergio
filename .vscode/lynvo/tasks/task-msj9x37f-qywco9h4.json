@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37f-qywco9h4",
   "title": "T03 — Implement schema v2 and session-based storage layout",
-  "description": "## Objective\n\nIntroducir un esquema versionado por sesiones que permita concurrencia, migraciones explícitas y consultas escalables.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T03.",
+  "description": "## Objective\n\nIntroduce a versioned session-based schema that supports concurrency, explicit migrations, and scalable queries.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T03.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033287,
-  "updatedAt": 1786127033287,
+  "updatedAt": 1786127326628,
   "position": 1786127033287,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
@@ -27,52 +27,52 @@
   "checklist": [
     {
       "id": "check-msj9x39k-7dl2vsw8",
-      "text": "Añadir schemaVersion 2",
+      "text": "Add schemaVersion 2",
       "done": false,
       "createdAt": 1786127033288,
-      "updatedAt": 1786127033288
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39l-qmzr5xee",
-      "text": "Crear ProjectIdentity, TrackingSession, ActivityInterval y DailyRollup",
+      "text": "Create ProjectIdentity, TrackingSession, ActivityInterval, and DailyRollup",
       "done": false,
       "createdAt": 1786127033289,
-      "updatedAt": 1786127033289
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39m-oxn8uvf8",
-      "text": "Guardar una sesión independiente por extension host",
+      "text": "Store an independent session for each extension host",
       "done": false,
       "createdAt": 1786127033290,
-      "updatedAt": 1786127033290
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39n-kkrrf4ux",
-      "text": "Separar metadatos, sesiones activas y rollups",
+      "text": "Separate metadata, active sessions, and rollups",
       "done": false,
       "createdAt": 1786127033291,
-      "updatedAt": 1786127033291
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39o-jh8wg170",
-      "text": "Utilizar ExtensionContext.globalStorageUri",
+      "text": "Use ExtensionContext.globalStorageUri",
       "done": false,
       "createdAt": 1786127033292,
-      "updatedAt": 1786127033292
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39p-1eijw335",
-      "text": "Definir validación estricta de todos los registros",
+      "text": "Define strict validation for every record",
       "done": false,
       "createdAt": 1786127033293,
-      "updatedAt": 1786127033293
+      "updatedAt": 1786127326628
     },
     {
       "id": "check-msj9x39q-k75u26tw",
-      "text": "Añadir permisos restrictivos en plataformas compatibles",
+      "text": "Add restrictive permissions on supported platforms",
       "done": false,
       "createdAt": 1786127033294,
-      "updatedAt": 1786127033294
+      "updatedAt": 1786127326628
     }
   ],
   "relations": [

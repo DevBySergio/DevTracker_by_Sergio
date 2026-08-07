@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37s-g1nkw3gb",
   "title": "T16 — Implement goals, baselines and personal insights",
-  "description": "## Objective\n\nCrear insights personales transparentes sin convertir volumen de código en puntuación de productividad.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T16.",
+  "description": "## Objective\n\nCreate transparent personal insights without turning code volume into a productivity score.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T16.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033476,
-  "updatedAt": 1786127033476,
+  "updatedAt": 1786127326654,
   "position": 1786127033476,
   "labelIds": [
     "feat",
@@ -22,52 +22,52 @@
   "checklist": [
     {
       "id": "check-msj9x3et-4asgjeot",
-      "text": "Mantener objetivo diario",
+      "text": "Preserve the daily goal",
       "done": false,
       "createdAt": 1786127033477,
-      "updatedAt": 1786127033477
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3eu-1i4jn3zb",
-      "text": "Añadir objetivo semanal opcional",
+      "text": "Add an optional weekly goal",
       "done": false,
       "createdAt": 1786127033478,
-      "updatedAt": 1786127033478
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3ev-tf0eslz5",
-      "text": "Calcular cumplimiento, rachas y días activos",
+      "text": "Calculate completion, streaks, and active days",
       "done": false,
       "createdAt": 1786127033479,
-      "updatedAt": 1786127033479
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3ew-ebhbjmn6",
-      "text": "Comparar con la mediana de las cuatro semanas anteriores",
+      "text": "Compare against the median of the previous four weeks",
       "done": false,
       "createdAt": 1786127033480,
-      "updatedAt": 1786127033480
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3ex-hrwvnyav",
-      "text": "Crear Focus Profile sin score opaco",
+      "text": "Create a Focus Profile without an opaque score",
       "done": false,
       "createdAt": 1786127033481,
-      "updatedAt": 1786127033481
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3ey-uatcyrbj",
-      "text": "Mostrar fragmentación y distribución de tiempo de forma neutral",
+      "text": "Present fragmentation and time distribution neutrally",
       "done": false,
       "createdAt": 1786127033482,
-      "updatedAt": 1786127033482
+      "updatedAt": 1786127326654
     },
     {
       "id": "check-msj9x3ez-x2dnqyfr",
-      "text": "Explicar fórmula y precisión de cada insight",
+      "text": "Explain the formula and precision of every insight",
       "done": false,
       "createdAt": 1786127033483,
-      "updatedAt": 1786127033483
+      "updatedAt": 1786127326654
     }
   ],
   "relations": [

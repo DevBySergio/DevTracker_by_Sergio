@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmr-l5skjrsb",
+  "type": "task_updated",
+  "message": "Updated \"T18 — Implement lossless JSON and safe CSV exports\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326659,
+  "taskId": "task-msj9x37u-dedvppu8",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

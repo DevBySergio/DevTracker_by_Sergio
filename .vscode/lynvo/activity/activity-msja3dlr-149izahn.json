@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dlr-149izahn",
+  "type": "task_updated",
+  "message": "Updated \"P00 — Plan: Refactor and release DevTracker 2.0\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326623,
+  "taskId": "task-msj9x37c-3qab7gb8",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

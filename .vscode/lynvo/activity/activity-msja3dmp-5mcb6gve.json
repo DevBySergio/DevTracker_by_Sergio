@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmp-5mcb6gve",
+  "type": "task_updated",
+  "message": "Updated \"T17 — Replace full-history webview updates with a typed protocol\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326657,
+  "taskId": "task-msj9x37t-hjrr7puw",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

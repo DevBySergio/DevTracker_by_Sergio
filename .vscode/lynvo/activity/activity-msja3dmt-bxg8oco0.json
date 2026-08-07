@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmt-bxg8oco0",
+  "type": "task_updated",
+  "message": "Updated \"T19 — Add privacy, tracking and data-management controls\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326661,
+  "taskId": "task-msj9x37v-g89au2qf",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

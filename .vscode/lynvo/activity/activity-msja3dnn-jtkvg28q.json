@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnn-jtkvg28q",
+  "type": "task_updated",
+  "message": "Updated \"T34 — Package and verify DevTracker 2.0.0\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326691,
+  "taskId": "task-msj9x38a-4pw9ni1p",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

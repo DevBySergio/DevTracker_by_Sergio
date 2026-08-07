@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37k-zkyrq7to",
   "title": "T08 — Implement the activity state machine",
-  "description": "## Objective\n\nSustituir contadores y booleanos globales por una máquina de estados basada en interacciones y tiempo monotónico.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T08.",
+  "description": "## Objective\n\nReplace global counters and booleans with a state machine based on interactions and monotonic time.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T08.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033356,
-  "updatedAt": 1786127033356,
+  "updatedAt": 1786127326638,
   "position": 1786127033356,
   "labelIds": [
     "label-msj9x374-pzsygu7i",
@@ -28,52 +28,52 @@
   "checklist": [
     {
       "id": "check-msj9x3bh-ctd8yg7e",
-      "text": "Definir estados active, inactive, paused y unfocused",
+      "text": "Define active, inactive, paused, and unfocused states",
       "done": false,
       "createdAt": 1786127033357,
-      "updatedAt": 1786127033357
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bi-grth5kad",
-      "text": "Procesar edición, selección debounced, save y cambio de editor",
+      "text": "Process edits, debounced selections, saves, and editor changes",
       "done": false,
       "createdAt": 1786127033358,
-      "updatedAt": 1786127033358
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bj-aosru5g7",
-      "text": "Finalizar active time tras cinco minutos sin interacción",
+      "text": "End active time after five minutes without interaction",
       "done": false,
       "createdAt": 1786127033359,
-      "updatedAt": 1786127033359
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bk-fnnvgiv0",
-      "text": "No acumular horas ilimitadas de idle",
+      "text": "Do not accumulate unlimited idle hours",
       "done": false,
       "createdAt": 1786127033360,
-      "updatedAt": 1786127033360
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bl-6n8irjzb",
-      "text": "Utilizar reloj monotónico para duraciones",
+      "text": "Use a monotonic clock for durations",
       "done": false,
       "createdAt": 1786127033361,
-      "updatedAt": 1786127033361
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bm-ff0l38jf",
-      "text": "Dividir correctamente intervalos al cambiar de fecha",
+      "text": "Split intervals correctly when the date changes",
       "done": false,
       "createdAt": 1786127033362,
-      "updatedAt": 1786127033362
+      "updatedAt": 1786127326638
     },
     {
       "id": "check-msj9x3bn-sktt501f",
-      "text": "Exponer estado y última actualización al dashboard",
+      "text": "Expose status and last update time to the dashboard",
       "done": false,
       "createdAt": 1786127033363,
-      "updatedAt": 1786127033363
+      "updatedAt": 1786127326638
     }
   ],
   "relations": [

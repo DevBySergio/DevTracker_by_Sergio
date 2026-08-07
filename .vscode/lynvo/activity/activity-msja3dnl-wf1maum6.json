@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnl-wf1maum6",
+  "type": "task_updated",
+  "message": "Updated \"T33 — Rewrite documentation, privacy text and release artifacts\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326689,
+  "taskId": "task-msj9x389-ckif110z",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

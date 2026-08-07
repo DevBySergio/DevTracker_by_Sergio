@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37i-n3rlb67m",
   "title": "T06 — Deduplicate activity across VS Code windows",
-  "description": "## Objective\n\nGarantizar que varios extension hosts no dupliquen el tiempo humano y que la atribución sea determinista.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T06.",
+  "description": "## Objective\n\nEnsure that multiple extension hosts do not duplicate human time and that attribution remains deterministic.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T06.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033328,
-  "updatedAt": 1786127033328,
+  "updatedAt": 1786127326634,
   "position": 1786127033328,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
@@ -22,52 +22,52 @@
   "checklist": [
     {
       "id": "check-msj9x3ap-mtcxdxui",
-      "text": "Identificar cada extension host con un ID de instancia",
+      "text": "Identify every extension host with an instance ID",
       "done": false,
       "createdAt": 1786127033329,
-      "updatedAt": 1786127033329
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3aq-pac2jf1w",
-      "text": "Detectar intervalos solapados",
+      "text": "Detect overlapping intervals",
       "done": false,
       "createdAt": 1786127033330,
-      "updatedAt": 1786127033330
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3ar-00zsp7f8",
-      "text": "Calcular tiempo global mediante unión de intervalos",
+      "text": "Calculate global time by taking the union of intervals",
       "done": false,
       "createdAt": 1786127033331,
-      "updatedAt": 1786127033331
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3as-wzcpb6oe",
-      "text": "Atribuir solapamientos a la interacción más reciente",
+      "text": "Attribute overlaps to the most recent interaction",
       "done": false,
       "createdAt": 1786127033332,
-      "updatedAt": 1786127033332
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3at-ojyt7899",
-      "text": "Resolver empates de forma determinista",
+      "text": "Resolve ties deterministically",
       "done": false,
       "createdAt": 1786127033333,
-      "updatedAt": 1786127033333
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3au-dsy8o4ge",
-      "text": "Evitar duplicar objetivos, proyectos y lenguajes",
+      "text": "Avoid duplicating goals, projects, and languages",
       "done": false,
       "createdAt": 1786127033334,
-      "updatedAt": 1786127033334
+      "updatedAt": 1786127326634
     },
     {
       "id": "check-msj9x3av-am0nxx0q",
-      "text": "Probar dos y tres ventanas concurrentes",
+      "text": "Test two and three concurrent windows",
       "done": false,
       "createdAt": 1786127033335,
-      "updatedAt": 1786127033335
+      "updatedAt": 1786127326634
     }
   ],
   "relations": [

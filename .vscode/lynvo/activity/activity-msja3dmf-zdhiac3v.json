@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmf-zdhiac3v",
+  "type": "task_updated",
+  "message": "Updated \"T12 — Build an opt-in Git integration per repository\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326647,
+  "taskId": "task-msj9x37o-k3b7gerj",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

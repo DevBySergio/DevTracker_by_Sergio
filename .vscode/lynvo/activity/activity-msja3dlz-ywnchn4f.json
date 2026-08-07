@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dlz-ywnchn4f",
+  "type": "task_updated",
+  "message": "Updated \"T04 — Migrate v1 data with backup and corruption recovery\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326631,
+  "taskId": "task-msj9x37g-ci6435gv",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

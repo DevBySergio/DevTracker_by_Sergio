@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x383-hzb03uu7",
   "title": "T27 — Add unit tests for storage and activity tracking",
-  "description": "## Objective\n\nCubrir con reloj y filesystem falsos los estados, concurrencia y persistencia ausentes en la suite.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T27.",
+  "description": "## Objective\n\nCover states, concurrency, and persistence with fake clocks and filesystems beyond the current suite.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T27.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033672,
-  "updatedAt": 1786127033672,
+  "updatedAt": 1786127326676,
   "position": 1786127033672,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
@@ -27,59 +27,59 @@
   "checklist": [
     {
       "id": "check-msj9x3k9-l799fnf5",
-      "text": "Probar active, inactive y paused con reloj falso",
+      "text": "Test active, inactive, and paused with a fake clock",
       "done": false,
       "createdAt": 1786127033673,
-      "updatedAt": 1786127033673
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3ka-hgbyqjtj",
-      "text": "Probar flow gap y context switch debounce",
+      "text": "Test the flow gap and context-switch debounce",
       "done": false,
       "createdAt": 1786127033674,
-      "updatedAt": 1786127033674
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3kb-2b5j068d",
-      "text": "Probar medianoche y horario de verano",
+      "text": "Test midnight and daylight-saving changes",
       "done": false,
       "createdAt": 1786127033675,
-      "updatedAt": 1786127033675
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3kc-0pcogrfm",
-      "text": "Probar flush, fallo de escritura y reintento",
+      "text": "Test flush, write failure, and retry",
       "done": false,
       "createdAt": 1786127033676,
-      "updatedAt": 1786127033676
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3kd-m6gd5uwq",
-      "text": "Probar dos ventanas con actividad solapada",
+      "text": "Test two windows with overlapping activity",
       "done": false,
       "createdAt": 1786127033677,
-      "updatedAt": 1786127033677
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3ke-jj6yf4vs",
-      "text": "Probar retención y compactación",
+      "text": "Test retention and compaction",
       "done": false,
       "createdAt": 1786127033678,
-      "updatedAt": 1786127033678
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3kf-4d7cegbl",
-      "text": "Probar identidad de rutas por plataforma",
+      "text": "Test path identity by platform",
       "done": false,
       "createdAt": 1786127033679,
-      "updatedAt": 1786127033679
+      "updatedAt": 1786127326676
     },
     {
       "id": "check-msj9x3kg-3voo2zki",
-      "text": "Probar sesiones concurrentes de debug",
+      "text": "Test concurrent debug sessions",
       "done": false,
       "createdAt": 1786127033680,
-      "updatedAt": 1786127033680
+      "updatedAt": 1786127326676
     }
   ],
   "relations": [

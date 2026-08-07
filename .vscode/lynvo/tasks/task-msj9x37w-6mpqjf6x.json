@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37w-6mpqjf6x",
   "title": "T20 — Create the modular webview build and native design system",
-  "description": "## Objective\n\nExtraer el webview monolítico y construir una base visual nativa, tipada y reutilizable.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T20.",
+  "description": "## Objective\n\nExtract the monolithic webview and build a native, typed, reusable visual foundation.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T20.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033537,
-  "updatedAt": 1786127033537,
+  "updatedAt": 1786127326662,
   "position": 1786127033537,
   "labelIds": [
     "label-msj9x374-pzsygu7i",
@@ -27,59 +27,59 @@
   "checklist": [
     {
       "id": "check-msj9x3gi-u0oxijcp",
-      "text": "Crear un segundo entrypoint Webpack para el webview",
+      "text": "Create a second Webpack entry point for the webview",
       "done": false,
       "createdAt": 1786127033538,
-      "updatedAt": 1786127033538
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gj-l23vo2jx",
-      "text": "Extraer HTML, TypeScript y CSS",
+      "text": "Extract HTML, TypeScript, and CSS",
       "done": false,
       "createdAt": 1786127033539,
-      "updatedAt": 1786127033539
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gk-qr0lzd3v",
-      "text": "Definir tokens de espaciado, radio y tipografía",
+      "text": "Define spacing, radius, and typography tokens",
       "done": false,
       "createdAt": 1786127033540,
-      "updatedAt": 1786127033540
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gl-ravhj10e",
-      "text": "Usar exclusivamente variables de tema de VS Code",
+      "text": "Use only VS Code theme variables",
       "done": false,
       "createdAt": 1786127033541,
-      "updatedAt": 1786127033541
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gm-g9ignfed",
-      "text": "Crear componentes Card, Metric, Toolbar, EmptyState y ChartPanel",
+      "text": "Create Card, Metric, Toolbar, EmptyState, and ChartPanel components",
       "done": false,
       "createdAt": 1786127033542,
-      "updatedAt": 1786127033542
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gn-mfbfxy7j",
-      "text": "Centralizar strings en inglés",
+      "text": "Centralize strings in English",
       "done": false,
       "createdAt": 1786127033543,
-      "updatedAt": 1786127033543
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3go-yt4bj741",
-      "text": "Mantener CSP estricta y recursos locales",
+      "text": "Keep a strict CSP and local resources",
       "done": false,
       "createdAt": 1786127033544,
-      "updatedAt": 1786127033544
+      "updatedAt": 1786127326662
     },
     {
       "id": "check-msj9x3gp-59tjtx17",
-      "text": "Eliminar JavaScript sin type checking dentro de template strings",
+      "text": "Remove unchecked JavaScript from template strings",
       "done": false,
       "createdAt": 1786127033545,
-      "updatedAt": 1786127033545
+      "updatedAt": 1786127326662
     }
   ],
   "relations": [

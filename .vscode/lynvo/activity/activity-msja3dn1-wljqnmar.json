@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dn1-wljqnmar",
+  "type": "task_updated",
+  "message": "Updated \"T23 — Implement the Trends view\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326669,
+  "taskId": "task-msj9x37z-2ign9osb",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

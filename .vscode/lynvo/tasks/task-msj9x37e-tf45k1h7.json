@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x37e-tf45k1h7",
   "title": "T02 — Create typed domain boundaries and modular architecture",
-  "description": "## Objective\n\nSeparar responsabilidades y convertir extension.ts en un composition root pequeño con dependencias inyectables.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T02.",
+  "description": "## Objective\n\nSeparate responsibilities and turn extension.ts into a small composition root with injectable dependencies.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T02.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033275,
-  "updatedAt": 1786127033275,
+  "updatedAt": 1786127326626,
   "position": 1786127033275,
   "labelIds": [
     "label-msj9x374-pzsygu7i"
@@ -26,45 +26,45 @@
   "checklist": [
     {
       "id": "check-msj9x398-c8tu4xcx",
-      "text": "Separar tracking, dominio, persistencia, consultas, integraciones y presentación",
+      "text": "Separate tracking, domain, persistence, queries, integrations, and presentation",
       "done": false,
       "createdAt": 1786127033276,
-      "updatedAt": 1786127033276
+      "updatedAt": 1786127326626
     },
     {
       "id": "check-msj9x399-3y62e7nl",
-      "text": "Definir interfaces entre extension host y servicios",
+      "text": "Define interfaces between the extension host and services",
       "done": false,
       "createdAt": 1786127033277,
-      "updatedAt": 1786127033277
+      "updatedAt": 1786127326626
     },
     {
       "id": "check-msj9x39a-85sl3c30",
-      "text": "Eliminar estado global mutable de extension.ts",
+      "text": "Remove mutable global state from extension.ts",
       "done": false,
       "createdAt": 1786127033278,
-      "updatedAt": 1786127033278
+      "updatedAt": 1786127326626
     },
     {
       "id": "check-msj9x39b-zyl22qx7",
-      "text": "Crear inyección de reloj, filesystem y adaptadores",
+      "text": "Add clock, filesystem, and adapter dependency injection",
       "done": false,
       "createdAt": 1786127033279,
-      "updatedAt": 1786127033279
+      "updatedAt": 1786127326626
     },
     {
       "id": "check-msj9x39c-jr0rhsc3",
-      "text": "Mantener activate como composition root ligero",
+      "text": "Keep activate as a lightweight composition root",
       "done": false,
       "createdAt": 1786127033280,
-      "updatedAt": 1786127033280
+      "updatedAt": 1786127326626
     },
     {
       "id": "check-msj9x39d-csrv4mo3",
-      "text": "Documentar dependencias permitidas entre módulos",
+      "text": "Document the allowed dependencies between modules",
       "done": false,
       "createdAt": 1786127033281,
-      "updatedAt": 1786127033281
+      "updatedAt": 1786127326626
     }
   ],
   "relations": [

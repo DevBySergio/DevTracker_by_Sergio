@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dnb-0ybdrj1n",
+  "type": "task_updated",
+  "message": "Updated \"T28 — Add migration, query and metric-contract tests\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326679,
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

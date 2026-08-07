@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmx-98u5dp0y",
+  "type": "task_updated",
+  "message": "Updated \"T21 — Build the application shell and persistent navigation\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326665,
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

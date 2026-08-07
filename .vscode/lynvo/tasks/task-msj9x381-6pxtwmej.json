@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x381-6pxtwmej",
   "title": "T25 — Implement the Workflow view",
-  "description": "## Objective\n\nAgrupar diagnósticos e integraciones opcionales sin presentarlos como puntuación de calidad.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T25.",
+  "description": "## Objective\n\nGroup diagnostics and optional integrations without presenting them as a quality score.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T25.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033625,
-  "updatedAt": 1786127033625,
+  "updatedAt": 1786127326672,
   "position": 1786127033625,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
@@ -22,59 +22,59 @@
   "checklist": [
     {
       "id": "check-msj9x3iy-mfxntibj",
-      "text": "Mostrar diagnósticos actuales, nuevos, resueltos y peak",
+      "text": "Display current, introduced, resolved, and peak diagnostics",
       "done": false,
       "createdAt": 1786127033626,
-      "updatedAt": 1786127033626
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3iz-36fefoga",
-      "text": "Mostrar edit volume y saves como datos descriptivos",
+      "text": "Display edit volume and saves as descriptive data",
       "done": false,
       "createdAt": 1786127033627,
-      "updatedAt": 1786127033627
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j0-a0tbbi2h",
-      "text": "Crear panel Git opt-in",
+      "text": "Create an opt-in Git panel",
       "done": false,
       "createdAt": 1786127033628,
-      "updatedAt": 1786127033628
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j1-b14d279q",
-      "text": "Crear panel Debug opt-in",
+      "text": "Create an opt-in Debug panel",
       "done": false,
       "createdAt": 1786127033629,
-      "updatedAt": 1786127033629
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j2-h6n2q5xy",
-      "text": "Crear panel Tasks opt-in",
+      "text": "Create an opt-in Tasks panel",
       "done": false,
       "createdAt": 1786127033630,
-      "updatedAt": 1786127033630
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j3-b9oj4ey6",
-      "text": "Añadir CTA y explicación antes de habilitar cada integración",
+      "text": "Add a CTA and explanation before enabling each integration",
       "done": false,
       "createdAt": 1786127033631,
-      "updatedAt": 1786127033631
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j4-06kmb3oc",
-      "text": "Diferenciar disabled, unavailable y no data",
+      "text": "Differentiate disabled, unavailable, and no data states",
       "done": false,
       "createdAt": 1786127033632,
-      "updatedAt": 1786127033632
+      "updatedAt": 1786127326672
     },
     {
       "id": "check-msj9x3j5-1jribynw",
-      "text": "Evitar el término Quality Score",
+      "text": "Avoid the term Quality Score",
       "done": false,
       "createdAt": 1786127033633,
-      "updatedAt": 1786127033633
+      "updatedAt": 1786127326672
     }
   ],
   "relations": [

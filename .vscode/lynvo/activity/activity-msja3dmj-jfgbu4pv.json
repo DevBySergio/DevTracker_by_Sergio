@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmj-jfgbu4pv",
+  "type": "task_updated",
+  "message": "Updated \"T14 — Add opt-in VS Code Tasks tracking\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326651,
+  "taskId": "task-msj9x37q-7v1kkm1j",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

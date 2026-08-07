@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dlt-aulxvo3q",
+  "type": "task_updated",
+  "message": "Updated \"T01 — Define the DevTracker v2 metric contract\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326625,
+  "taskId": "task-msj9x37d-gmtmt7lu",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

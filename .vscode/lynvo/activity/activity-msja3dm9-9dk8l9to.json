@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dm9-9dk8l9to",
+  "type": "task_updated",
+  "message": "Updated \"T09 — Correct flow blocks and context-switch tracking\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326641,
+  "taskId": "task-msj9x37l-tywr6lgn",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

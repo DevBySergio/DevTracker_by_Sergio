@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dn3-px1f3qq5",
+  "type": "task_updated",
+  "message": "Updated \"T24 — Implement the Projects view\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326671,
+  "taskId": "task-msj9x380-gkrvze5x",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

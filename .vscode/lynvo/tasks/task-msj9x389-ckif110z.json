@@ -1,7 +1,7 @@
 {
   "id": "task-msj9x389-ckif110z",
   "title": "T33 — Rewrite documentation, privacy text and release artifacts",
-  "description": "## Objective\n\nAlinear comunicación pública con capacidades reales, privacidad local y nueva interfaz.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T33.",
+  "description": "## Objective\n\nAlign public communication with real capabilities, local privacy, and the redesigned interface.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T33.",
   "status": "backlog",
   "createdBy": {
     "githubId": "unknown",
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033805,
-  "updatedAt": 1786127033805,
+  "updatedAt": 1786127326688,
   "position": 1786127033805,
   "labelIds": [
     "label-msj9x37a-nsh60545",
@@ -27,66 +27,66 @@
   "checklist": [
     {
       "id": "check-msj9x3ny-bamcq6ea",
-      "text": "Reescribir README con capacidades exactas",
+      "text": "Rewrite the README with accurate capabilities",
       "done": false,
       "createdAt": 1786127033806,
-      "updatedAt": 1786127033806
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3nz-io3tmui0",
-      "text": "Eliminar claims de productividad no demostrables",
+      "text": "Remove unsupported productivity claims",
       "done": false,
       "createdAt": 1786127033807,
-      "updatedAt": 1786127033807
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o0-eyra2ewl",
-      "text": "Documentar todas las métricas",
+      "text": "Document every metric",
       "done": false,
       "createdAt": 1786127033808,
-      "updatedAt": 1786127033808
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o1-w2k3rxob",
-      "text": "Documentar almacenamiento, retención y exclusiones",
+      "text": "Document storage, retention, and exclusions",
       "done": false,
       "createdAt": 1786127033809,
-      "updatedAt": 1786127033809
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o2-q6vj7a3s",
-      "text": "Explicar integraciones opt-in",
+      "text": "Explain opt-in integrations",
       "done": false,
       "createdAt": 1786127033810,
-      "updatedAt": 1786127033810
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o3-7oanq2fd",
-      "text": "Actualizar privacidad y exportación",
+      "text": "Update privacy and export documentation",
       "done": false,
       "createdAt": 1786127033811,
-      "updatedAt": 1786127033811
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o4-3r5pppy1",
-      "text": "Completar changelog desde versiones anteriores",
+      "text": "Complete the changelog for previous versions",
       "done": false,
       "createdAt": 1786127033812,
-      "updatedAt": 1786127033812
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o5-4fws51lr",
-      "text": "Generar screenshots reales de las cuatro vistas",
+      "text": "Generate current screenshots of all four views",
       "done": false,
       "createdAt": 1786127033813,
-      "updatedAt": 1786127033813
+      "updatedAt": 1786127326688
     },
     {
       "id": "check-msj9x3o6-s3akdohl",
-      "text": "Mantener toda la documentación de producto en inglés",
+      "text": "Keep all product documentation in English",
       "done": false,
       "createdAt": 1786127033814,
-      "updatedAt": 1786127033814
+      "updatedAt": 1786127326688
     }
   ],
   "relations": [

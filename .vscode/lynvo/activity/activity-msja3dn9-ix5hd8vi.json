@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dn9-ix5hd8vi",
+  "type": "task_updated",
+  "message": "Updated \"T27 — Add unit tests for storage and activity tracking\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326677,
+  "taskId": "task-msj9x383-hzb03uu7",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

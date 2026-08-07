@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dml-1xpvo7cd",
+  "type": "task_updated",
+  "message": "Updated \"T15 — Build the range-query and rollup engine\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326653,
+  "taskId": "task-msj9x37r-2v07qqas",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

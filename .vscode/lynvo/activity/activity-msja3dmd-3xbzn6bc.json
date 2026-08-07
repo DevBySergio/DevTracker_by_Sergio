@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmd-3xbzn6bc",
+  "type": "task_updated",
+  "message": "Updated \"T11 — Track diagnostic snapshots and deltas correctly\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326645,
+  "taskId": "task-msj9x37n-yfekzejt",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

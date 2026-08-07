@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dmv-o70adphb",
+  "type": "task_updated",
+  "message": "Updated \"T20 — Create the modular webview build and native design system\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326663,
+  "taskId": "task-msj9x37w-6mpqjf6x",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}

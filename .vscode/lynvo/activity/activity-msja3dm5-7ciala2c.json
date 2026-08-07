@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja3dm5-7ciala2c",
+  "type": "task_updated",
+  "message": "Updated \"T07 — Implement URI-safe project and document identity\" to use English throughout",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127326637,
+  "taskId": "task-msj9x37j-5tii1xj9",
+  "metadata": {
+    "fields": "description,checklist",
+    "language": "en"
+  }
+}
