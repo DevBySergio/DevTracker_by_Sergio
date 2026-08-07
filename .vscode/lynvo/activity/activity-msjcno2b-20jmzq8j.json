@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjcno2b-20jmzq8j",
+  "type": "checklist_updated",
+  "message": "Completed checklist item in \"T08 — Implement the activity state machine\"",
+  "createdAt": 1786131632531,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37k-zkyrq7to",
+  "metadata": {
+    "checklistItemId": "check-msj9x3bi-grth5kad",
+    "done": true
+  }
+}

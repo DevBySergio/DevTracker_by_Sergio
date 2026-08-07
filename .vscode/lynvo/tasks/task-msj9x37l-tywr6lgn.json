@@ -2,7 +2,7 @@
   "id": "task-msj9x37l-tywr6lgn",
   "title": "T09 — Correct flow blocks and context-switch tracking",
   "description": "## Objective\n\nMake flow and context switching depend on human events and remain comparable across periods.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T09.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033369,
-  "updatedAt": 1786127326640,
+  "updatedAt": 1786131687411,
   "position": 1786127033369,
   "labelIds": [
     "bug",

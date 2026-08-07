@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjcno2h-wlaip1mj",
+  "type": "task_moved",
+  "message": "Moved \"T08 — Implement the activity state machine\" from In Progress to Done",
+  "createdAt": 1786131632537,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37k-zkyrq7to",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

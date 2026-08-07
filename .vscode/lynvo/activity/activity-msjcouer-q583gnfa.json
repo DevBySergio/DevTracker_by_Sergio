@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjcouer-q583gnfa",
+  "type": "task_moved",
+  "message": "Moved \"T09 — Correct flow blocks and context-switch tracking\" from Backlog to In Progress",
+  "createdAt": 1786131687411,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37l-tywr6lgn",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
