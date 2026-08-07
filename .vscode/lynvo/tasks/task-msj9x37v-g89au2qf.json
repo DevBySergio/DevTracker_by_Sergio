@@ -1,0 +1,106 @@
+{
+  "id": "task-msj9x37v-g89au2qf",
+  "title": "T19 — Add privacy, tracking and data-management controls",
+  "description": "## Objective\n\nDar control visible y reversible sobre captura, retención, rutas e integraciones locales.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T19.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033521,
+  "updatedAt": 1786127033521,
+  "position": 1786127033521,
+  "labelIds": [
+    "label-msj9x377-qxg3e5m5",
+    "feat",
+    "label-msj9x378-ofqe4hvu"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "package.json",
+    "lineStart": 31,
+    "lineEnd": 31
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3g2-gwtso13m",
+      "text": "Añadir pausa y reanudación manual",
+      "done": false,
+      "createdAt": 1786127033522,
+      "updatedAt": 1786127033522
+    },
+    {
+      "id": "check-msj9x3g3-7qan4ozy",
+      "text": "Mostrar Tracking, Inactive y Paused en la status bar",
+      "done": false,
+      "createdAt": 1786127033523,
+      "updatedAt": 1786127033523
+    },
+    {
+      "id": "check-msj9x3g4-oj4yggzl",
+      "text": "Configurar exclusiones por glob",
+      "done": false,
+      "createdAt": 1786127033524,
+      "updatedAt": 1786127033524
+    },
+    {
+      "id": "check-msj9x3g5-iuy923i1",
+      "text": "Configurar retención detallada",
+      "done": false,
+      "createdAt": 1786127033525,
+      "updatedAt": 1786127033525
+    },
+    {
+      "id": "check-msj9x3g6-3ci5q6dm",
+      "text": "Añadir modos de archivo relative, hashed y none",
+      "done": false,
+      "createdAt": 1786127033526,
+      "updatedAt": 1786127033526
+    },
+    {
+      "id": "check-msj9x3g7-sxkmnmpu",
+      "text": "Añadir Open Data Folder",
+      "done": false,
+      "createdAt": 1786127033527,
+      "updatedAt": 1786127033527
+    },
+    {
+      "id": "check-msj9x3g8-b628n7iz",
+      "text": "Añadir reset con confirmación y backup",
+      "done": false,
+      "createdAt": 1786127033528,
+      "updatedAt": 1786127033528
+    },
+    {
+      "id": "check-msj9x3g9-7leit2bd",
+      "text": "Mantener Git, Debug y Tasks deshabilitados por defecto",
+      "done": false,
+      "createdAt": 1786127033529,
+      "updatedAt": 1786127033529
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3ga-pzic188v",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033530
+    },
+    {
+      "id": "rel-msj9x3gb-4325qiok",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37f-qywco9h4",
+      "createdAt": 1786127033531
+    },
+    {
+      "id": "rel-msj9x3gc-9kfivdh3",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37k-zkyrq7to",
+      "createdAt": 1786127033532
+    }
+  ]
+}

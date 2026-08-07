@@ -1,0 +1,92 @@
+{
+  "id": "task-msj9x37f-qywco9h4",
+  "title": "T03 — Implement schema v2 and session-based storage layout",
+  "description": "## Objective\n\nIntroducir un esquema versionado por sesiones que permita concurrencia, migraciones explícitas y consultas escalables.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T03.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033287,
+  "updatedAt": 1786127033287,
+  "position": 1786127033287,
+  "labelIds": [
+    "label-msj9x375-5ic0rlvn",
+    "label-msj9x374-pzsygu7i"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 33,
+    "lineEnd": 33
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x39k-7dl2vsw8",
+      "text": "Añadir schemaVersion 2",
+      "done": false,
+      "createdAt": 1786127033288,
+      "updatedAt": 1786127033288
+    },
+    {
+      "id": "check-msj9x39l-qmzr5xee",
+      "text": "Crear ProjectIdentity, TrackingSession, ActivityInterval y DailyRollup",
+      "done": false,
+      "createdAt": 1786127033289,
+      "updatedAt": 1786127033289
+    },
+    {
+      "id": "check-msj9x39m-oxn8uvf8",
+      "text": "Guardar una sesión independiente por extension host",
+      "done": false,
+      "createdAt": 1786127033290,
+      "updatedAt": 1786127033290
+    },
+    {
+      "id": "check-msj9x39n-kkrrf4ux",
+      "text": "Separar metadatos, sesiones activas y rollups",
+      "done": false,
+      "createdAt": 1786127033291,
+      "updatedAt": 1786127033291
+    },
+    {
+      "id": "check-msj9x39o-jh8wg170",
+      "text": "Utilizar ExtensionContext.globalStorageUri",
+      "done": false,
+      "createdAt": 1786127033292,
+      "updatedAt": 1786127033292
+    },
+    {
+      "id": "check-msj9x39p-1eijw335",
+      "text": "Definir validación estricta de todos los registros",
+      "done": false,
+      "createdAt": 1786127033293,
+      "updatedAt": 1786127033293
+    },
+    {
+      "id": "check-msj9x39q-k75u26tw",
+      "text": "Añadir permisos restrictivos en plataformas compatibles",
+      "done": false,
+      "createdAt": 1786127033294,
+      "updatedAt": 1786127033294
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x39r-rih8ekmp",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033295
+    },
+    {
+      "id": "rel-msj9x39s-xk4j0918",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37e-tf45k1h7",
+      "createdAt": 1786127033296
+    }
+  ]
+}

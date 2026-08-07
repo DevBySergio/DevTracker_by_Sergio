@@ -1,0 +1,98 @@
+{
+  "id": "task-msj9x37m-d4gueuhr",
+  "title": "T10 — Replace misleading edit metrics",
+  "description": "## Objective\n\nReemplazar nombres engañosos por contadores descriptivos del comportamiento real del editor.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T10.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033382,
+  "updatedAt": 1786127033382,
+  "position": 1786127033382,
+  "labelIds": [
+    "bug",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/extension.ts",
+    "lineStart": 188,
+    "lineEnd": 188
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3c7-ikzy6dj8",
+      "text": "Separar caracteres insertados y eliminados",
+      "done": false,
+      "createdAt": 1786127033383,
+      "updatedAt": 1786127033383
+    },
+    {
+      "id": "check-msj9x3c8-4jr6rsua",
+      "text": "Renombrar paste a large edit",
+      "done": false,
+      "createdAt": 1786127033384,
+      "updatedAt": 1786127033384
+    },
+    {
+      "id": "check-msj9x3c9-gm1am7pj",
+      "text": "Registrar eventos de edición sin llamarlos keystrokes",
+      "done": false,
+      "createdAt": 1786127033385,
+      "updatedAt": 1786127033385
+    },
+    {
+      "id": "check-msj9x3ca-auar09wt",
+      "text": "Presentar line activity como aproximación del editor",
+      "done": false,
+      "createdAt": 1786127033386,
+      "updatedAt": 1786127033386
+    },
+    {
+      "id": "check-msj9x3cb-3ycx6bad",
+      "text": "Separar tiempo activo por archivo y número de archivos únicos",
+      "done": false,
+      "createdAt": 1786127033387,
+      "updatedAt": 1786127033387
+    },
+    {
+      "id": "check-msj9x3cc-al1i2n33",
+      "text": "Evitar doble conteo entre ticks y ediciones",
+      "done": false,
+      "createdAt": 1786127033388,
+      "updatedAt": 1786127033388
+    },
+    {
+      "id": "check-msj9x3cd-ly27rqtf",
+      "text": "Mantener compatibilidad de importación con campos v1",
+      "done": false,
+      "createdAt": 1786127033389,
+      "updatedAt": 1786127033389
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3ce-s7s61ij6",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033390
+    },
+    {
+      "id": "rel-msj9x3cf-j0jxdnaf",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37k-zkyrq7to",
+      "createdAt": 1786127033391
+    },
+    {
+      "id": "rel-msj9x3cg-gowtw4jn",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37d-gmtmt7lu",
+      "createdAt": 1786127033392
+    }
+  ]
+}

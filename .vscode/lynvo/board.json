@@ -10,6 +10,46 @@
       "id": "feat",
       "name": "Feature",
       "color": "#a371f7"
+    },
+    "label-msj9x374-pzsygu7i": {
+      "id": "label-msj9x374-pzsygu7i",
+      "name": "Refactor",
+      "color": "#db6d28"
+    },
+    "label-msj9x375-5ic0rlvn": {
+      "id": "label-msj9x375-5ic0rlvn",
+      "name": "Data",
+      "color": "#2f81f7"
+    },
+    "label-msj9x376-atwveebr": {
+      "id": "label-msj9x376-atwveebr",
+      "name": "Performance",
+      "color": "#d29922"
+    },
+    "label-msj9x377-qxg3e5m5": {
+      "id": "label-msj9x377-qxg3e5m5",
+      "name": "Security",
+      "color": "#f778ba"
+    },
+    "label-msj9x378-ofqe4hvu": {
+      "id": "label-msj9x378-ofqe4hvu",
+      "name": "UX",
+      "color": "#39c5cf"
+    },
+    "label-msj9x379-b0gg52nk": {
+      "id": "label-msj9x379-b0gg52nk",
+      "name": "Test",
+      "color": "#3fb950"
+    },
+    "label-msj9x37a-nsh60545": {
+      "id": "label-msj9x37a-nsh60545",
+      "name": "Documentation",
+      "color": "#8b949e"
+    },
+    "label-msj9x37b-glb1mzea": {
+      "id": "label-msj9x37b-glb1mzea",
+      "name": "CI",
+      "color": "#bc8cff"
     }
   }
 }

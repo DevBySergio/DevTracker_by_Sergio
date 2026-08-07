@@ -1,0 +1,13 @@
+{
+  "id": "activity-msj9x38f-edur6dho",
+  "type": "column_created",
+  "message": "Created column \"Review\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033247,
+  "metadata": {
+    "columnId": "review"
+  }
+}

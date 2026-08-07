@@ -1,0 +1,118 @@
+{
+  "id": "task-msj9x384-t5cnmngh",
+  "title": "T28 — Add migration, query and metric-contract tests",
+  "description": "## Objective\n\nDemostrar que migraciones, agregaciones y fórmulas respetan el contrato v2 y los casos históricos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T28.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033694,
+  "updatedAt": 1786127033694,
+  "position": 1786127033694,
+  "labelIds": [
+    "label-msj9x379-b0gg52nk",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x3kv-1kekdsyr",
+      "text": "Migrar historial v1 completo y parcial",
+      "done": false,
+      "createdAt": 1786127033695,
+      "updatedAt": 1786127033695
+    },
+    {
+      "id": "check-msj9x3kw-2i1z6izy",
+      "text": "Repetir migración sin duplicados",
+      "done": false,
+      "createdAt": 1786127033696,
+      "updatedAt": 1786127033696
+    },
+    {
+      "id": "check-msj9x3kx-giskpap5",
+      "text": "Recuperar JSON corrupto",
+      "done": false,
+      "createdAt": 1786127033697,
+      "updatedAt": 1786127033697
+    },
+    {
+      "id": "check-msj9x3ky-mpixudeo",
+      "text": "Verificar periodos y comparaciones",
+      "done": false,
+      "createdAt": 1786127033698,
+      "updatedAt": 1786127033698
+    },
+    {
+      "id": "check-msj9x3kz-jtswbyfw",
+      "text": "Rellenar días vacíos",
+      "done": false,
+      "createdAt": 1786127033699,
+      "updatedAt": 1786127033699
+    },
+    {
+      "id": "check-msj9x3l0-4d3my44x",
+      "text": "Excluir fechas futuras",
+      "done": false,
+      "createdAt": 1786127033700,
+      "updatedAt": 1786127033700
+    },
+    {
+      "id": "check-msj9x3l1-36til2xh",
+      "text": "No sumar snapshots de diagnóstico",
+      "done": false,
+      "createdAt": 1786127033701,
+      "updatedAt": 1786127033701
+    },
+    {
+      "id": "check-msj9x3l2-hij4j69v",
+      "text": "Validar todos los ejemplos del contrato de métricas",
+      "done": false,
+      "createdAt": 1786127033702,
+      "updatedAt": 1786127033702
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3l3-nbwsrpl5",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033703
+    },
+    {
+      "id": "rel-msj9x3l4-hywxydt5",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37g-ci6435gv",
+      "createdAt": 1786127033704
+    },
+    {
+      "id": "rel-msj9x3l5-m3f68jrz",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37m-d4gueuhr",
+      "createdAt": 1786127033705
+    },
+    {
+      "id": "rel-msj9x3l6-ougdrh0a",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37n-yfekzejt",
+      "createdAt": 1786127033706
+    },
+    {
+      "id": "rel-msj9x3l7-u93dbfdb",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37r-2v07qqas",
+      "createdAt": 1786127033707
+    },
+    {
+      "id": "rel-msj9x3l8-pohzvivt",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37s-g1nkw3gb",
+      "createdAt": 1786127033708
+    }
+  ]
+}

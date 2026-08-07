@@ -1,0 +1,68 @@
+{
+  "id": "task-msj9x37c-3qab7gb8",
+  "title": "P00 — Plan: Refactor and release DevTracker 2.0",
+  "description": "## Objective\n\nConsolidar la auditoría técnica y de producto, las decisiones de privacidad, la arquitectura v2 y el rediseño UX/UI en un backlog ejecutable.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item P00.",
+  "status": "done",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033257,
+  "updatedAt": 1786127033881,
+  "position": 1786127033257,
+  "labelIds": [
+    "label-msj9x374-pzsygu7i",
+    "label-msj9x375-5ic0rlvn",
+    "label-msj9x378-ofqe4hvu"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x38q-7o4n78vo",
+      "text": "Auditoría de código, persistencia y rendimiento",
+      "done": true,
+      "createdAt": 1786127033258,
+      "updatedAt": 1786127033869
+    },
+    {
+      "id": "check-msj9x38r-rex2z8ky",
+      "text": "Auditoría de semántica de producto",
+      "done": true,
+      "createdAt": 1786127033259,
+      "updatedAt": 1786127033871
+    },
+    {
+      "id": "check-msj9x38s-6elh0l87",
+      "text": "Definición de nuevas métricas y límites de privacidad",
+      "done": true,
+      "createdAt": 1786127033260,
+      "updatedAt": 1786127033873
+    },
+    {
+      "id": "check-msj9x38t-9u8576x9",
+      "text": "Definición de arquitectura v2",
+      "done": true,
+      "createdAt": 1786127033261,
+      "updatedAt": 1786127033875
+    },
+    {
+      "id": "check-msj9x38u-w3cx6ypr",
+      "text": "Definición del rediseño UX/UI",
+      "done": true,
+      "createdAt": 1786127033262,
+      "updatedAt": 1786127033877
+    },
+    {
+      "id": "check-msj9x38v-ku5utf1s",
+      "text": "Creación del backlog y mapa de dependencias",
+      "done": true,
+      "createdAt": 1786127033263,
+      "updatedAt": 1786127033879
+    }
+  ],
+  "relations": []
+}

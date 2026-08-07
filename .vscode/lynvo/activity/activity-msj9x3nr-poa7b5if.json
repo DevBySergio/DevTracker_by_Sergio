@@ -1,0 +1,15 @@
+{
+  "id": "activity-msj9x3nr-poa7b5if",
+  "type": "relation_added",
+  "message": "Added related relation from \"T32\" to \"P00\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033799,
+  "taskId": "task-msj9x388-tz8fih2o",
+  "targetTaskId": "task-msj9x37c-3qab7gb8",
+  "metadata": {
+    "relationType": "related"
+  }
+}

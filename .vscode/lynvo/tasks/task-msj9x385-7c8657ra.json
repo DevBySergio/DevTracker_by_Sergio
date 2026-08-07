@@ -1,0 +1,130 @@
+{
+  "id": "task-msj9x385-7c8657ra",
+  "title": "T29 — Add VS Code Extension Host integration tests",
+  "description": "## Objective\n\nValidar comandos y eventos reales de VS Code más allá de DataManager.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T29.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033716,
+  "updatedAt": 1786127033716,
+  "position": 1786127033716,
+  "labelIds": [
+    "label-msj9x379-b0gg52nk"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x3lh-3cx5153i",
+      "text": "Probar activación sin editor",
+      "done": false,
+      "createdAt": 1786127033717,
+      "updatedAt": 1786127033717
+    },
+    {
+      "id": "check-msj9x3li-m3oq68vx",
+      "text": "Probar apertura de dashboard sin actividad reciente",
+      "done": false,
+      "createdAt": 1786127033718,
+      "updatedAt": 1786127033718
+    },
+    {
+      "id": "check-msj9x3lj-3svnyslr",
+      "text": "Probar edición, save, selección y cambio de editor",
+      "done": false,
+      "createdAt": 1786127033719,
+      "updatedAt": 1786127033719
+    },
+    {
+      "id": "check-msj9x3lk-14pqp7jk",
+      "text": "Probar pausa y reanudación",
+      "done": false,
+      "createdAt": 1786127033720,
+      "updatedAt": 1786127033720
+    },
+    {
+      "id": "check-msj9x3ll-fpk7effs",
+      "text": "Probar multi-root",
+      "done": false,
+      "createdAt": 1786127033721,
+      "updatedAt": 1786127033721
+    },
+    {
+      "id": "check-msj9x3lm-lm245i51",
+      "text": "Probar cambios de configuración",
+      "done": false,
+      "createdAt": 1786127033722,
+      "updatedAt": 1786127033722
+    },
+    {
+      "id": "check-msj9x3ln-obgqcjhy",
+      "text": "Probar diagnósticos",
+      "done": false,
+      "createdAt": 1786127033723,
+      "updatedAt": 1786127033723
+    },
+    {
+      "id": "check-msj9x3lo-835zzfn1",
+      "text": "Probar Git disponible y no disponible",
+      "done": false,
+      "createdAt": 1786127033724,
+      "updatedAt": 1786127033724
+    },
+    {
+      "id": "check-msj9x3lp-pgmecd9z",
+      "text": "Probar desactivación con flush pendiente",
+      "done": false,
+      "createdAt": 1786127033725,
+      "updatedAt": 1786127033725
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3lq-j4sib9sb",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033726
+    },
+    {
+      "id": "rel-msj9x3lr-b1zfguh6",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37k-zkyrq7to",
+      "createdAt": 1786127033727
+    },
+    {
+      "id": "rel-msj9x3ls-y71tczm5",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37o-k3b7gerj",
+      "createdAt": 1786127033728
+    },
+    {
+      "id": "rel-msj9x3lt-9z8zuo85",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37p-o57jtvmi",
+      "createdAt": 1786127033729
+    },
+    {
+      "id": "rel-msj9x3lu-tw21kj1v",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37q-7v1kkm1j",
+      "createdAt": 1786127033730
+    },
+    {
+      "id": "rel-msj9x3lv-66laz755",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37t-hjrr7puw",
+      "createdAt": 1786127033731
+    },
+    {
+      "id": "rel-msj9x3lw-zp5kp01b",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033732
+    }
+  ]
+}

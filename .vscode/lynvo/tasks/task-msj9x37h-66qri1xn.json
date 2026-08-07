@@ -1,0 +1,100 @@
+{
+  "id": "task-msj9x37h-66qri1xn",
+  "title": "T05 — Replace blocking persistence with asynchronous per-session writes",
+  "description": "## Objective\n\nEliminar escrituras globales síncronas y esperas bloqueantes sin perder deltas ante fallos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T05.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033314,
+  "updatedAt": 1786127033314,
+  "position": 1786127033314,
+  "labelIds": [
+    "label-msj9x376-atwveebr",
+    "label-msj9x375-5ic0rlvn",
+    "bug"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 177,
+    "lineEnd": 177
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3ab-rapiwg4u",
+      "text": "Eliminar Atomics.wait y locks bloqueantes",
+      "done": false,
+      "createdAt": 1786127033315,
+      "updatedAt": 1786127033315
+    },
+    {
+      "id": "check-msj9x3ac-8xmlzvqe",
+      "text": "Usar escrituras atómicas asíncronas",
+      "done": false,
+      "createdAt": 1786127033316,
+      "updatedAt": 1786127033316
+    },
+    {
+      "id": "check-msj9x3ad-r1urdlry",
+      "text": "Serializar mutaciones mediante una write queue",
+      "done": false,
+      "createdAt": 1786127033317,
+      "updatedAt": 1786127033317
+    },
+    {
+      "id": "check-msj9x3ae-p75o6mpm",
+      "text": "Aplicar flush debounced cada diez segundos",
+      "done": false,
+      "createdAt": 1786127033318,
+      "updatedAt": 1786127033318
+    },
+    {
+      "id": "check-msj9x3af-9ocpnesf",
+      "text": "Forzar flush al pausar, perder foco y desactivar",
+      "done": false,
+      "createdAt": 1786127033319,
+      "updatedAt": 1786127033319
+    },
+    {
+      "id": "check-msj9x3ag-9lxo12yh",
+      "text": "Evitar reescribir todo el historial",
+      "done": false,
+      "createdAt": 1786127033320,
+      "updatedAt": 1786127033320
+    },
+    {
+      "id": "check-msj9x3ah-9jsfncte",
+      "text": "Mantener los deltas si una escritura falla",
+      "done": false,
+      "createdAt": 1786127033321,
+      "updatedAt": 1786127033321
+    },
+    {
+      "id": "check-msj9x3ai-726mttpm",
+      "text": "Exponer estado de salud de persistencia",
+      "done": false,
+      "createdAt": 1786127033322,
+      "updatedAt": 1786127033322
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3aj-1e9i33hi",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033323
+    },
+    {
+      "id": "rel-msj9x3ak-kf2rbfh6",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37f-qywco9h4",
+      "createdAt": 1786127033324
+    }
+  ]
+}

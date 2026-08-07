@@ -1,0 +1,13 @@
+{
+  "id": "activity-msj9x38g-t1zr2jw1",
+  "type": "column_updated",
+  "message": "Updated column \"Done\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033248,
+  "metadata": {
+    "columnId": "done"
+  }
+}

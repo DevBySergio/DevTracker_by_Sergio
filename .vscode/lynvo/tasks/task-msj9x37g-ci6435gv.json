@@ -1,0 +1,100 @@
+{
+  "id": "task-msj9x37g-ci6435gv",
+  "title": "T04 — Migrate v1 data with backup and corruption recovery",
+  "description": "## Objective\n\nMigrar el historial existente sin pérdida y evitar reemplazar silenciosamente un JSON corrupto.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T04.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033300,
+  "updatedAt": 1786127033300,
+  "position": 1786127033300,
+  "labelIds": [
+    "label-msj9x375-5ic0rlvn",
+    "label-msj9x377-qxg3e5m5",
+    "bug"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 149,
+    "lineEnd": 149
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x39x-k099chxl",
+      "text": "Detectar automáticamente ~/.devtracker/data.json",
+      "done": false,
+      "createdAt": 1786127033301,
+      "updatedAt": 1786127033301
+    },
+    {
+      "id": "check-msj9x39y-le1u2jy6",
+      "text": "Crear backup antes de cualquier transformación",
+      "done": false,
+      "createdAt": 1786127033302,
+      "updatedAt": 1786127033302
+    },
+    {
+      "id": "check-msj9x39z-ekfxi73s",
+      "text": "Validar proyectos, días, mapas y números",
+      "done": false,
+      "createdAt": 1786127033303,
+      "updatedAt": 1786127033303
+    },
+    {
+      "id": "check-msj9x3a0-8k6il8fr",
+      "text": "Importar rollups y marcar datos no reconstruibles como legacy",
+      "done": false,
+      "createdAt": 1786127033304,
+      "updatedAt": 1786127033304
+    },
+    {
+      "id": "check-msj9x3a1-rnriaq91",
+      "text": "Poner archivos corruptos en cuarentena",
+      "done": false,
+      "createdAt": 1786127033305,
+      "updatedAt": 1786127033305
+    },
+    {
+      "id": "check-msj9x3a2-ca67dwmu",
+      "text": "Recuperar el backup válido más reciente",
+      "done": false,
+      "createdAt": 1786127033306,
+      "updatedAt": 1786127033306
+    },
+    {
+      "id": "check-msj9x3a3-ipxvj6cl",
+      "text": "Mantener el archivo v1 original intacto",
+      "done": false,
+      "createdAt": 1786127033307,
+      "updatedAt": 1786127033307
+    },
+    {
+      "id": "check-msj9x3a4-xd8aosqi",
+      "text": "Hacer la migración idempotente",
+      "done": false,
+      "createdAt": 1786127033308,
+      "updatedAt": 1786127033308
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3a5-cho2tdcs",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033309
+    },
+    {
+      "id": "rel-msj9x3a6-j3tvx62c",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37f-qywco9h4",
+      "createdAt": 1786127033310
+    }
+  ]
+}

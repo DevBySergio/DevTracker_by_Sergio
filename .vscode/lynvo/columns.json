@@ -3,18 +3,36 @@
     "id": "todo",
     "title": "To Do",
     "color": "var(--vscode-charts-blue)",
-    "position": 0
+    "position": 1
   },
   "in-progress": {
     "id": "in-progress",
     "title": "In Progress",
     "color": "var(--vscode-charts-yellow)",
-    "position": 1
+    "position": 3
   },
   "done": {
     "id": "done",
     "title": "Done",
     "color": "var(--vscode-charts-green)",
+    "position": 5
+  },
+  "backlog": {
+    "id": "backlog",
+    "title": "Backlog",
+    "color": "var(--vscode-charts-purple)",
+    "position": 0
+  },
+  "blocked": {
+    "id": "blocked",
+    "title": "Blocked",
+    "color": "var(--vscode-charts-red)",
     "position": 2
+  },
+  "review": {
+    "id": "review",
+    "title": "Review",
+    "color": "var(--vscode-charts-orange)",
+    "position": 4
   }
 }

@@ -1,0 +1,123 @@
+{
+  "id": "task-msj9x388-tz8fih2o",
+  "title": "T32 — Add CI and a complete validation gate",
+  "description": "## Objective\n\nUnificar typecheck, lint, tests, build y validación del paquete en un gate local y de CI.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T32.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033783,
+  "updatedAt": 1786127033783,
+  "position": 1786127033783,
+  "labelIds": [
+    "label-msj9x37b-glb1mzea",
+    "label-msj9x379-b0gg52nk"
+  ],
+  "priority": "medium",
+  "codeReference": {
+    "filePath": "package.json",
+    "lineStart": 48,
+    "lineEnd": 48
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3nc-8ak5myc5",
+      "text": "Añadir npm run validate",
+      "done": false,
+      "createdAt": 1786127033784,
+      "updatedAt": 1786127033784
+    },
+    {
+      "id": "check-msj9x3nd-5h17mfpb",
+      "text": "Ejecutar typecheck estricto",
+      "done": false,
+      "createdAt": 1786127033785,
+      "updatedAt": 1786127033785
+    },
+    {
+      "id": "check-msj9x3ne-aja8w4hw",
+      "text": "Convertir reglas relevantes de lint a error",
+      "done": false,
+      "createdAt": 1786127033786,
+      "updatedAt": 1786127033786
+    },
+    {
+      "id": "check-msj9x3nf-73apgz09",
+      "text": "Ejecutar unit e integration tests",
+      "done": false,
+      "createdAt": 1786127033787,
+      "updatedAt": 1786127033787
+    },
+    {
+      "id": "check-msj9x3ng-b6pmrrmb",
+      "text": "Construir extension y webview en producción",
+      "done": false,
+      "createdAt": 1786127033788,
+      "updatedAt": 1786127033788
+    },
+    {
+      "id": "check-msj9x3nh-mf2ra8oh",
+      "text": "Validar estructura y contenido del VSIX",
+      "done": false,
+      "createdAt": 1786127033789,
+      "updatedAt": 1786127033789
+    },
+    {
+      "id": "check-msj9x3ni-qfpyk6cd",
+      "text": "Ejecutar CI para pull requests y master",
+      "done": false,
+      "createdAt": 1786127033790,
+      "updatedAt": 1786127033790
+    },
+    {
+      "id": "check-msj9x3nj-tmxu5gr0",
+      "text": "Guardar resultados de tests y capturas fallidas",
+      "done": false,
+      "createdAt": 1786127033791,
+      "updatedAt": 1786127033791
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3nk-32hw5z2a",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033792
+    },
+    {
+      "id": "rel-msj9x3nl-mv5u0z00",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x383-hzb03uu7",
+      "createdAt": 1786127033793
+    },
+    {
+      "id": "rel-msj9x3nm-aoczxyv8",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x384-t5cnmngh",
+      "createdAt": 1786127033794
+    },
+    {
+      "id": "rel-msj9x3nn-q0ciyrgk",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x385-7c8657ra",
+      "createdAt": 1786127033795
+    },
+    {
+      "id": "rel-msj9x3no-zdvbfbqr",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x386-phlzn1ks",
+      "createdAt": 1786127033796
+    },
+    {
+      "id": "rel-msj9x3np-wckm7sm9",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x387-2qtjcubx",
+      "createdAt": 1786127033797
+    }
+  ]
+}

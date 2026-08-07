@@ -1,0 +1,92 @@
+{
+  "id": "task-msj9x37l-tywr6lgn",
+  "title": "T09 — Correct flow blocks and context-switch tracking",
+  "description": "## Objective\n\nHacer que flow y context switching dependan de eventos humanos y sean comparables entre periodos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T09.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033369,
+  "updatedAt": 1786127033369,
+  "position": 1786127033369,
+  "labelIds": [
+    "bug",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 371,
+    "lineEnd": 371
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3bu-1bz6scr4",
+      "text": "Iniciar flow únicamente con interacción significativa",
+      "done": false,
+      "createdAt": 1786127033370,
+      "updatedAt": 1786127033370
+    },
+    {
+      "id": "check-msj9x3bv-xsj3uq92",
+      "text": "Finalizarlo tras 120 segundos sin interacción",
+      "done": false,
+      "createdAt": 1786127033371,
+      "updatedAt": 1786127033371
+    },
+    {
+      "id": "check-msj9x3bw-qse53a9j",
+      "text": "Mostrar cero cuando el flow actual expire",
+      "done": false,
+      "createdAt": 1786127033372,
+      "updatedAt": 1786127033372
+    },
+    {
+      "id": "check-msj9x3bx-rdjfkm05",
+      "text": "Contabilizar cambios de archivo solo tras cinco segundos estables",
+      "done": false,
+      "createdAt": 1786127033373,
+      "updatedAt": 1786127033373
+    },
+    {
+      "id": "check-msj9x3by-z673vwy4",
+      "text": "Separar cambio de archivo y cambio de proyecto",
+      "done": false,
+      "createdAt": 1786127033374,
+      "updatedAt": 1786127033374
+    },
+    {
+      "id": "check-msj9x3bz-4itdbd0g",
+      "text": "Calcular switches por hora activa",
+      "done": false,
+      "createdAt": 1786127033375,
+      "updatedAt": 1786127033375
+    },
+    {
+      "id": "check-msj9x3c0-egcvaxhp",
+      "text": "Cubrir medianoche, pausa y reanudación",
+      "done": false,
+      "createdAt": 1786127033376,
+      "updatedAt": 1786127033376
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3c1-o7iu735g",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033377
+    },
+    {
+      "id": "rel-msj9x3c2-o6jy2zgi",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37k-zkyrq7to",
+      "createdAt": 1786127033378
+    }
+  ]
+}

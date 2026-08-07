@@ -1,0 +1,92 @@
+{
+  "id": "task-msj9x37j-5tii1xj9",
+  "title": "T07 — Implement URI-safe project and document identity",
+  "description": "## Objective\n\nEvitar colisiones entre rutas y soportar proyectos multi-root, remotos y con nombres repetidos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T07.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033343,
+  "updatedAt": 1786127033343,
+  "position": 1786127033343,
+  "labelIds": [
+    "bug",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 340,
+    "lineEnd": 340
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3b4-ztrmlt1a",
+      "text": "Eliminar el toLowerCase universal",
+      "done": false,
+      "createdAt": 1786127033344,
+      "updatedAt": 1786127033344
+    },
+    {
+      "id": "check-msj9x3b5-kviawxym",
+      "text": "Crear IDs estables a partir de URI canónica",
+      "done": false,
+      "createdAt": 1786127033345,
+      "updatedAt": 1786127033345
+    },
+    {
+      "id": "check-msj9x3b6-1f3kaozy",
+      "text": "Usar realpath cuando sea posible",
+      "done": false,
+      "createdAt": 1786127033346,
+      "updatedAt": 1786127033346
+    },
+    {
+      "id": "check-msj9x3b7-is3mel2v",
+      "text": "Normalizar drives únicamente en Windows",
+      "done": false,
+      "createdAt": 1786127033347,
+      "updatedAt": 1786127033347
+    },
+    {
+      "id": "check-msj9x3b8-fv81vb4g",
+      "text": "Soportar proyectos con el mismo basename",
+      "done": false,
+      "createdAt": 1786127033348,
+      "updatedAt": 1786127033348
+    },
+    {
+      "id": "check-msj9x3b9-iqvq0kpf",
+      "text": "Cubrir rutas remotas, multi-root y virtuales compatibles",
+      "done": false,
+      "createdAt": 1786127033349,
+      "updatedAt": 1786127033349
+    },
+    {
+      "id": "check-msj9x3ba-t9veigvh",
+      "text": "Evitar guardar rutas absolutas en los rollups analíticos",
+      "done": false,
+      "createdAt": 1786127033350,
+      "updatedAt": 1786127033350
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3bb-sx56uwa4",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033351
+    },
+    {
+      "id": "rel-msj9x3bc-xgrujbmw",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37e-tf45k1h7",
+      "createdAt": 1786127033352
+    }
+  ]
+}

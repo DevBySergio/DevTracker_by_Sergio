@@ -1,0 +1,15 @@
+{
+  "id": "activity-msj9x3q2-x84zk1n4",
+  "type": "task_moved",
+  "message": "Moved \"P00 — Plan: Refactor and release DevTracker 2.0\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033882,
+  "taskId": "task-msj9x37c-3qab7gb8",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

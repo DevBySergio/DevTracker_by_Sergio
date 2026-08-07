@@ -1,0 +1,11 @@
+{
+  "id": "activity-msj9x3dc-cqrzldu5",
+  "type": "task_created",
+  "message": "Created \"T12 — Build an opt-in Git integration per repository\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033424,
+  "taskId": "task-msj9x37o-k3b7gerj"
+}

@@ -1,0 +1,100 @@
+{
+  "id": "task-msj9x37x-owabv4pf",
+  "title": "T21 — Build the application shell and persistent navigation",
+  "description": "## Objective\n\nCrear navegación estable, selección explícita de proyecto y acceso permanente al dashboard.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T21.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033551,
+  "updatedAt": 1786127033551,
+  "position": 1786127033551,
+  "labelIds": [
+    "label-msj9x378-ofqe4hvu",
+    "feat"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x3gw-svcwwxec",
+      "text": "Crear tabs Overview, Trends, Projects y Workflow",
+      "done": false,
+      "createdAt": 1786127033552,
+      "updatedAt": 1786127033552
+    },
+    {
+      "id": "check-msj9x3gx-40e40eeq",
+      "text": "Añadir estado de tracking visible",
+      "done": false,
+      "createdAt": 1786127033553,
+      "updatedAt": 1786127033553
+    },
+    {
+      "id": "check-msj9x3gy-2ggcx8nj",
+      "text": "Añadir selector persistente de proyecto",
+      "done": false,
+      "createdAt": 1786127033554,
+      "updatedAt": 1786127033554
+    },
+    {
+      "id": "check-msj9x3gz-7fu0m7z1",
+      "text": "Añadir filtro de rango compartido donde corresponda",
+      "done": false,
+      "createdAt": 1786127033555,
+      "updatedAt": 1786127033555
+    },
+    {
+      "id": "check-msj9x3h0-cduz3kzl",
+      "text": "Añadir menú Export, Settings, Open Data y Reset",
+      "done": false,
+      "createdAt": 1786127033556,
+      "updatedAt": 1786127033556
+    },
+    {
+      "id": "check-msj9x3h1-qn0a8osg",
+      "text": "Permitir abrir dashboard sin editor activo",
+      "done": false,
+      "createdAt": 1786127033557,
+      "updatedAt": 1786127033557
+    },
+    {
+      "id": "check-msj9x3h2-16pfpcrq",
+      "text": "Conservar vista, proyecto y rango con getState/setState",
+      "done": false,
+      "createdAt": 1786127033558,
+      "updatedAt": 1786127033558
+    },
+    {
+      "id": "check-msj9x3h3-7acqurf0",
+      "text": "Evitar cambios inesperados cuando cambia el editor",
+      "done": false,
+      "createdAt": 1786127033559,
+      "updatedAt": 1786127033559
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3h4-k0ry72a5",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033560
+    },
+    {
+      "id": "rel-msj9x3h5-jibzmnc5",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37w-6mpqjf6x",
+      "createdAt": 1786127033561
+    },
+    {
+      "id": "rel-msj9x3h6-ymk1jcz3",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033562
+    }
+  ]
+}

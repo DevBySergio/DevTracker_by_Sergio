@@ -1,0 +1,11 @@
+{
+  "id": "activity-msj9x3ml-jzggcg2k",
+  "type": "task_created",
+  "message": "Created \"T30 — Add webview accessibility and visual regression tests\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033757,
+  "taskId": "task-msj9x386-phlzn1ks"
+}

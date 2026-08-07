@@ -1,0 +1,11 @@
+{
+  "id": "activity-msj9x3fx-sqgqgc5k",
+  "type": "task_created",
+  "message": "Created \"T18 — Implement lossless JSON and safe CSV exports\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033517,
+  "taskId": "task-msj9x37u-dedvppu8"
+}

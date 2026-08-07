@@ -1,0 +1,99 @@
+{
+  "id": "task-msj9x37n-yfekzejt",
+  "title": "T11 — Track diagnostic snapshots and deltas correctly",
+  "description": "## Objective\n\nConvertir diagnósticos en snapshots y deltas temporales sin almacenar mensajes ni contenido.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T11.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033397,
+  "updatedAt": 1786127033397,
+  "position": 1786127033397,
+  "labelIds": [
+    "feat",
+    "label-msj9x375-5ic0rlvn",
+    "bug"
+  ],
+  "priority": "medium",
+  "codeReference": {
+    "filePath": "src/extension.ts",
+    "lineStart": 359,
+    "lineEnd": 359
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3cm-q94d1xb3",
+      "text": "Agregar diagnósticos de todos los proyectos afectados en una sola pasada",
+      "done": false,
+      "createdAt": 1786127033398,
+      "updatedAt": 1786127033398
+    },
+    {
+      "id": "check-msj9x3cn-bgv7vf59",
+      "text": "Mantener snapshot actual por proyecto",
+      "done": false,
+      "createdAt": 1786127033399,
+      "updatedAt": 1786127033399
+    },
+    {
+      "id": "check-msj9x3co-cwy9ierx",
+      "text": "Calcular introduced, resolved y peak por severidad",
+      "done": false,
+      "createdAt": 1786127033400,
+      "updatedAt": 1786127033400
+    },
+    {
+      "id": "check-msj9x3cp-w73qzbzz",
+      "text": "No persistir mensajes, código ni contenido",
+      "done": false,
+      "createdAt": 1786127033401,
+      "updatedAt": 1786127033401
+    },
+    {
+      "id": "check-msj9x3cq-ygltn401",
+      "text": "Crear buckets temporales sin sumar snapshots",
+      "done": false,
+      "createdAt": 1786127033402,
+      "updatedAt": 1786127033402
+    },
+    {
+      "id": "check-msj9x3cr-hpp47w34",
+      "text": "Limitar frecuencia y volumen de snapshots",
+      "done": false,
+      "createdAt": 1786127033403,
+      "updatedAt": 1786127033403
+    },
+    {
+      "id": "check-msj9x3cs-gymhz95j",
+      "text": "Gestionar la eliminación completa de diagnósticos",
+      "done": false,
+      "createdAt": 1786127033404,
+      "updatedAt": 1786127033404
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3ct-nhwngyro",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033405
+    },
+    {
+      "id": "rel-msj9x3cu-3yp0gig0",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37f-qywco9h4",
+      "createdAt": 1786127033406
+    },
+    {
+      "id": "rel-msj9x3cv-vm2rqh5g",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37j-5tii1xj9",
+      "createdAt": 1786127033407
+    }
+  ]
+}

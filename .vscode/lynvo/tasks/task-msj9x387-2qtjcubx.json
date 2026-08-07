@@ -1,0 +1,106 @@
+{
+  "id": "task-msj9x387-2qtjcubx",
+  "title": "T31 — Add large-history performance fixtures and budgets",
+  "description": "## Objective\n\nConvertir límites de escalabilidad en presupuestos automatizados reproducibles.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T31.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033765,
+  "updatedAt": 1786127033765,
+  "position": 1786127033765,
+  "labelIds": [
+    "label-msj9x376-atwveebr",
+    "label-msj9x379-b0gg52nk"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x3mu-npj0wu7c",
+      "text": "Generar fixture de tres años y 50 proyectos",
+      "done": false,
+      "createdAt": 1786127033766,
+      "updatedAt": 1786127033766
+    },
+    {
+      "id": "check-msj9x3mv-18ltpf9q",
+      "text": "Medir activación",
+      "done": false,
+      "createdAt": 1786127033767,
+      "updatedAt": 1786127033767
+    },
+    {
+      "id": "check-msj9x3mw-0qsnwnx1",
+      "text": "Medir consultas de 7, 30, 90 días y all time",
+      "done": false,
+      "createdAt": 1786127033768,
+      "updatedAt": 1786127033768
+    },
+    {
+      "id": "check-msj9x3mx-i6r6f1ai",
+      "text": "Medir payload inicial y deltas",
+      "done": false,
+      "createdAt": 1786127033769,
+      "updatedAt": 1786127033769
+    },
+    {
+      "id": "check-msj9x3my-sycr8sl8",
+      "text": "Verificar ausencia de full-history updates",
+      "done": false,
+      "createdAt": 1786127033770,
+      "updatedAt": 1786127033770
+    },
+    {
+      "id": "check-msj9x3mz-0na2blh6",
+      "text": "Verificar ausencia de I/O síncrono en handlers",
+      "done": false,
+      "createdAt": 1786127033771,
+      "updatedAt": 1786127033771
+    },
+    {
+      "id": "check-msj9x3n0-6uux7w9n",
+      "text": "Añadir presupuestos como tests repetibles",
+      "done": false,
+      "createdAt": 1786127033772,
+      "updatedAt": 1786127033772
+    },
+    {
+      "id": "check-msj9x3n1-kufky9vt",
+      "text": "Documentar baseline y tolerancias",
+      "done": false,
+      "createdAt": 1786127033773,
+      "updatedAt": 1786127033773
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3n2-9whkioo8",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033774
+    },
+    {
+      "id": "rel-msj9x3n3-a36bf9nd",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37h-66qri1xn",
+      "createdAt": 1786127033775
+    },
+    {
+      "id": "rel-msj9x3n4-lq7qcjx4",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37r-2v07qqas",
+      "createdAt": 1786127033776
+    },
+    {
+      "id": "rel-msj9x3n5-27mms684",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37t-hjrr7puw",
+      "createdAt": 1786127033777
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "id": "task-msj9x38a-4pw9ni1p",
+  "title": "T34 — Package and verify DevTracker 2.0.0",
+  "description": "## Objective\n\nGenerar un VSIX 2.0.0 reproducible y validado sin publicar hasta autorización explícita.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T34.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033832,
+  "updatedAt": 1786127033832,
+  "position": 1786127033832,
+  "labelIds": [
+    "label-msj9x37b-glb1mzea",
+    "label-msj9x377-qxg3e5m5"
+  ],
+  "priority": "high",
+  "codeReference": {
+    "filePath": "package.json",
+    "lineStart": 1,
+    "lineEnd": 1
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3op-9i8kquz4",
+      "text": "Subir versión a 2.0.0",
+      "done": false,
+      "createdAt": 1786127033833,
+      "updatedAt": 1786127033833
+    },
+    {
+      "id": "check-msj9x3oq-hj4hxv4c",
+      "text": "Alinear package.json y lockfile",
+      "done": false,
+      "createdAt": 1786127033834,
+      "updatedAt": 1786127033834
+    },
+    {
+      "id": "check-msj9x3or-sf47s8zk",
+      "text": "Fijar VS Code mínimo en ^1.109.0",
+      "done": false,
+      "createdAt": 1786127033835,
+      "updatedAt": 1786127033835
+    },
+    {
+      "id": "check-msj9x3os-dhl1xu1t",
+      "text": "Ejecutar instalación limpia",
+      "done": false,
+      "createdAt": 1786127033836,
+      "updatedAt": 1786127033836
+    },
+    {
+      "id": "check-msj9x3ot-rbggih6p",
+      "text": "Ejecutar npm run validate",
+      "done": false,
+      "createdAt": 1786127033837,
+      "updatedAt": 1786127033837
+    },
+    {
+      "id": "check-msj9x3ou-4821wyga",
+      "text": "Crear VSIX de producción",
+      "done": false,
+      "createdAt": 1786127033838,
+      "updatedAt": 1786127033838
+    },
+    {
+      "id": "check-msj9x3ov-a14y3qrc",
+      "text": "Inspeccionar payload y manifiesto",
+      "done": false,
+      "createdAt": 1786127033839,
+      "updatedAt": 1786127033839
+    },
+    {
+      "id": "check-msj9x3ow-ez97zbrl",
+      "text": "Verificar licencias de terceros",
+      "done": false,
+      "createdAt": 1786127033840,
+      "updatedAt": 1786127033840
+    },
+    {
+      "id": "check-msj9x3ox-brqnipuz",
+      "text": "Escanear secretos y datos locales",
+      "done": false,
+      "createdAt": 1786127033841,
+      "updatedAt": 1786127033841
+    },
+    {
+      "id": "check-msj9x3oy-lwu2rd1h",
+      "text": "Instalar y realizar smoke test en VS Code",
+      "done": false,
+      "createdAt": 1786127033842,
+      "updatedAt": 1786127033842
+    },
+    {
+      "id": "check-msj9x3oz-48pe83rt",
+      "text": "No publicar sin autorización explícita",
+      "done": false,
+      "createdAt": 1786127033843,
+      "updatedAt": 1786127033843
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3p0-zrljdqok",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033844
+    },
+    {
+      "id": "rel-msj9x3p1-t29siy0h",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37g-ci6435gv",
+      "createdAt": 1786127033845
+    },
+    {
+      "id": "rel-msj9x3p2-4l6qytnu",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37u-dedvppu8",
+      "createdAt": 1786127033846
+    },
+    {
+      "id": "rel-msj9x3p3-ilavk18b",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033847
+    },
+    {
+      "id": "rel-msj9x3p4-tgdiq6k2",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x382-110rg3j5",
+      "createdAt": 1786127033848
+    },
+    {
+      "id": "rel-msj9x3p5-byggqp3b",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x383-hzb03uu7",
+      "createdAt": 1786127033849
+    },
+    {
+      "id": "rel-msj9x3p6-mabr7od6",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x384-t5cnmngh",
+      "createdAt": 1786127033850
+    },
+    {
+      "id": "rel-msj9x3p7-w48ijevo",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x385-7c8657ra",
+      "createdAt": 1786127033851
+    },
+    {
+      "id": "rel-msj9x3p8-vh60s6iy",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x386-phlzn1ks",
+      "createdAt": 1786127033852
+    },
+    {
+      "id": "rel-msj9x3p9-j8c0ob1a",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x387-2qtjcubx",
+      "createdAt": 1786127033853
+    },
+    {
+      "id": "rel-msj9x3pa-nrh0v8l6",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x388-tz8fih2o",
+      "createdAt": 1786127033854
+    },
+    {
+      "id": "rel-msj9x3pb-62f3s6d4",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x389-ckif110z",
+      "createdAt": 1786127033855
+    }
+  ]
+}

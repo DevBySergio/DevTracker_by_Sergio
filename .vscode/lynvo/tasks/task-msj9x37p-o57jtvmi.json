@@ -1,0 +1,92 @@
+{
+  "id": "task-msj9x37p-o57jtvmi",
+  "title": "T13 — Track concurrent debug sessions",
+  "description": "## Objective\n\nMedir debug correctamente con sesiones concurrentes sin persistir configuraciones sensibles.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T13.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033428,
+  "updatedAt": 1786127033428,
+  "position": 1786127033428,
+  "labelIds": [
+    "feat",
+    "bug",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "medium",
+  "codeReference": {
+    "filePath": "src/extension.ts",
+    "lineStart": 115,
+    "lineEnd": 115
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3dh-u0x18zcz",
+      "text": "Mantener un Set de sesiones por identificador",
+      "done": false,
+      "createdAt": 1786127033429,
+      "updatedAt": 1786127033429
+    },
+    {
+      "id": "check-msj9x3di-j0f1bjvf",
+      "text": "Asociar sesiones al workspace cuando sea posible",
+      "done": false,
+      "createdAt": 1786127033430,
+      "updatedAt": 1786127033430
+    },
+    {
+      "id": "check-msj9x3dj-hh9o6jtt",
+      "text": "Medir duración total de debug",
+      "done": false,
+      "createdAt": 1786127033431,
+      "updatedAt": 1786127033431
+    },
+    {
+      "id": "check-msj9x3dk-ik3yhr0e",
+      "text": "Medir por separado actividad humana durante debug",
+      "done": false,
+      "createdAt": 1786127033432,
+      "updatedAt": 1786127033432
+    },
+    {
+      "id": "check-msj9x3dl-ce5bf6pz",
+      "text": "Manejar sesiones concurrentes y anidadas",
+      "done": false,
+      "createdAt": 1786127033433,
+      "updatedAt": 1786127033433
+    },
+    {
+      "id": "check-msj9x3dm-ac3kg42e",
+      "text": "No guardar configuración ni argumentos de lanzamiento",
+      "done": false,
+      "createdAt": 1786127033434,
+      "updatedAt": 1786127033434
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3dn-kff7kqm9",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033435
+    },
+    {
+      "id": "rel-msj9x3do-p33dk2cl",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37k-zkyrq7to",
+      "createdAt": 1786127033436
+    },
+    {
+      "id": "rel-msj9x3dp-2w4jnx4f",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033437
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "activity-msj9x3l9-nck3disd",
+  "type": "task_created",
+  "message": "Created \"T28 — Add migration, query and metric-contract tests\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033709,
+  "taskId": "task-msj9x384-t5cnmngh"
+}

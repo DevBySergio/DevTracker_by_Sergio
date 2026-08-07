@@ -1,0 +1,15 @@
+{
+  "id": "activity-msj9x3pn-zr4pg9wp",
+  "type": "relation_added",
+  "message": "Added blocked-by relation from \"T34\" to \"T32\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033867,
+  "taskId": "task-msj9x38a-4pw9ni1p",
+  "targetTaskId": "task-msj9x388-tz8fih2o",
+  "metadata": {
+    "relationType": "blocked-by"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "id": "task-msj9x37u-dedvppu8",
+  "title": "T18 — Implement lossless JSON and safe CSV exports",
+  "description": "## Objective\n\nOfrecer backup completo y resumen tabular seguro con límites y unidades claramente comunicados.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T18.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033505,
+  "updatedAt": 1786127033505,
+  "position": 1786127033505,
+  "labelIds": [
+    "feat",
+    "label-msj9x377-qxg3e5m5",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "medium",
+  "codeReference": {
+    "filePath": "src/DataManager.ts",
+    "lineStart": 756,
+    "lineEnd": 756
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3fm-m8ww84p4",
+      "text": "Añadir exportación JSON completa y versionada",
+      "done": false,
+      "createdAt": 1786127033506,
+      "updatedAt": 1786127033506
+    },
+    {
+      "id": "check-msj9x3fn-h6quv0fj",
+      "text": "Redefinir CSV como resumen diario",
+      "done": false,
+      "createdAt": 1786127033507,
+      "updatedAt": 1786127033507
+    },
+    {
+      "id": "check-msj9x3fo-c878bmdi",
+      "text": "Ordenar proyectos y fechas",
+      "done": false,
+      "createdAt": 1786127033508,
+      "updatedAt": 1786127033508
+    },
+    {
+      "id": "check-msj9x3fp-z53u7ook",
+      "text": "Incluir nombres y unidades inequívocas",
+      "done": false,
+      "createdAt": 1786127033509,
+      "updatedAt": 1786127033509
+    },
+    {
+      "id": "check-msj9x3fq-8ac1np1y",
+      "text": "Añadir UTF-8 BOM",
+      "done": false,
+      "createdAt": 1786127033510,
+      "updatedAt": 1786127033510
+    },
+    {
+      "id": "check-msj9x3fr-cd3cm04y",
+      "text": "Neutralizar fórmulas de spreadsheet",
+      "done": false,
+      "createdAt": 1786127033511,
+      "updatedAt": 1786127033511
+    },
+    {
+      "id": "check-msj9x3fs-zr4ezxxz",
+      "text": "Permitir exportar el rango o todo el historial",
+      "done": false,
+      "createdAt": 1786127033512,
+      "updatedAt": 1786127033512
+    },
+    {
+      "id": "check-msj9x3ft-m8cj51ks",
+      "text": "Mantener alias compatible para devtracker.exportCSV",
+      "done": false,
+      "createdAt": 1786127033513,
+      "updatedAt": 1786127033513
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3fu-i0me0wq4",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033514
+    },
+    {
+      "id": "rel-msj9x3fv-n1lvudcx",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37f-qywco9h4",
+      "createdAt": 1786127033515
+    },
+    {
+      "id": "rel-msj9x3fw-a7emq7h9",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37r-2v07qqas",
+      "createdAt": 1786127033516
+    }
+  ]
+}

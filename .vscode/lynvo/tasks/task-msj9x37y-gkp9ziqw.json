@@ -1,0 +1,112 @@
+{
+  "id": "task-msj9x37y-gkp9ziqw",
+  "title": "T22 — Implement the Overview view",
+  "description": "## Objective\n\nCrear una vista diaria clara que priorice tiempo activo, objetivo y contexto sin saturación.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T22.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033567,
+  "updatedAt": 1786127033567,
+  "position": 1786127033567,
+  "labelIds": [
+    "label-msj9x378-ofqe4hvu",
+    "feat"
+  ],
+  "priority": "high",
+  "checklist": [
+    {
+      "id": "check-msj9x3hc-n5tcrgb1",
+      "text": "Crear hero de active time y objetivo diario",
+      "done": false,
+      "createdAt": 1786127033568,
+      "updatedAt": 1786127033568
+    },
+    {
+      "id": "check-msj9x3hd-tlt5m1pv",
+      "text": "Añadir timeline de 24 horas con buckets de 15 minutos",
+      "done": false,
+      "createdAt": 1786127033569,
+      "updatedAt": 1786127033569
+    },
+    {
+      "id": "check-msj9x3he-wppmcte4",
+      "text": "Mostrar Focus Profile explicable",
+      "done": false,
+      "createdAt": 1786127033570,
+      "updatedAt": 1786127033570
+    },
+    {
+      "id": "check-msj9x3hf-krc4wic5",
+      "text": "Mostrar distribución por proyecto y lenguaje",
+      "done": false,
+      "createdAt": 1786127033571,
+      "updatedAt": 1786127033571
+    },
+    {
+      "id": "check-msj9x3hg-zhto055f",
+      "text": "Resumir archivos únicos y bloques",
+      "done": false,
+      "createdAt": 1786127033572,
+      "updatedAt": 1786127033572
+    },
+    {
+      "id": "check-msj9x3hh-wr0qpgps",
+      "text": "Limitar a tres métricas primarias",
+      "done": false,
+      "createdAt": 1786127033573,
+      "updatedAt": 1786127033573
+    },
+    {
+      "id": "check-msj9x3hi-sylh4xed",
+      "text": "Mostrar freshness y estado de captura",
+      "done": false,
+      "createdAt": 1786127033574,
+      "updatedAt": 1786127033574
+    },
+    {
+      "id": "check-msj9x3hj-eb6vqyo4",
+      "text": "Crear empty state para un usuario nuevo",
+      "done": false,
+      "createdAt": 1786127033575,
+      "updatedAt": 1786127033575
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3hk-b7cb4l6t",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033576
+    },
+    {
+      "id": "rel-msj9x3hl-0i15f4q3",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37s-g1nkw3gb",
+      "createdAt": 1786127033577
+    },
+    {
+      "id": "rel-msj9x3hm-wugyoa9d",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37t-hjrr7puw",
+      "createdAt": 1786127033578
+    },
+    {
+      "id": "rel-msj9x3hn-pl96ert2",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37w-6mpqjf6x",
+      "createdAt": 1786127033579
+    },
+    {
+      "id": "rel-msj9x3ho-ni6hpw87",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37x-owabv4pf",
+      "createdAt": 1786127033580
+    }
+  ]
+}

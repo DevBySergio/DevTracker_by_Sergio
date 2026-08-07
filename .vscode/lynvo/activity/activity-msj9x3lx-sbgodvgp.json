@@ -1,0 +1,11 @@
+{
+  "id": "activity-msj9x3lx-sbgodvgp",
+  "type": "task_created",
+  "message": "Created \"T29 — Add VS Code Extension Host integration tests\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033733,
+  "taskId": "task-msj9x385-7c8657ra"
+}

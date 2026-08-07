@@ -1,0 +1,80 @@
+{
+  "id": "task-msj9x37q-7v1kkm1j",
+  "title": "T14 — Add opt-in VS Code Tasks tracking",
+  "description": "## Objective\n\nAñadir señales de build y test mediante APIs públicas sin inspeccionar terminales ni comandos.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T14.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033442,
+  "updatedAt": 1786127033442,
+  "position": 1786127033442,
+  "labelIds": [
+    "feat",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "medium",
+  "checklist": [
+    {
+      "id": "check-msj9x3dv-lzc8cwtb",
+      "text": "Escuchar inicio, finalización y exit code mediante APIs públicas",
+      "done": false,
+      "createdAt": 1786127033443,
+      "updatedAt": 1786127033443
+    },
+    {
+      "id": "check-msj9x3dw-90wbi69x",
+      "text": "Guardar únicamente nombre configurado, duración y resultado",
+      "done": false,
+      "createdAt": 1786127033444,
+      "updatedAt": 1786127033444
+    },
+    {
+      "id": "check-msj9x3dx-yyyveiyo",
+      "text": "Permitir marcar tareas concretas como build o test",
+      "done": false,
+      "createdAt": 1786127033445,
+      "updatedAt": 1786127033445
+    },
+    {
+      "id": "check-msj9x3dy-nbxfd24n",
+      "text": "No leer terminal, stdout, comandos ni variables",
+      "done": false,
+      "createdAt": 1786127033446,
+      "updatedAt": 1786127033446
+    },
+    {
+      "id": "check-msj9x3dz-c6bbi3a5",
+      "text": "Mostrar tasa de éxito y duración mediana",
+      "done": false,
+      "createdAt": 1786127033447,
+      "updatedAt": 1786127033447
+    },
+    {
+      "id": "check-msj9x3e0-rm1l1bjo",
+      "text": "Documentar limitaciones y privacidad",
+      "done": false,
+      "createdAt": 1786127033448,
+      "updatedAt": 1786127033448
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3e1-ght4qlvk",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033449
+    },
+    {
+      "id": "rel-msj9x3e2-rg04ltpy",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033450
+    }
+  ]
+}

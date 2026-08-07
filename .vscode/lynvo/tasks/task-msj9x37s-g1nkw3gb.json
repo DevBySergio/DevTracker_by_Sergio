@@ -1,0 +1,93 @@
+{
+  "id": "task-msj9x37s-g1nkw3gb",
+  "title": "T16 — Implement goals, baselines and personal insights",
+  "description": "## Objective\n\nCrear insights personales transparentes sin convertir volumen de código en puntuación de productividad.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T16.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033476,
+  "updatedAt": 1786127033476,
+  "position": 1786127033476,
+  "labelIds": [
+    "feat",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "medium",
+  "checklist": [
+    {
+      "id": "check-msj9x3et-4asgjeot",
+      "text": "Mantener objetivo diario",
+      "done": false,
+      "createdAt": 1786127033477,
+      "updatedAt": 1786127033477
+    },
+    {
+      "id": "check-msj9x3eu-1i4jn3zb",
+      "text": "Añadir objetivo semanal opcional",
+      "done": false,
+      "createdAt": 1786127033478,
+      "updatedAt": 1786127033478
+    },
+    {
+      "id": "check-msj9x3ev-tf0eslz5",
+      "text": "Calcular cumplimiento, rachas y días activos",
+      "done": false,
+      "createdAt": 1786127033479,
+      "updatedAt": 1786127033479
+    },
+    {
+      "id": "check-msj9x3ew-ebhbjmn6",
+      "text": "Comparar con la mediana de las cuatro semanas anteriores",
+      "done": false,
+      "createdAt": 1786127033480,
+      "updatedAt": 1786127033480
+    },
+    {
+      "id": "check-msj9x3ex-hrwvnyav",
+      "text": "Crear Focus Profile sin score opaco",
+      "done": false,
+      "createdAt": 1786127033481,
+      "updatedAt": 1786127033481
+    },
+    {
+      "id": "check-msj9x3ey-uatcyrbj",
+      "text": "Mostrar fragmentación y distribución de tiempo de forma neutral",
+      "done": false,
+      "createdAt": 1786127033482,
+      "updatedAt": 1786127033482
+    },
+    {
+      "id": "check-msj9x3ez-x2dnqyfr",
+      "text": "Explicar fórmula y precisión de cada insight",
+      "done": false,
+      "createdAt": 1786127033483,
+      "updatedAt": 1786127033483
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3f0-hlm8812s",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033484
+    },
+    {
+      "id": "rel-msj9x3f1-vu0xhm1b",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37r-2v07qqas",
+      "createdAt": 1786127033485
+    },
+    {
+      "id": "rel-msj9x3f2-mr24yjsc",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37d-gmtmt7lu",
+      "createdAt": 1786127033486
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "id": "task-msj9x37z-2ign9osb",
+  "title": "T23 — Implement the Trends view",
+  "description": "## Objective\n\nPermitir explorar patrones temporales y comparaciones justas con visualizaciones accesibles.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T23.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033587,
+  "updatedAt": 1786127033587,
+  "position": 1786127033587,
+  "labelIds": [
+    "label-msj9x378-ofqe4hvu",
+    "feat"
+  ],
+  "priority": "medium",
+  "checklist": [
+    {
+      "id": "check-msj9x3hw-68ihjdap",
+      "text": "Añadir rangos 7, 30, 90 días, año y personalizado",
+      "done": false,
+      "createdAt": 1786127033588,
+      "updatedAt": 1786127033588
+    },
+    {
+      "id": "check-msj9x3hx-hluc8dl4",
+      "text": "Crear serie diaria con días vacíos",
+      "done": false,
+      "createdAt": 1786127033589,
+      "updatedAt": 1786127033589
+    },
+    {
+      "id": "check-msj9x3hy-hpr6bvog",
+      "text": "Comparar con periodo equivalente",
+      "done": false,
+      "createdAt": 1786127033590,
+      "updatedAt": 1786127033590
+    },
+    {
+      "id": "check-msj9x3hz-dx3svr4j",
+      "text": "Crear heatmap accesible",
+      "done": false,
+      "createdAt": 1786127033591,
+      "updatedAt": 1786127033591
+    },
+    {
+      "id": "check-msj9x3i0-cx998z90",
+      "text": "Mostrar tendencia de flow blocks y context switches por hora",
+      "done": false,
+      "createdAt": 1786127033592,
+      "updatedAt": 1786127033592
+    },
+    {
+      "id": "check-msj9x3i1-zufeb586",
+      "text": "Mostrar consistencia, objetivos y rachas",
+      "done": false,
+      "createdAt": 1786127033593,
+      "updatedAt": 1786127033593
+    },
+    {
+      "id": "check-msj9x3i2-sb0ivft6",
+      "text": "Mostrar evolución de lenguajes",
+      "done": false,
+      "createdAt": 1786127033594,
+      "updatedAt": 1786127033594
+    },
+    {
+      "id": "check-msj9x3i3-fuz8wxbr",
+      "text": "Añadir tabla alternativa para cada gráfico",
+      "done": false,
+      "createdAt": 1786127033595,
+      "updatedAt": 1786127033595
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3i4-epaltaqw",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033596
+    },
+    {
+      "id": "rel-msj9x3i5-hkwzq58k",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37r-2v07qqas",
+      "createdAt": 1786127033597
+    },
+    {
+      "id": "rel-msj9x3i6-cl4s1uoj",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37s-g1nkw3gb",
+      "createdAt": 1786127033598
+    },
+    {
+      "id": "rel-msj9x3i7-8ckfpti5",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37t-hjrr7puw",
+      "createdAt": 1786127033599
+    },
+    {
+      "id": "rel-msj9x3i8-wxuu19lo",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37w-6mpqjf6x",
+      "createdAt": 1786127033600
+    }
+  ]
+}

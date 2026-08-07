@@ -1,0 +1,105 @@
+{
+  "id": "task-msj9x37o-k3b7gerj",
+  "title": "T12 — Build an opt-in Git integration per repository",
+  "description": "## Objective\n\nAislar estado Git por repositorio y recopilar señales locales solo tras consentimiento explícito.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T12.",
+  "status": "backlog",
+  "createdBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "lastModifiedBy": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127033412,
+  "updatedAt": 1786127033412,
+  "position": 1786127033412,
+  "labelIds": [
+    "feat",
+    "label-msj9x375-5ic0rlvn"
+  ],
+  "priority": "medium",
+  "codeReference": {
+    "filePath": "src/extension.ts",
+    "lineStart": 311,
+    "lineEnd": 311
+  },
+  "checklist": [
+    {
+      "id": "check-msj9x3d1-0xrngg4i",
+      "text": "Eliminar estado Git global",
+      "done": false,
+      "createdAt": 1786127033413,
+      "updatedAt": 1786127033413
+    },
+    {
+      "id": "check-msj9x3d2-xrdk38xw",
+      "text": "Crear estado independiente por repository URI",
+      "done": false,
+      "createdAt": 1786127033414,
+      "updatedAt": 1786127033414
+    },
+    {
+      "id": "check-msj9x3d3-fcdlldzq",
+      "text": "Seleccionar el repositorio contenedor más específico",
+      "done": false,
+      "createdAt": 1786127033415,
+      "updatedAt": 1786127033415
+    },
+    {
+      "id": "check-msj9x3d4-6qr587vj",
+      "text": "Contar archivos dirty únicos",
+      "done": false,
+      "createdAt": 1786127033416,
+      "updatedAt": 1786127033416
+    },
+    {
+      "id": "check-msj9x3d5-1oz5ti92",
+      "text": "Suscribirse a cambios en lugar de hacer polling continuo",
+      "done": false,
+      "createdAt": 1786127033417,
+      "updatedAt": 1786127033417
+    },
+    {
+      "id": "check-msj9x3d6-1m8z4sv6",
+      "text": "Descartar respuestas asíncronas obsoletas",
+      "done": false,
+      "createdAt": 1786127033418,
+      "updatedAt": 1786127033418
+    },
+    {
+      "id": "check-msj9x3d7-oj0o10dz",
+      "text": "Registrar cambios de rama y commits detectados",
+      "done": false,
+      "createdAt": 1786127033419,
+      "updatedAt": 1786127033419
+    },
+    {
+      "id": "check-msj9x3d8-kbhyxh7c",
+      "text": "Mostrar estados disabled, unavailable y no repository",
+      "done": false,
+      "createdAt": 1786127033420,
+      "updatedAt": 1786127033420
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel-msj9x3d9-f52pct1k",
+      "type": "related",
+      "targetTaskId": "task-msj9x37c-3qab7gb8",
+      "createdAt": 1786127033421
+    },
+    {
+      "id": "rel-msj9x3da-psrrcogc",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37j-5tii1xj9",
+      "createdAt": 1786127033422
+    },
+    {
+      "id": "rel-msj9x3db-c70e7146",
+      "type": "blocked-by",
+      "targetTaskId": "task-msj9x37v-g89au2qf",
+      "createdAt": 1786127033423
+    }
+  ]
+}
