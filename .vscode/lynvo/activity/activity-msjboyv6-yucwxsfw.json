@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjboyv6-yucwxsfw",
+  "type": "task_moved",
+  "message": "Moved \"T05 — Replace blocking persistence with asynchronous per-session writes\" from Backlog to In Progress",
+  "createdAt": 1786130013570,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37h-66qri1xn",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
