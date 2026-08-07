@@ -2,7 +2,7 @@
   "id": "task-msj9x37n-yfekzejt",
   "title": "T11 — Track diagnostic snapshots and deltas correctly",
   "description": "## Objective\n\nTurn diagnostics into meaningful temporal snapshots and deltas without storing messages or source content.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T11.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033397,
-  "updatedAt": 1786134248068,
+  "updatedAt": 1786135469520,
   "position": 1786127033397,
   "labelIds": [
     "feat",
@@ -29,51 +29,51 @@
     {
       "id": "check-msj9x3cm-q94d1xb3",
       "text": "Aggregate diagnostics for every affected project in one pass",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033398,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469511
     },
     {
       "id": "check-msj9x3cn-bgv7vf59",
       "text": "Maintain the current snapshot for each project",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033399,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469512
     },
     {
       "id": "check-msj9x3co-cwy9ierx",
       "text": "Calculate introduced, resolved, and peak values by severity",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033400,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469513
     },
     {
       "id": "check-msj9x3cp-w73qzbzz",
       "text": "Do not persist messages, code, or content",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033401,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469514
     },
     {
       "id": "check-msj9x3cq-ygltn401",
       "text": "Create temporal buckets without summing snapshots",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033402,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469515
     },
     {
       "id": "check-msj9x3cr-hpp47w34",
       "text": "Limit snapshot frequency and volume",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033403,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469516
     },
     {
       "id": "check-msj9x3cs-gymhz95j",
       "text": "Handle complete diagnostic removal",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033404,
-      "updatedAt": 1786127326644
+      "updatedAt": 1786135469517
     }
   ],
   "relations": [

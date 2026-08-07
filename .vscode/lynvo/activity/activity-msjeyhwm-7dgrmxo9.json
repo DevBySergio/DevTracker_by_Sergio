@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjeyhwm-7dgrmxo9",
+  "type": "task_moved",
+  "message": "Moved \"T11 — Track diagnostic snapshots and deltas correctly\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786135496998,
+  "taskId": "task-msj9x37n-yfekzejt",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

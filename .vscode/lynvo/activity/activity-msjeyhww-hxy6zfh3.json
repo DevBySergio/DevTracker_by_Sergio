@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjeyhww-hxy6zfh3",
+  "type": "task_moved",
+  "message": "Moved \"T19 — Add privacy, tracking and data-management controls\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786135497008,
+  "taskId": "task-msj9x37v-g89au2qf",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
