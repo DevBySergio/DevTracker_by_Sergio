@@ -2,7 +2,7 @@
   "id": "task-msj9x37r-2v07qqas",
   "title": "T15 — Build the range-query and rollup engine",
   "description": "## Objective\n\nMove aggregation out of the webview and provide fast, complete, typed range queries.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T15.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033454,
-  "updatedAt": 1786127326652,
+  "updatedAt": 1786135639449,
   "position": 1786127033454,
   "labelIds": [
     "label-msj9x374-pzsygu7i",
