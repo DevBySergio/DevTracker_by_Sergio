@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjfdu26-on5z4dgy",
+  "type": "task_moved",
+  "message": "Moved \"T18 — Implement lossless JSON and safe CSV exports\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786136212590,
+  "taskId": "task-msj9x37u-dedvppu8",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

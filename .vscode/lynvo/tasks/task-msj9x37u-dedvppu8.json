@@ -2,7 +2,7 @@
   "id": "task-msj9x37u-dedvppu8",
   "title": "T18 — Implement lossless JSON and safe CSV exports",
   "description": "## Objective\n\nProvide a complete backup and a safe tabular summary with clearly communicated limits and units.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T18.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033505,
-  "updatedAt": 1786127326658,
+  "updatedAt": 1786136212590,
   "position": 1786127033505,
   "labelIds": [
     "feat",

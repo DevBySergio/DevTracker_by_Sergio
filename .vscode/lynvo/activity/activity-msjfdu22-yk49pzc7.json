@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjfdu22-yk49pzc7",
+  "type": "task_moved",
+  "message": "Moved \"T16 — Implement goals, baselines and personal insights\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786136212586,
+  "taskId": "task-msj9x37s-g1nkw3gb",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjfcahs-7g7x1hgd",
+  "type": "task_moved",
+  "message": "Moved \"T15 — Build the range-query and rollup engine\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786136140576,
+  "taskId": "task-msj9x37r-2v07qqas",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjfdu25-zfo9u9ig",
+  "type": "task_moved",
+  "message": "Moved \"T17 — Replace full-history webview updates with a typed protocol\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786136212589,
+  "taskId": "task-msj9x37t-hjrr7puw",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
