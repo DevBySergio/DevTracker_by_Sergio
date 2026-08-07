@@ -1,9 +1,9 @@
 {
   "branch": "lynvo-sync",
   "status": "syncing",
-  "pendingChanges": false,
-  "lastSyncAt": null,
-  "lastRemoteCommit": null,
-  "message": "Synchronizing Lynvo board",
-  "updatedAt": 1786126636677
+  "pendingChanges": true,
+  "lastSyncAt": 1786126639390,
+  "lastRemoteCommit": "ecba11b05466a80fad89c9a556bf54c925ffd430",
+  "message": "Sync merge completed",
+  "updatedAt": 1786126756680
 }
