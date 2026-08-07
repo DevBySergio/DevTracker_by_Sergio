@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjdh3x9-v03vn07a",
+  "type": "task_moved",
+  "message": "Moved \"T06 — Deduplicate activity across VS Code windows\" from Backlog to In Progress",
+  "createdAt": 1786133006109,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37i-n3rlb67m",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

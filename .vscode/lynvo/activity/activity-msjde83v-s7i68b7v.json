@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjde83v-s7i68b7v",
+  "type": "task_moved",
+  "message": "Moved \"T04 — Migrate v1 data with backup and corruption recovery\" from In Progress to Done",
+  "createdAt": 1786132871563,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37g-ci6435gv",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

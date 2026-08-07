@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjde83n-9sbvvhs6",
+  "type": "checklist_updated",
+  "message": "Completed checklist item in \"T04 — Migrate v1 data with backup and corruption recovery\"",
+  "createdAt": 1786132871555,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37g-ci6435gv",
+  "metadata": {
+    "checklistItemId": "check-msj9x39x-k099chxl",
+    "done": true
+  }
+}
