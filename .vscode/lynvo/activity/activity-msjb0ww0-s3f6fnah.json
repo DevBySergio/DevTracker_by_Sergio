@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjb0ww0-s3f6fnah",
+  "type": "checklist_updated",
+  "message": "Completed \"Use ExtensionContext.globalStorageUri\" in \"T03 — Implement schema v2 and session-based storage layout\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128891264,
+  "taskId": "task-msj9x37f-qywco9h4"
+}

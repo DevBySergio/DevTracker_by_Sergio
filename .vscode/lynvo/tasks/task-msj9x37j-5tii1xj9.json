@@ -2,7 +2,7 @@
   "id": "task-msj9x37j-5tii1xj9",
   "title": "T07 — Implement URI-safe project and document identity",
   "description": "## Objective\n\nPrevent path collisions and support multi-root, remote, and same-named projects correctly.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T07.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033343,
-  "updatedAt": 1786127326636,
+  "updatedAt": 1786128891268,
   "position": 1786127033343,
   "labelIds": [
     "bug",

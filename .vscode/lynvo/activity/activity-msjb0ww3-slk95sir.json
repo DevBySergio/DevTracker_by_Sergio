@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjb0ww3-slk95sir",
+  "type": "task_moved",
+  "message": "Moved \"T03 — Implement schema v2 and session-based storage layout\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128891267,
+  "taskId": "task-msj9x37f-qywco9h4",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

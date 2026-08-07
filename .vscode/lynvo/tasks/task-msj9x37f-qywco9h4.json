@@ -2,7 +2,7 @@
   "id": "task-msj9x37f-qywco9h4",
   "title": "T03 — Implement schema v2 and session-based storage layout",
   "description": "## Objective\n\nIntroduce a versioned session-based schema that supports concurrency, explicit migrations, and scalable queries.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T03.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033287,
-  "updatedAt": 1786128492963,
+  "updatedAt": 1786128891267,
   "position": 1786127033287,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
@@ -28,51 +28,51 @@
     {
       "id": "check-msj9x39k-7dl2vsw8",
       "text": "Add schemaVersion 2",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033288,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891260
     },
     {
       "id": "check-msj9x39l-qmzr5xee",
       "text": "Create ProjectIdentity, TrackingSession, ActivityInterval, and DailyRollup",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033289,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891261
     },
     {
       "id": "check-msj9x39m-oxn8uvf8",
       "text": "Store an independent session for each extension host",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033290,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891262
     },
     {
       "id": "check-msj9x39n-kkrrf4ux",
       "text": "Separate metadata, active sessions, and rollups",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033291,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891263
     },
     {
       "id": "check-msj9x39o-jh8wg170",
       "text": "Use ExtensionContext.globalStorageUri",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033292,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891264
     },
     {
       "id": "check-msj9x39p-1eijw335",
       "text": "Define strict validation for every record",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033293,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891265
     },
     {
       "id": "check-msj9x39q-k75u26tw",
       "text": "Add restrictive permissions on supported platforms",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033294,
-      "updatedAt": 1786127326628
+      "updatedAt": 1786128891266
     }
   ],
   "relations": [

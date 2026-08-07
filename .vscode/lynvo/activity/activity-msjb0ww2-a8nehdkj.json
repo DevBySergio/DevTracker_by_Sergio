@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjb0ww2-a8nehdkj",
+  "type": "checklist_updated",
+  "message": "Completed \"Add restrictive permissions on supported platforms\" in \"T03 — Implement schema v2 and session-based storage layout\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128891266,
+  "taskId": "task-msj9x37f-qywco9h4"
+}

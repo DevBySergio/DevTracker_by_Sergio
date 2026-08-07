@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjb0ww4-30fytzff",
+  "type": "task_moved",
+  "message": "Moved \"T07 — Implement URI-safe project and document identity\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786128891268,
+  "taskId": "task-msj9x37j-5tii1xj9",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
