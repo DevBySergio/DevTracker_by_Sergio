@@ -457,7 +457,7 @@
     "localValue": "in-progress",
     "remoteValue": "backlog",
     "createdAt": 1786134362580,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x37v-g89au2qf-status": {
     "id": "task-task-msj9x37v-g89au2qf-status",
@@ -467,6 +467,6 @@
     "localValue": "in-progress",
     "remoteValue": "backlog",
     "createdAt": 1786134362580,
-    "resolved": false
+    "resolved": true
   }
 }
