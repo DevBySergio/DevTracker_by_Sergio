@@ -2,7 +2,7 @@
   "id": "task-msj9x37d-gmtmt7lu",
   "title": "T01 — Define the DevTracker v2 metric contract",
   "description": "## Objective\n\nCreate the normative metric contract so approximations are never presented as exact measurements of productivity or quality.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T01.",
-  "status": "todo",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033265,
-  "updatedAt": 1786127326624,
+  "updatedAt": 1786127617729,
   "position": 1786127033265,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",

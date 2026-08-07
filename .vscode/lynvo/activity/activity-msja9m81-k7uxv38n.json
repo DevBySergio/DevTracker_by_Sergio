@@ -1,0 +1,15 @@
+{
+  "id": "activity-msja9m81-k7uxv38n",
+  "type": "task_moved",
+  "message": "Moved \"T01 — Define the DevTracker v2 metric contract\" from To Do to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127617729,
+  "taskId": "task-msj9x37d-gmtmt7lu",
+  "metadata": {
+    "from": "todo",
+    "to": "in-progress"
+  }
+}

@@ -348,5 +348,15 @@
     "remoteValue": "## Objective\n\nGenerar un VSIX 2.0.0 reproducible y validado sin publicar hasta autorización explícita.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T34.",
     "createdAt": 1786127361108,
     "resolved": true
+  },
+  "task-task-msj9x37d-gmtmt7lu-status": {
+    "id": "task-task-msj9x37d-gmtmt7lu-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37d-gmtmt7lu",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "todo",
+    "createdAt": 1786127720073,
+    "resolved": false
   }
 }
