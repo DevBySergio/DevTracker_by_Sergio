@@ -354,9 +354,19 @@
     "entityType": "task",
     "entityId": "task-msj9x37d-gmtmt7lu",
     "field": "status",
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786128080173,
+    "resolved": false
+  },
+  "task-task-msj9x37e-tf45k1h7-status": {
+    "id": "task-task-msj9x37e-tf45k1h7-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37e-tf45k1h7",
+    "field": "status",
     "localValue": "in-progress",
-    "remoteValue": "todo",
-    "createdAt": 1786127720073,
+    "remoteValue": "backlog",
+    "createdAt": 1786128080173,
     "resolved": false
   }
 }

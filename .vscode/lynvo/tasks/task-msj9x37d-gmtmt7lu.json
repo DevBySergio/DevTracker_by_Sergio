@@ -2,7 +2,7 @@
   "id": "task-msj9x37d-gmtmt7lu",
   "title": "T01 — Define the DevTracker v2 metric contract",
   "description": "## Objective\n\nCreate the normative metric contract so approximations are never presented as exact measurements of productivity or quality.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T01.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033265,
-  "updatedAt": 1786127617729,
+  "updatedAt": 1786127940736,
   "position": 1786127033265,
   "labelIds": [
     "label-msj9x375-5ic0rlvn",
@@ -29,44 +29,44 @@
     {
       "id": "check-msj9x38y-y1rjfdup",
       "text": "Document the name, unit, scope, source, and precision of every metric",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033266,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940730
     },
     {
       "id": "check-msj9x38z-qf8lv4qw",
       "text": "Rename keystrokes, pasteEvents, filesTouched, and line churn",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033267,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940731
     },
     {
       "id": "check-msj9x390-d4y5gahb",
       "text": "Define active time, inactivity, flow block, and context switch",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033268,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940732
     },
     {
       "id": "check-msj9x391-lavgh5y6",
       "text": "Remove unsupported interpretations of productivity or quality",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033269,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940733
     },
     {
       "id": "check-msj9x392-tqv9s1kp",
       "text": "Define which legacy metrics will be marked as approximate",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033270,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940734
     },
     {
       "id": "check-msj9x393-ormhiwnx",
       "text": "Create numerical examples and acceptance criteria",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033271,
-      "updatedAt": 1786127326624
+      "updatedAt": 1786127940735
     }
   ],
   "relations": [

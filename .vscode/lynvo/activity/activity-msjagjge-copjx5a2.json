@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjagjge-copjx5a2",
+  "type": "checklist_updated",
+  "message": "Completed \"Define which legacy metrics will be marked as approximate\" in \"T01 — Define the DevTracker v2 metric contract\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127940734,
+  "taskId": "task-msj9x37d-gmtmt7lu"
+}

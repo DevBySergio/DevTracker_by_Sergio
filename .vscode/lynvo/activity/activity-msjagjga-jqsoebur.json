@@ -1,0 +1,11 @@
+{
+  "id": "activity-msjagjga-jqsoebur",
+  "type": "checklist_updated",
+  "message": "Completed \"Document the name, unit, scope, source, and precision of every metric\" in \"T01 — Define the DevTracker v2 metric contract\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127940730,
+  "taskId": "task-msj9x37d-gmtmt7lu"
+}

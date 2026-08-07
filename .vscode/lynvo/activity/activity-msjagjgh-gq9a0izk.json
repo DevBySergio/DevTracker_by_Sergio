@@ -1,0 +1,15 @@
+{
+  "id": "activity-msjagjgh-gq9a0izk",
+  "type": "task_moved",
+  "message": "Moved \"T02 — Create typed domain boundaries and modular architecture\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786127940737,
+  "taskId": "task-msj9x37e-tf45k1h7",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
