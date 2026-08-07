@@ -434,19 +434,19 @@
     "entityType": "task",
     "entityId": "task-msj9x37i-n3rlb67m",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786133043542,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786134243935,
+    "resolved": false
   },
   "task-task-msj9x37m-d4gueuhr-status": {
     "id": "task-task-msj9x37m-d4gueuhr-status",
     "entityType": "task",
     "entityId": "task-msj9x37m-d4gueuhr",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786133043542,
-    "resolved": true
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786134243935,
+    "resolved": false
   }
 }

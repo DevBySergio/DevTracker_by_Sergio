@@ -1,0 +1,15 @@
+{
+  "id": "activity-msje5j55-400au0c9",
+  "type": "task_moved",
+  "message": "Moved \"T10 — Replace misleading edit metrics\" from In Progress to Done",
+  "createdAt": 1786134145577,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37m-d4gueuhr",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

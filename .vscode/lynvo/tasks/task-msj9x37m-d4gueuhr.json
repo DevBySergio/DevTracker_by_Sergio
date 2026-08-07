@@ -2,7 +2,7 @@
   "id": "task-msj9x37m-d4gueuhr",
   "title": "T10 — Replace misleading edit metrics",
   "description": "## Objective\n\nReplace misleading names with counters that accurately describe editor behavior.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T10.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033382,
-  "updatedAt": 1786133006110,
+  "updatedAt": 1786134145577,
   "position": 1786127033382,
   "labelIds": [
     "bug",
@@ -28,51 +28,51 @@
     {
       "id": "check-msj9x3c7-ikzy6dj8",
       "text": "Separate inserted and removed characters",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033383,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145570
     },
     {
       "id": "check-msj9x3c8-4jr6rsua",
       "text": "Rename paste to large edit",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033384,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145571
     },
     {
       "id": "check-msj9x3c9-gm1am7pj",
       "text": "Record edit events without calling them keystrokes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033385,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145572
     },
     {
       "id": "check-msj9x3ca-auar09wt",
       "text": "Present line activity as an editor approximation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033386,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145573
     },
     {
       "id": "check-msj9x3cb-3ycx6bad",
       "text": "Separate active file time from the number of unique files",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033387,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145574
     },
     {
       "id": "check-msj9x3cc-al1i2n33",
       "text": "Avoid double counting between ticks and edits",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033388,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145575
     },
     {
       "id": "check-msj9x3cd-ly27rqtf",
       "text": "Preserve import compatibility with v1 fields",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033389,
-      "updatedAt": 1786127326642
+      "updatedAt": 1786134145576
     }
   ],
   "relations": [

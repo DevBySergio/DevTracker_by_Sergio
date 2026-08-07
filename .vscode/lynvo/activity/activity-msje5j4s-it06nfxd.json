@@ -1,0 +1,15 @@
+{
+  "id": "activity-msje5j4s-it06nfxd",
+  "type": "checklist_updated",
+  "message": "Completed checklist item in \"T06 — Deduplicate activity across VS Code windows\"",
+  "createdAt": 1786134145564,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37i-n3rlb67m",
+  "metadata": {
+    "checklistItemId": "check-msj9x3ar-00zsp7f8",
+    "done": true
+  }
+}
