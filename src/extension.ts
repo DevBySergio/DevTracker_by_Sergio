@@ -129,6 +129,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         folder?.name ?? path.basename(projectPath) ?? projectPath,
       ).id;
     },
+    fileDetailAvailable: () => privacy.isFileDetailAvailable(),
   });
   const activeSession = await sessionStore.startSession();
   const activityIntervals = new SessionActivityRecorder({

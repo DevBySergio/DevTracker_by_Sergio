@@ -15,6 +15,7 @@ export interface DashboardPresenterOptions {
   rangeQueries: RangeAnalyticsQueryService;
   clock: Clock;
   resolveProjectId(projectPath: string): string | undefined;
+  fileDetailAvailable(): boolean;
 }
 
 export class DashboardPresenter implements DashboardPresentation {
@@ -58,6 +59,10 @@ export class DashboardPresenter implements DashboardPresentation {
       ReportPanel.currentPanel.updateTrackingStatus(
         snapshot.trackingStatus,
         snapshot.lastUpdatedAt,
+        snapshot.dailyGoalSeconds > 0
+          ? snapshot.dailyGoalSeconds
+          : DEFAULT_DAILY_GOAL_SECONDS,
+        this.options.fileDetailAvailable(),
       );
       ReportPanel.currentPanel.notifyDataChanged();
     }
@@ -80,6 +85,7 @@ export class DashboardPresenter implements DashboardPresentation {
         : DEFAULT_DAILY_GOAL_SECONDS,
       trackingStatus: snapshot.trackingStatus,
       lastUpdatedAt: snapshot.lastUpdatedAt,
+      fileDetailAvailable: this.options.fileDetailAvailable(),
     });
   }
 

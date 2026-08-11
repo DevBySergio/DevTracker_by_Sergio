@@ -82,6 +82,10 @@ export class VscodePrivacySettings implements TrackingPrivacyPolicy {
     return this.settings.taskTrackingEnabled;
   }
 
+  public isFileDetailAvailable(): boolean {
+    return this.settings.fileIdentityMode !== "none";
+  }
+
   public getDetailedDataRetentionDays(): number {
     return this.settings.detailedDataRetentionDays;
   }

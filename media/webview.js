@@ -61,9 +61,14 @@ const ENGLISH_STRINGS = {
         trackedTime: "Tracked Time",
         projects: "Projects",
         mostActiveHour: "Most Active Hour",
+        uniqueActiveFiles: "Unique Active Files",
+        flowBlocks: "Flow Blocks",
     },
     panels: {
-        todayTimeline: "Today Timeline",
+        todayTimeline: "Today · 15-Minute Activity",
+        focusProfile: "Focus Profile",
+        projectDistribution: "Project Distribution",
+        languageDistribution: "Language Distribution",
         sessionLanguages: "Session Languages",
         activeFiles: "Active Files",
         activityTrend: "Activity Trend",
@@ -86,6 +91,10 @@ const ENGLISH_STRINGS = {
         gitUnavailable: "Git unavailable",
         diagnosticsUnavailable: "Diagnostics unavailable",
         noGlobalLanguageActivity: "No global language activity",
+        overviewTitle: "No activity yet today",
+        overviewBody: "DevTracker will show active time, focus context, and distributions here after your first tracked interaction.",
+        noProjectDistribution: "No project activity yet",
+        noLanguageDistribution: "No language activity yet",
     },
     dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     chartLabels: {
@@ -93,6 +102,7 @@ const ENGLISH_STRINGS = {
         errors: "Errors",
         warnings: "Warnings",
         info: "Info",
+        activeMinutes: "Active minutes",
     },
     tableHeaders: {
         file: ["File", "Time", "Activity samples"],
@@ -139,7 +149,7 @@ const ENGLISH_STRINGS = {
         approximateLineActivity: "Approximate line activity",
         currentDiagnostics: "Current diagnostics",
         gitContext: "Git context",
-        activeHoursTodayChart: "Bar chart of active hours today",
+        activeHoursTodayChart: "Bar chart of active time in 15-minute buckets across today",
         projectHoursChart: "Bar chart of project active hours",
         diagnosticsChart: "Stacked chart of diagnostics by severity",
     },
@@ -155,12 +165,27 @@ const ENGLISH_STRINGS = {
         longestZeroMinutes: "Longest 0m",
         selectProjectToContinue: "Select a project to view project-specific data.",
         loading: "Loading dashboard data…",
+        trackedAcrossProjects: "Tracked across active projects today",
+        goalNotConfigured: "Daily goal unavailable",
+        fileDetailUnavailable: "File detail is disabled",
+        exactRetainedFileCount: "Distinct retained file identities with activity",
+        observedFlowBlocks: "Observed interaction-based flow blocks today",
+        updatedJustNow: "Updated just now",
         tracking: {
             active: "Tracking",
             inactive: "Inactive",
             paused: "Paused",
             unfocused: "Unfocused",
         },
+    },
+    focusProfile: {
+        topThreeFiles: "Top-3 file share",
+        topThreeFilesDescription: "Share of active time in the three most active retained files.",
+        fileSwitches: "File switches / active hour",
+        fileSwitchesDescription: "Confirmed file changes normalized by tracked active time.",
+        typicalFlow: "Typical flow block",
+        typicalFlowDescription: "Average active time inside an observed interaction-based flow block.",
+        unavailable: "Unavailable",
     },
 };
 
@@ -200,6 +225,375 @@ function safeProjectId(value) {
 }
 function isRecord(value) {
     return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+
+/***/ }),
+/* 3 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   buildOverviewViewModel: () => (/* binding */ buildOverviewViewModel)
+/* harmony export */ });
+/* harmony import */ var _queries_PersonalInsights__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+
+/**
+ * Adapts the bounded one-day range projection to the Overview UI. Metric
+ * formulas stay delegated to PersonalInsights; this layer only supplies
+ * labels, the 96 wall-clock buckets, and presentation-specific availability.
+ */
+function buildOverviewViewModel(period, dailyGoalSeconds, fileDetailAvailable) {
+    const normalizedPeriod = ensureSelectedDay(period);
+    const dailyGoalMs = secondsToMilliseconds(dailyGoalSeconds);
+    const insights = (0,_queries_PersonalInsights__WEBPACK_IMPORTED_MODULE_0__.buildPersonalInsights)({
+        period: normalizedPeriod,
+        dailyGoalMs,
+        selectedLocalDate: normalizedPeriod.range.endLocalDate,
+        todayLocalDate: normalizedPeriod.range.endLocalDate,
+        fileDetailAvailable,
+    });
+    return Object.freeze({
+        hasActivity: normalizedPeriod.metrics.activeTimeMs > 0,
+        activeTimeMs: normalizedPeriod.metrics.activeTimeMs,
+        dailyGoalMs,
+        dailyGoalCompletionPercent: insights.dailyGoalCompletionPercent.value,
+        uniqueActiveFiles: fileDetailAvailable
+            ? normalizedPeriod.files.filter((file) => file.activeTimeMs > 0).length
+            : null,
+        flowBlockCount: normalizedPeriod.metrics.flowBlockCount,
+        focusProfile: insights.focusProfile,
+        projectDistribution: labelDistribution(insights.projectDistribution.value, new Map(normalizedPeriod.projects.map((project) => [
+            project.project.id,
+            project.project.displayName,
+        ]))),
+        languageDistribution: labelDistribution(insights.languageDistribution.value, new Map()),
+        timeline: quarterHourTimeline(normalizedPeriod),
+    });
+}
+function ensureSelectedDay(period) {
+    if (period.days.some((day) => day.localDate === period.range.endLocalDate)) {
+        return period;
+    }
+    return {
+        ...period,
+        days: [{
+                localDate: period.range.endLocalDate,
+                metrics: period.metrics,
+            }],
+    };
+}
+function secondsToMilliseconds(value) {
+    const milliseconds = value * 1000;
+    return Number.isSafeInteger(milliseconds) && milliseconds > 0
+        ? milliseconds
+        : null;
+}
+function labelDistribution(values, labels) {
+    return Object.freeze((values ?? [])
+        .filter((value) => value.activeTimeMs > 0)
+        .map((value) => Object.freeze({
+        ...value,
+        label: labels.get(value.id) ?? value.id,
+    })));
+}
+function quarterHourTimeline(period) {
+    const totals = new Array(96).fill(0);
+    period.quarterHours.forEach((bucket) => {
+        if (bucket.localDate !== period.range.endLocalDate) {
+            return;
+        }
+        const match = /^(\d{2}):(\d{2})\b/.exec(bucket.label);
+        if (!match) {
+            return;
+        }
+        const hour = Number(match[1]);
+        const minute = Number(match[2]);
+        if (hour < 0 || hour > 23 || minute % 15 !== 0 || minute > 45) {
+            return;
+        }
+        totals[hour * 4 + minute / 15] += bucket.activeTimeMs;
+    });
+    return Object.freeze(totals.map((activeTimeMs, index) => Object.freeze({
+        label: `${String(Math.floor(index / 4)).padStart(2, "0")}:${String((index % 4) * 15).padStart(2, "0")}`,
+        activeTimeMs,
+    })));
+}
+
+
+/***/ }),
+/* 4 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   buildPersonalInsights: () => (/* binding */ buildPersonalInsights),
+/* harmony export */   calculateActiveDayStreak: () => (/* binding */ calculateActiveDayStreak),
+/* harmony export */   calculateActiveDays: () => (/* binding */ calculateActiveDays),
+/* harmony export */   calculateFourWeekActiveTimeBaseline: () => (/* binding */ calculateFourWeekActiveTimeBaseline),
+/* harmony export */   calculateMostActiveHour: () => (/* binding */ calculateMostActiveHour),
+/* harmony export */   calculateTopThreeShare: () => (/* binding */ calculateTopThreeShare),
+/* harmony export */   goalCompletionPercent: () => (/* binding */ goalCompletionPercent),
+/* harmony export */   ratePerActiveHour: () => (/* binding */ ratePerActiveHour)
+/* harmony export */ });
+const HOUR_MS = 60 * 60 * 1000;
+function buildPersonalInsights(input) {
+    const { period } = input;
+    const weeklyPeriod = input.weeklyPeriod ?? period;
+    const selectedLocalDate = input.selectedLocalDate ?? period.range.endLocalDate;
+    const todayLocalDate = input.todayLocalDate ?? period.range.endLocalDate;
+    assertLocalDate(selectedLocalDate);
+    assertLocalDate(todayLocalDate);
+    const selectedDay = period.days.find((day) => day.localDate === selectedLocalDate);
+    if (!selectedDay) {
+        throw new Error("selectedLocalDate must belong to the queried period");
+    }
+    const dailyGoal = validGoal(input.dailyGoalMs);
+    const weeklyGoal = validGoal(input.weeklyGoalMs);
+    const fileDetailAvailable = input.fileDetailAvailable ?? true;
+    const activeDays = calculateActiveDays(period.days);
+    const streakDays = calculateActiveDayStreak(period.days, selectedLocalDate, todayLocalDate);
+    const weeklyScope = isCalendarWeekScope(weeklyPeriod, todayLocalDate);
+    const weeklyBaseline = calculateFourWeekActiveTimeBaseline(input.previousCompleteWeeks ?? [], weeklyPeriod.range.startLocalDate);
+    const topThreeFileShare = fileDetailAvailable
+        ? calculateTopThreeShare(period.files, period.metrics.activeTimeMs)
+        : null;
+    const switchRate = ratePerActiveHour(period.metrics.fileSwitchEvents, period.metrics.activeTimeMs);
+    const typicalFlow = period.metrics.flowBlockCount > 0
+        ? Math.round(period.metrics.flowActiveMs / period.metrics.flowBlockCount)
+        : null;
+    return {
+        dailyGoalMs: insight(dailyGoal, "validated configured dailyGoalMs", "exact-configured-duration", "The configured goal is absent, non-integer, non-positive, or outside the safe integer range."),
+        weeklyGoalMs: insight(weeklyGoal, "validated configured weeklyGoalMs", "exact-configured-duration", "The configured goal is absent, non-integer, non-positive, or outside the safe integer range."),
+        dailyGoalCompletionPercent: insight(goalCompletionPercent(selectedDay.metrics.activeTimeMs, dailyGoal), "min(100, selectedDay.activeTimeMs / dailyGoalMs * 100)", "derived", "The daily goal is absent or invalid."),
+        weeklyGoalCompletionPercent: insight(weeklyScope
+            ? goalCompletionPercent(weeklyPeriod.metrics.activeTimeMs, weeklyGoal)
+            : null, "min(100, calendarWeek.activeTimeMs / weeklyGoalMs * 100)", "derived", "The weekly goal is absent or invalid, or the query is not a complete calendar week or current week-to-date."),
+        activeDays: insight(activeDays, "count(days where activeTimeMs > 0)", "derived", "Never unavailable; an empty or inactive range returns zero."),
+        streakDays: insight(streakDays, "consecutive local days with activeTimeMs > 0 ending at min(selectedLocalDate, todayLocalDate)", "derived", "Never unavailable; a non-active selected day returns zero."),
+        fourWeekActiveTimeBaseline: insight(weeklyBaseline, "median(activeTimeMs of the four latest prior complete Monday-Sunday weeks with data)", "derived", "Fewer than two of the four prior complete weeks contain positive active time."),
+        focusProfile: {
+            topThreeFileSharePercent: insight(topThreeFileShare, "sum(activeTimeMs of three most active retained documents) / totalActiveTimeMs * 100", "derived", "File detail is disabled or total active time is zero."),
+            fileSwitchesPerActiveHour: insight(switchRate, "fileSwitchEvents / (activeTimeMs / 3,600,000)", "derived", "Total active time is zero."),
+            typicalFlowActiveMs: insight(typicalFlow, "round(flowActiveMs / flowBlockCount) to the nearest millisecond", "derived", "No flow block was observed."),
+        },
+        projectDistribution: distributionInsight(period.projects.map((project) => ({
+            id: project.project.id,
+            activeTimeMs: project.metrics.activeTimeMs,
+        })), period.metrics.activeTimeMs, "project"),
+        languageDistribution: distributionInsight(period.languages, period.metrics.activeTimeMs, "language"),
+        fileDistribution: fileDetailAvailable
+            ? distributionInsight(period.files, period.metrics.activeTimeMs, "file")
+            : insight(null, "document.activeTimeMs / totalActiveTimeMs * 100", "derived", "File detail is disabled."),
+        mostActiveHour: insight(calculateMostActiveHour(period.quarterHours), "sum(activeTimeMs of quarter-hour buckets within each local hour); choose the greatest, breaking ties by earliest wall bucket", "derived", "No local hour contains positive active time."),
+        timeDistributionSummary: insight(`Active time was recorded on ${activeDays} of ${period.days.length} selected local days.`, "format(activeDays, selectedLocalDays)", "derived", "Never unavailable."),
+        fragmentationSummary: insight(switchRate === null
+            ? `${period.metrics.fileSwitchEvents} confirmed file switches were recorded; no active-time rate is available.`
+            : `${period.metrics.fileSwitchEvents} confirmed file switches were recorded (${formatDecimal(switchRate)} per active hour).`, "format(fileSwitchEvents, fileSwitchesPerActiveHour)", "derived", "Never unavailable; the rate is described as unavailable when active time is zero."),
+    };
+}
+function goalCompletionPercent(activeTimeMs, goalMs) {
+    assertNonNegativeSafeInteger(activeTimeMs, "activeTimeMs");
+    const valid = validGoal(goalMs);
+    return valid === null
+        ? null
+        : Math.min(100, (activeTimeMs / valid) * 100);
+}
+function calculateActiveDays(days) {
+    return days.reduce((count, day) => {
+        assertNonNegativeSafeInteger(day.metrics.activeTimeMs, "activeTimeMs");
+        return count + (day.metrics.activeTimeMs > 0 ? 1 : 0);
+    }, 0);
+}
+function calculateActiveDayStreak(days, selectedLocalDate, todayLocalDate) {
+    assertLocalDate(selectedLocalDate);
+    assertLocalDate(todayLocalDate);
+    const byDate = new Map();
+    days.forEach((day) => {
+        assertLocalDate(day.localDate);
+        assertNonNegativeSafeInteger(day.metrics.activeTimeMs, "activeTimeMs");
+        if (byDate.has(day.localDate)) {
+            throw new Error(`Duplicate day ${day.localDate}`);
+        }
+        byDate.set(day.localDate, day.metrics.activeTimeMs);
+    });
+    let cursor = selectedLocalDate > todayLocalDate ? todayLocalDate : selectedLocalDate;
+    let streak = 0;
+    while ((byDate.get(cursor) ?? 0) > 0) {
+        streak += 1;
+        cursor = addCalendarDays(cursor, -1);
+    }
+    return streak;
+}
+function calculateFourWeekActiveTimeBaseline(weeks, beforeLocalDate) {
+    assertLocalDate(beforeLocalDate);
+    const priorFour = weeks
+        .filter((week) => week.range.endLocalDate < beforeLocalDate &&
+        isCompleteCalendarWeek(week))
+        .sort((left, right) => right.range.endLocalDate.localeCompare(left.range.endLocalDate))
+        .filter((week, index, values) => values.findIndex((candidate) => candidate.range.startLocalDate === week.range.startLocalDate) === index)
+        .slice(0, 4);
+    priorFour.forEach((week) => assertNonNegativeSafeInteger(week.metrics.activeTimeMs, "activeTimeMs"));
+    const eligible = priorFour.filter((week) => week.metrics.activeTimeMs > 0);
+    if (eligible.length < 2) {
+        return null;
+    }
+    const sortedValues = eligible
+        .map((week) => week.metrics.activeTimeMs)
+        .sort((left, right) => left - right);
+    const midpoint = Math.floor(sortedValues.length / 2);
+    const median = sortedValues.length % 2 === 1
+        ? sortedValues[midpoint]
+        : Math.round(sortedValues[midpoint - 1] +
+            (sortedValues[midpoint] - sortedValues[midpoint - 1]) / 2);
+    return {
+        medianActiveTimeMs: median,
+        weeksUsed: eligible.map((week) => ({
+            startLocalDate: week.range.startLocalDate,
+            endLocalDate: week.range.endLocalDate,
+            activeTimeMs: week.metrics.activeTimeMs,
+        })),
+    };
+}
+function calculateTopThreeShare(files, totalActiveTimeMs) {
+    assertNonNegativeSafeInteger(totalActiveTimeMs, "totalActiveTimeMs");
+    if (totalActiveTimeMs === 0) {
+        return null;
+    }
+    const topThree = [...files]
+        .map((file) => {
+        assertNonNegativeSafeInteger(file.activeTimeMs, "file.activeTimeMs");
+        return file.activeTimeMs;
+    })
+        .sort((left, right) => right - left)
+        .slice(0, 3)
+        .reduce((total, value) => total + value, 0);
+    return (topThree / totalActiveTimeMs) * 100;
+}
+function ratePerActiveHour(eventCount, activeTimeMs) {
+    assertNonNegativeSafeInteger(eventCount, "eventCount");
+    assertNonNegativeSafeInteger(activeTimeMs, "activeTimeMs");
+    return activeTimeMs === 0
+        ? null
+        : eventCount / (activeTimeMs / HOUR_MS);
+}
+function calculateMostActiveHour(quarterHours) {
+    const hours = new Map();
+    quarterHours.forEach((bucket) => {
+        assertLocalDate(bucket.localDate);
+        assertNonNegativeSafeInteger(bucket.activeTimeMs, "bucket.activeTimeMs");
+        const startedAt = Number(bucket.key);
+        if (!Number.isSafeInteger(startedAt)) {
+            throw new Error("Quarter-hour bucket key must be a safe timestamp");
+        }
+        const match = /^(\d{2}):\d{2} (UTC[+-]\d{2}:\d{2})$/.exec(bucket.label);
+        if (!match) {
+            throw new Error(`Invalid quarter-hour label ${bucket.label}`);
+        }
+        const key = `${bucket.localDate}\0${match[1]}\0${bucket.utcOffsetMinutes}`;
+        const existing = hours.get(key);
+        if (existing) {
+            hours.set(key, {
+                ...existing,
+                activeTimeMs: safeAdd(existing.activeTimeMs, bucket.activeTimeMs, "hour.activeTimeMs"),
+                startedAt: Math.min(existing.startedAt, startedAt),
+            });
+        }
+        else {
+            hours.set(key, {
+                localDate: bucket.localDate,
+                label: `${match[1]}:00 ${match[2]}`,
+                utcOffsetMinutes: bucket.utcOffsetMinutes,
+                activeTimeMs: bucket.activeTimeMs,
+                startedAt,
+            });
+        }
+    });
+    return ([...hours.values()]
+        .filter((hour) => hour.activeTimeMs > 0)
+        .sort((left, right) => right.activeTimeMs - left.activeTimeMs ||
+        left.startedAt - right.startedAt)[0] ?? null);
+}
+function distributionInsight(values, totalActiveTimeMs, dimension) {
+    assertNonNegativeSafeInteger(totalActiveTimeMs, "totalActiveTimeMs");
+    if (totalActiveTimeMs === 0) {
+        return insight(null, `${dimension}.activeTimeMs / totalActiveTimeMs * 100`, "derived", "Total active time is zero.");
+    }
+    return insight(values.map((value) => {
+        assertNonNegativeSafeInteger(value.activeTimeMs, `${dimension}.activeTimeMs`);
+        return {
+            id: value.id,
+            activeTimeMs: value.activeTimeMs,
+            sharePercent: (value.activeTimeMs / totalActiveTimeMs) * 100,
+        };
+    }), `${dimension}.activeTimeMs / totalActiveTimeMs * 100`, "derived", "Total active time is zero.");
+}
+function isCalendarWeekScope(period, todayLocalDate) {
+    const dates = period.range.localDates;
+    if (dates.length === 0 ||
+        dates[0] !== period.range.startLocalDate ||
+        dates[dates.length - 1] !== period.range.endLocalDate ||
+        dayOfWeek(period.range.startLocalDate) !== 1 ||
+        dates.length > 7) {
+        return false;
+    }
+    for (let index = 1; index < dates.length; index += 1) {
+        if (dates[index] !== addCalendarDays(dates[index - 1], 1)) {
+            return false;
+        }
+    }
+    return (dates.length === 7 && dayOfWeek(period.range.endLocalDate) === 0) || period.range.endLocalDate === todayLocalDate;
+}
+function isCompleteCalendarWeek(period) {
+    return (period.range.complete &&
+        period.range.localDates.length === 7 &&
+        period.range.localDates[0] === period.range.startLocalDate &&
+        period.range.localDates[6] === period.range.endLocalDate &&
+        dayOfWeek(period.range.startLocalDate) === 1 &&
+        dayOfWeek(period.range.endLocalDate) === 0 &&
+        period.range.localDates.every((date, index) => date === addCalendarDays(period.range.startLocalDate, index)));
+}
+function validGoal(value) {
+    return Number.isSafeInteger(value) && (value ?? 0) > 0 ? value : null;
+}
+function insight(value, formula, precision, unavailableWhen) {
+    return { value, metadata: { formula, precision, unavailableWhen } };
+}
+function formatDecimal(value) {
+    return Number.isInteger(value) ? String(value) : value.toFixed(2);
+}
+function assertNonNegativeSafeInteger(value, name) {
+    if (!Number.isSafeInteger(value) || value < 0) {
+        throw new Error(`${name} must be a non-negative safe integer`);
+    }
+}
+function safeAdd(left, right, name) {
+    const total = left + right;
+    assertNonNegativeSafeInteger(total, name);
+    return total;
+}
+function assertLocalDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        throw new Error(`Invalid local date ${value}`);
+    }
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    if (date.getUTCFullYear() !== year ||
+        date.getUTCMonth() !== month - 1 ||
+        date.getUTCDate() !== day) {
+        throw new Error(`Invalid local date ${value}`);
+    }
+}
+function dayOfWeek(localDate) {
+    assertLocalDate(localDate);
+    const [year, month, day] = localDate.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+}
+function addCalendarDays(localDate, amount) {
+    assertLocalDate(localDate);
+    const [year, month, day] = localDate.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day + amount));
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
 }
 
 
@@ -266,6 +660,8 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _src_webview_shellState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _src_webview_overviewModel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
+
 
 
 const themeColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -288,6 +684,8 @@ let rawComparisonProject = null;
 let rawAll = [];
 let rangeDays = [];
 let dailyGoal = initialData.dailyGoalSeconds;
+let runtimeLastUpdatedAt = initialData.lastUpdatedAt;
+let runtimeFileDetailAvailable = initialData.fileDetailAvailable;
 let todayTrendChart = null;
 let projectTrendChart = null;
 let qualityTrendChart = null;
@@ -317,7 +715,12 @@ window.addEventListener('message', (event) => {
         return;
     }
     if (msg.type === 'dashboard/tracking-status') {
+        dailyGoal = msg.dailyGoalSeconds;
+        runtimeFileDetailAvailable = msg.fileDetailAvailable;
         renderTrackingStatus(msg.status, msg.lastUpdatedAt);
+        if (currentTab === 'today' && dashboardData) {
+            renderToday();
+        }
         return;
     }
     if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
@@ -439,10 +842,29 @@ function renderProjectOptions() {
     selector.value = selectedProjectId ?? '';
 }
 function renderTrackingStatus(status, lastUpdatedAt) {
+    runtimeLastUpdatedAt = lastUpdatedAt;
     const target = document.getElementById('tracking-status');
     target.dataset.status = status;
     target.title = `Last updated ${new Date(lastUpdatedAt).toLocaleString()}`;
     document.getElementById('tracking-status-label').textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.tracking[status];
+    const overviewStatus = document.getElementById('overview-tracking-status');
+    if (overviewStatus) {
+        overviewStatus.textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.tracking[status];
+    }
+    renderFreshness();
+}
+function renderFreshness() {
+    const target = document.getElementById('overview-freshness');
+    if (!target) {
+        return;
+    }
+    const updated = new Date(runtimeLastUpdatedAt);
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - runtimeLastUpdatedAt) / 1000));
+    target.dateTime = updated.toISOString();
+    target.title = updated.toLocaleString();
+    target.textContent = elapsedSeconds < 60
+        ? _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.updatedJustNow
+        : `Updated ${Math.floor(elapsedSeconds / 60)}m ago`;
 }
 function setBusy(busy) {
     document.getElementById('dashboard-content').setAttribute('aria-busy', String(busy));
@@ -836,36 +1258,43 @@ function addDiagnostics(target, source) {
     target.hint += diagnostics.hint;
 }
 function renderToday() {
-    const todayKey = getLocalDateKey();
-    const todayDays = allDays().filter(day => day.date === todayKey);
-    const todayAgg = aggregateDays(todayDays);
-    const sessionAgg = sessionAsAgg();
-    const targetSeconds = dailyGoal > 0 ? dailyGoal : 14400;
-    const pct = targetSeconds > 0 ? Math.min(100, Math.round((todayAgg.seconds / targetSeconds) * 100)) : 0;
-    const concentration = topThreeFileShare(todayAgg);
-    const changedCharacters = rawSession.insertedCharacters + rawSession.removedCharacters;
-    const lineActivity = todayAgg.insertedLineBreaksApprox + todayAgg.removedLineBreaksApprox;
-    const quality = rawSession.diagnosticsBySeverity.error + rawSession.diagnosticsBySeverity.warning;
-    setText('t-active', fmt(todayAgg.seconds));
-    setText('t-active-sub', `${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.session} ${fmt(rawSession.seconds)}`);
-    setText('t-goal', pct + '%');
-    setText('t-goal-sub', `${fmt(todayAgg.seconds)} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.of} ${fmt(targetSeconds)}`);
-    setText('t-focus', concentration + '%');
-    setText('t-focus-sub', topLabel(todayAgg.files, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.noActiveFile));
-    setText('t-flow', fmt(rawSession.flow.currentSeconds));
-    setText('t-flow-sub', `${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.longest} ${fmt(Math.max(rawSession.flow.longestSeconds, todayAgg.flow.longestSeconds))}`);
-    setText('t-edit', compact(changedCharacters));
-    setText('t-edit-sub', `${rawSession.editEvents} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.editEvents}, ${rawSession.largeEditEvents} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.largeEditEvents}`);
-    setText('t-churn', compact(lineActivity));
-    setText('t-churn-sub', `${compact(todayAgg.insertedLineBreaksApprox)} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.inserted}, ${compact(todayAgg.removedLineBreaksApprox)} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.removedLineBreaksApprox}`);
-    setText('t-quality', quality);
-    setText('t-quality-sub', `${rawSession.diagnosticsBySeverity.error} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.errors}, ${rawSession.diagnosticsBySeverity.warning} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.warnings}`);
-    setText('t-git', rawSession.gitDirtyFiles);
-    setText('t-git-sub', topLabel(rawSession.branches, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.gitUnavailable));
-    setText('t-save-rhythm', saveRhythm(todayAgg));
-    renderTimeline(todayTrendChart, 'todayTrendChart', todayDays, chart => todayTrendChart = chart);
-    renderBarList('today-language-list', sessionAgg.languages, fmt, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.noSessionLanguages);
-    renderFileTable('today-files-table', mapToRows(todayAgg.files).slice(0, 10), todayAgg.activeFileCounts, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.noActiveFilesToday);
+    if (!dashboardData) {
+        return;
+    }
+    const overview = (0,_src_webview_overviewModel__WEBPACK_IMPORTED_MODULE_2__.buildOverviewViewModel)(dashboardData.current, dailyGoal, runtimeFileDetailAvailable);
+    const empty = document.getElementById('overview-empty');
+    const content = document.getElementById('overview-content');
+    empty.hidden = overview.hasActivity;
+    content.hidden = !overview.hasActivity;
+    if (!overview.hasActivity) {
+        renderFreshness();
+        return;
+    }
+    setText('t-active', fmt(overview.activeTimeMs / 1000));
+    const activeProjects = overview.projectDistribution.length;
+    setText('t-active-sub', activeProjects > 0
+        ? `${activeProjects} active ${activeProjects === 1 ? 'project' : 'projects'} today`
+        : _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.trackedAcrossProjects);
+    const goalPercent = overview.dailyGoalCompletionPercent;
+    const roundedGoal = goalPercent === null ? null : Math.round(goalPercent);
+    setText('t-goal', roundedGoal === null ? '—' : `${roundedGoal}%`);
+    setText('t-goal-sub', overview.dailyGoalMs === null
+        ? _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.goalNotConfigured
+        : `${fmt(overview.activeTimeMs / 1000)} ${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.phrases.of} ${fmt(overview.dailyGoalMs / 1000)}`);
+    const goalProgress = document.getElementById('overview-goal-progress');
+    goalProgress.value = roundedGoal ?? 0;
+    goalProgress.setAttribute('aria-valuetext', roundedGoal === null ? _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.goalNotConfigured : `${roundedGoal}%`);
+    setText('t-files', overview.uniqueActiveFiles ?? '—');
+    setText('t-files-sub', overview.uniqueActiveFiles === null
+        ? _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.fileDetailUnavailable
+        : _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.exactRetainedFileCount);
+    setText('t-flow-blocks', overview.flowBlockCount);
+    setText('t-flow-blocks-sub', _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.observedFlowBlocks);
+    renderOverviewTimeline(overview);
+    renderFocusProfile(overview);
+    renderOverviewDistribution('overview-project-distribution', overview.projectDistribution, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.noProjectDistribution);
+    renderOverviewDistribution('overview-language-distribution', overview.languageDistribution, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.empty.noLanguageDistribution);
+    renderFreshness();
 }
 function renderProject() {
     const projectDays = daysForProject(rawProject);
@@ -975,6 +1404,94 @@ function setDelta(id, delta) {
     const el = document.getElementById(id);
     el.textContent = delta.label;
     el.className = 'delta ' + (delta.value > 0 ? 'good' : delta.value < 0 ? 'bad' : '');
+}
+function renderOverviewTimeline(overview) {
+    const labels = overview.timeline.map(bucket => bucket.label);
+    const values = overview.timeline.map(bucket => bucket.activeTimeMs / 60000);
+    const canvas = document.getElementById('todayTrendChart');
+    if (todayTrendChart) {
+        todayTrendChart.data.labels = labels;
+        todayTrendChart.data.datasets[0].data = values;
+        todayTrendChart.update('none');
+        return;
+    }
+    todayTrendChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                    label: _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.chartLabels.activeMinutes,
+                    data: values,
+                    backgroundColor: colors[0],
+                    borderRadius: 2,
+                    barPercentage: 1,
+                    categoryPercentage: 1
+                }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true },
+                x: {
+                    grid: { display: false },
+                    ticks: { autoSkip: true, maxTicksLimit: 12, maxRotation: 0 }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: item => fmt(Number(item.raw) * 60)
+                    }
+                }
+            }
+        }
+    });
+}
+function renderFocusProfile(overview) {
+    renderFocusMetric('focus-files', overview.focusProfile.topThreeFileSharePercent, value => `${formatDecimal(value)}%`, _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.focusProfile.topThreeFilesDescription);
+    renderFocusMetric('focus-switches', overview.focusProfile.fileSwitchesPerActiveHour, value => formatDecimal(value), _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.focusProfile.fileSwitchesDescription);
+    renderFocusMetric('focus-flow', overview.focusProfile.typicalFlowActiveMs, value => fmt(value / 1000), _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.focusProfile.typicalFlowDescription);
+}
+function renderFocusMetric(prefix, insight, formatter, description) {
+    const available = insight.value !== null;
+    setText(`${prefix}-value`, available ? formatter(insight.value) : _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.focusProfile.unavailable);
+    setText(`${prefix}-description`, available ? description : insight.metadata.unavailableWhen);
+    setText(`${prefix}-formula`, insight.metadata.formula);
+}
+function renderOverviewDistribution(id, rows, emptyText) {
+    const target = document.getElementById(id);
+    target.replaceChildren();
+    if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = emptyText;
+        target.append(empty);
+        return;
+    }
+    rows.slice(0, 8).forEach(row => {
+        const item = document.createElement('div');
+        item.className = 'bar-row distribution-row';
+        item.setAttribute('aria-label', `${row.label}: ${fmt(row.activeTimeMs / 1000)}, ${formatDecimal(row.sharePercent)}%`);
+        const label = document.createElement('div');
+        label.className = 'bar-label';
+        label.textContent = row.label;
+        label.title = row.label;
+        const value = document.createElement('div');
+        value.className = 'value';
+        value.textContent = `${fmt(row.activeTimeMs / 1000)} · ${formatDecimal(row.sharePercent)}%`;
+        const track = document.createElement('progress');
+        track.className = 'bar-track';
+        track.max = 100;
+        track.value = row.sharePercent;
+        track.setAttribute('aria-hidden', 'true');
+        item.append(label, value, track);
+        target.append(item);
+    });
+}
+function formatDecimal(value) {
+    return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 function renderTimeline(chart, canvasId, days, assign) {
     const byDate = {};

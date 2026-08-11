@@ -20,6 +20,7 @@ export function Metric(options: {
   ariaLabel?: string;
   tone?: MetricTone;
   valueSuffix?: string;
+  primary?: boolean;
 }): string {
   const tone = options.tone && options.tone !== "default"
     ? ` ${options.tone}`
@@ -28,7 +29,8 @@ export function Metric(options: {
     ? ` aria-label="${escapeAttribute(options.ariaLabel)}"`
     : "";
   const suffix = options.valueSuffix ?? "";
-  return `<div class="card metric-card${tone}"${aria}><div class="card-title">${escapeHtml(options.title)}</div><div class="metric-big" id="${escapeAttribute(options.id)}" aria-live="polite">${escapeHtml(options.value)}</div><div class="metric-sub" id="${escapeAttribute(options.id)}-sub">${escapeHtml(options.subtitle)}</div>${suffix}</div>`;
+  const primary = options.primary ? ' data-primary-metric="true"' : "";
+  return `<div class="card metric-card${tone}"${aria}${primary}><div class="card-title">${escapeHtml(options.title)}</div><div class="metric-big" id="${escapeAttribute(options.id)}" aria-live="polite">${escapeHtml(options.value)}</div><div class="metric-sub" id="${escapeAttribute(options.id)}-sub">${escapeHtml(options.subtitle)}</div>${suffix}</div>`;
 }
 
 export function Toolbar(options: {

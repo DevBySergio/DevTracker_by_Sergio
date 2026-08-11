@@ -261,6 +261,123 @@ button:focus-visible, .skip-link:focus-visible {
 }
 .view-section { display: none; }
 .view-section.active { display: block; }
+.overview-empty {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+}
+.overview-empty[hidden], #overview-content[hidden] { display: none; }
+.overview-empty h2 { margin: var(--space-3) 0 var(--space-1); }
+.overview-empty p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 560px;
+}
+.empty-mark {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  height: 12px;
+  opacity: 0.75;
+  width: 56px;
+}
+.overview-metrics {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  margin-bottom: var(--space-3);
+}
+.overview-hero {
+  border-left: 4px solid var(--success);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  justify-content: space-between;
+  min-height: 260px;
+}
+.overview-hero-heading, .goal-row, .focus-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+.hero-value {
+  font-size: clamp(2.8rem, 7vw, 4.8rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: var(--space-2) 0;
+}
+.overview-runtime {
+  align-items: flex-end;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-size-caption);
+  gap: var(--space-2);
+}
+.goal-row { align-items: end; }
+.goal-row strong {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+.goal-label {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-1);
+}
+.goal-progress {
+  appearance: none;
+  background: var(--vscode-progressBar-background);
+  border: 0;
+  border-radius: var(--radius-pill);
+  height: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+.goal-progress::-webkit-progress-bar { background: var(--vscode-editorWidget-background); }
+.goal-progress::-webkit-progress-value { background: var(--success); }
+.goal-progress::-moz-progress-bar { background: var(--success); }
+.overview-supporting-metrics {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+.focus-card { min-height: 100%; }
+.focus-profile {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+.focus-item {
+  border-top: 1px solid var(--card-border);
+  padding-top: var(--space-3);
+}
+.focus-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.focus-heading { align-items: baseline; }
+.focus-heading span { font-weight: var(--font-weight-medium); }
+.focus-heading strong { font-variant-numeric: tabular-nums; }
+.focus-item p {
+  color: var(--text-secondary);
+  font-size: var(--font-size-body-sm);
+  line-height: 1.4;
+  margin: var(--space-1) 0;
+}
+.focus-item code {
+  color: var(--muted);
+  display: block;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  overflow-wrap: anywhere;
+}
+.distribution-row { grid-template-columns: minmax(0, 1fr) minmax(110px, auto); }
 .grid-4 {
   display: grid;
   gap: var(--space-3);
@@ -281,12 +398,22 @@ button:focus-visible, .skip-link:focus-visible {
 }
 @media (max-width: 980px) {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .overview-metrics { grid-template-columns: 1fr; }
+  .overview-supporting-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
   .navbar, .view-header { align-items: flex-start; flex-direction: column; }
   .navbar-actions { justify-content: space-between; width: 100%; }
   .shell-controls { align-items: flex-start; flex-direction: column; }
   .project-control { justify-content: space-between; width: 100%; }
   .project-control select { max-width: 70vw; }
   .tabs, .filters { flex-wrap: wrap; }
+}
+@media (max-width: 620px) {
+  .overview-supporting-metrics { grid-template-columns: 1fr; }
+  .overview-hero-heading { flex-direction: column; }
+  .overview-runtime { align-items: flex-start; }
 }
 .card {
   background: var(--card-bg);

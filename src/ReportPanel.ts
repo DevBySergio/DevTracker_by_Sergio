@@ -20,6 +20,7 @@ export interface ReportPanelOptions {
   dailyGoalSeconds: number;
   trackingStatus: TrackingStatus;
   lastUpdatedAt: number;
+  fileDetailAvailable: boolean;
 }
 
 export class ReportPanel {
@@ -100,6 +101,7 @@ export class ReportPanel {
       options.dailyGoalSeconds,
       options.trackingStatus,
       options.lastUpdatedAt,
+      options.fileDetailAvailable,
     );
   }
 
@@ -110,12 +112,16 @@ export class ReportPanel {
   public updateTrackingStatus(
     status: TrackingStatus,
     lastUpdatedAt: number,
+    dailyGoalSeconds: number,
+    fileDetailAvailable: boolean,
   ): void {
     void this._panel.webview.postMessage({
       type: "dashboard/tracking-status",
       protocolVersion: DASHBOARD_PROTOCOL_VERSION,
       status,
       lastUpdatedAt,
+      dailyGoalSeconds,
+      fileDetailAvailable,
     });
   }
 
@@ -136,6 +142,7 @@ export class ReportPanel {
     dailyGoalSeconds: number,
     trackingStatus: TrackingStatus,
     lastUpdatedAt: number,
+    fileDetailAvailable: boolean,
   ): string {
     const webview = this._panel.webview;
     const nonce = getNonce();
@@ -149,6 +156,7 @@ export class ReportPanel {
         dailyGoalSeconds,
         trackingStatus,
         lastUpdatedAt,
+        fileDetailAvailable,
       },
       {
         nonce,

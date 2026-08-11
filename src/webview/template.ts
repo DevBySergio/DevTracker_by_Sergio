@@ -27,6 +27,7 @@ export interface DashboardInitialData {
   dailyGoalSeconds: number;
   trackingStatus: DashboardTrackingStatus;
   lastUpdatedAt: number;
+  fileDetailAvailable: boolean;
 }
 
 export interface DashboardResources {
@@ -129,23 +130,52 @@ export function renderDashboardHtml(
     </div>
 
     <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-overview">
-      <div class="grid-4">
-        ${Metric({ id: "t-active", title: EN.metrics.activeToday, value: "0m", subtitle: EN.status.sessionZeroMinutes, ariaLabel: EN.aria.activeTimeToday, tone: "success" })}
-        ${Metric({ id: "t-goal", title: EN.metrics.dailyGoal, value: "0%", subtitle: EN.status.targetZeroMinutes, ariaLabel: EN.aria.dailyGoalProgress })}
-        ${Metric({ id: "t-focus", title: EN.metrics.topThreeFileShare, value: "0%", subtitle: EN.empty.noActivity, ariaLabel: EN.aria.topThreeFileShare })}
-        ${Metric({ id: "t-flow", title: EN.metrics.currentFlow, value: "0m", subtitle: EN.status.longestZeroMinutes, ariaLabel: EN.aria.currentFlowBlock })}
+      <div id="overview-empty" class="card overview-empty" hidden>
+        <div class="empty-mark" aria-hidden="true"></div>
+        <h2>${EN.empty.overviewTitle}</h2>
+        <p>${EN.empty.overviewBody}</p>
       </div>
-      <div class="grid-4">
-        ${Metric({ id: "t-edit", title: EN.metrics.characterEditVolume, value: "0", subtitle: EN.initial.zeroEditEvents, ariaLabel: EN.aria.characterEditVolume })}
-        ${Metric({ id: "t-churn", title: EN.metrics.approximateLineActivity, value: "0", subtitle: EN.initial.approximateNetZeroLineBreaks, ariaLabel: EN.aria.approximateLineActivity, tone: "warning" })}
-        ${Metric({ id: "t-quality", title: EN.metrics.currentDiagnostics, value: "0", subtitle: EN.initial.zeroWarnings, ariaLabel: EN.aria.currentDiagnostics, tone: "danger" })}
-        ${Metric({ id: "t-git", title: EN.metrics.gitContext, value: "0", subtitle: EN.empty.gitUnavailable, ariaLabel: EN.aria.gitContext })}
+      <div id="overview-content">
+        <div class="overview-metrics">
+          <div class="card overview-hero" data-primary-metric="true" aria-label="${EN.aria.activeTimeToday}">
+            <div class="overview-hero-heading">
+              <div>
+                <div class="card-title">${EN.metrics.activeToday}</div>
+                <div class="hero-value" id="t-active">0m</div>
+                <div class="metric-sub" id="t-active-sub">${EN.status.trackedAcrossProjects}</div>
+              </div>
+              <div class="overview-runtime">
+                <span id="overview-tracking-status" class="badge">${escapeHtml(trackingLabel)}</span>
+                <time id="overview-freshness">${EN.status.updatedJustNow}</time>
+              </div>
+            </div>
+            <div class="goal-row">
+              <div>
+                <div class="goal-label">${EN.metrics.dailyGoal}</div>
+                <div id="t-goal-sub" class="metric-sub">${EN.status.targetZeroMinutes}</div>
+              </div>
+              <strong id="t-goal">0%</strong>
+            </div>
+            <progress id="overview-goal-progress" class="goal-progress" max="100" value="0" aria-label="${EN.aria.dailyGoalProgress}"></progress>
+          </div>
+          <div class="overview-supporting-metrics">
+            ${Metric({ id: "t-files", title: EN.metrics.uniqueActiveFiles, value: "0", subtitle: EN.status.exactRetainedFileCount, primary: true })}
+            ${Metric({ id: "t-flow-blocks", title: EN.metrics.flowBlocks, value: "0", subtitle: EN.status.observedFlowBlocks, primary: true })}
+          </div>
+        </div>
+        <div class="grid-2">
+          ${ChartPanel({ title: EN.panels.todayTimeline, canvasId: "todayTrendChart", ariaLabel: EN.aria.activeHoursTodayChart, short: true })}
+          ${Card(`<div class="card-title">${EN.panels.focusProfile}</div><div class="focus-profile">
+            <div class="focus-item"><div class="focus-heading"><span>${EN.focusProfile.topThreeFiles}</span><strong id="focus-files-value">—</strong></div><p id="focus-files-description">${EN.focusProfile.topThreeFilesDescription}</p><code id="focus-files-formula"></code></div>
+            <div class="focus-item"><div class="focus-heading"><span>${EN.focusProfile.fileSwitches}</span><strong id="focus-switches-value">—</strong></div><p id="focus-switches-description">${EN.focusProfile.fileSwitchesDescription}</p><code id="focus-switches-formula"></code></div>
+            <div class="focus-item"><div class="focus-heading"><span>${EN.focusProfile.typicalFlow}</span><strong id="focus-flow-value">—</strong></div><p id="focus-flow-description">${EN.focusProfile.typicalFlowDescription}</p><code id="focus-flow-formula"></code></div>
+          </div>`, "focus-card")}
+        </div>
+        <div class="grid-2 distribution-grid">
+          ${Card(`<div class="card-title">${EN.panels.projectDistribution}</div><div class="list" id="overview-project-distribution">${EmptyState(EN.empty.noProjectDistribution)}</div>`)}
+          ${Card(`<div class="card-title">${EN.panels.languageDistribution}</div><div class="list" id="overview-language-distribution">${EmptyState(EN.empty.noLanguageDistribution)}</div>`)}
+        </div>
       </div>
-      <div class="grid-2">
-        ${ChartPanel({ title: EN.panels.todayTimeline, canvasId: "todayTrendChart", ariaLabel: EN.aria.activeHoursTodayChart, short: true, accessory: `<span class="delta" id="t-save-rhythm">${EN.initial.zeroSavesPerHour}</span>` })}
-        ${Card(`<div class="card-title">${EN.panels.sessionLanguages}</div><div class="list" id="today-language-list">${EmptyState(EN.empty.noSessionLanguages)}</div>`)}
-      </div>
-      ${Card(`<div class="card-title">${EN.panels.activeFiles}</div><div class="table-wrapper"><table id="today-files-table"></table></div>`)}
     </section>
 
     <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-trends" hidden>

@@ -87,6 +87,12 @@ added to an application port first and wired in the composition root.
   `getState`/`setState` API, so editor changes cannot silently replace a user's
   dashboard context. Overview, Trends, Projects, and Workflow remain available
   from the persistent shell even when no text editor is active.
+- Overview adapts the bounded `today` projection into a zero-filled 96-bucket
+  wall-clock timeline and exactly three primary metrics: active time with daily
+  goal progress, unique retained files, and observed flow blocks. Its Focus
+  Profile and project/language shares reuse `buildPersonalInsights`, preserving
+  the documented formulas and unavailability rules; file-level values remain
+  unavailable when document identity storage is disabled.
 - `ReportPanel` creates only a nonce, local resource URIs, and serialized startup
   configuration. `src/webview/template.ts` owns HTML, `webview/main.ts` is the
   separately type-checked browser entry, and `webview/styles.css` owns the

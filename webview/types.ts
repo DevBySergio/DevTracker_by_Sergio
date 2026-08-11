@@ -9,6 +9,7 @@ export interface DashboardInitialData {
   dailyGoalSeconds: number;
   trackingStatus: "active" | "inactive" | "paused" | "unfocused";
   lastUpdatedAt: number;
+  fileDetailAvailable: boolean;
 }
 
 export interface DashboardTrackingStatusMessage {
@@ -16,6 +17,8 @@ export interface DashboardTrackingStatusMessage {
   protocolVersion: number;
   status: DashboardInitialData["trackingStatus"];
   lastUpdatedAt: number;
+  dailyGoalSeconds: number;
+  fileDetailAvailable: boolean;
 }
 
 export interface SeverityCounts {

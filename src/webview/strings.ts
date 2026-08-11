@@ -52,9 +52,14 @@ export const ENGLISH_STRINGS = {
     trackedTime: "Tracked Time",
     projects: "Projects",
     mostActiveHour: "Most Active Hour",
+    uniqueActiveFiles: "Unique Active Files",
+    flowBlocks: "Flow Blocks",
   },
   panels: {
-    todayTimeline: "Today Timeline",
+    todayTimeline: "Today · 15-Minute Activity",
+    focusProfile: "Focus Profile",
+    projectDistribution: "Project Distribution",
+    languageDistribution: "Language Distribution",
     sessionLanguages: "Session Languages",
     activeFiles: "Active Files",
     activityTrend: "Activity Trend",
@@ -77,6 +82,11 @@ export const ENGLISH_STRINGS = {
     gitUnavailable: "Git unavailable",
     diagnosticsUnavailable: "Diagnostics unavailable",
     noGlobalLanguageActivity: "No global language activity",
+    overviewTitle: "No activity yet today",
+    overviewBody:
+      "DevTracker will show active time, focus context, and distributions here after your first tracked interaction.",
+    noProjectDistribution: "No project activity yet",
+    noLanguageDistribution: "No language activity yet",
   },
   dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   chartLabels: {
@@ -84,6 +94,7 @@ export const ENGLISH_STRINGS = {
     errors: "Errors",
     warnings: "Warnings",
     info: "Info",
+    activeMinutes: "Active minutes",
   },
   tableHeaders: {
     file: ["File", "Time", "Activity samples"],
@@ -130,7 +141,8 @@ export const ENGLISH_STRINGS = {
     approximateLineActivity: "Approximate line activity",
     currentDiagnostics: "Current diagnostics",
     gitContext: "Git context",
-    activeHoursTodayChart: "Bar chart of active hours today",
+    activeHoursTodayChart:
+      "Bar chart of active time in 15-minute buckets across today",
     projectHoursChart: "Bar chart of project active hours",
     diagnosticsChart: "Stacked chart of diagnostics by severity",
   },
@@ -146,12 +158,30 @@ export const ENGLISH_STRINGS = {
     longestZeroMinutes: "Longest 0m",
     selectProjectToContinue: "Select a project to view project-specific data.",
     loading: "Loading dashboard data…",
+    trackedAcrossProjects: "Tracked across active projects today",
+    goalNotConfigured: "Daily goal unavailable",
+    fileDetailUnavailable: "File detail is disabled",
+    exactRetainedFileCount: "Distinct retained file identities with activity",
+    observedFlowBlocks: "Observed interaction-based flow blocks today",
+    updatedJustNow: "Updated just now",
     tracking: {
       active: "Tracking",
       inactive: "Inactive",
       paused: "Paused",
       unfocused: "Unfocused",
     },
+  },
+  focusProfile: {
+    topThreeFiles: "Top-3 file share",
+    topThreeFilesDescription:
+      "Share of active time in the three most active retained files.",
+    fileSwitches: "File switches / active hour",
+    fileSwitchesDescription:
+      "Confirmed file changes normalized by tracked active time.",
+    typicalFlow: "Typical flow block",
+    typicalFlowDescription:
+      "Average active time inside an observed interaction-based flow block.",
+    unavailable: "Unavailable",
   },
 } as const;
 

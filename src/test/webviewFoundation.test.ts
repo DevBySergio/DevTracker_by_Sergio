@@ -27,6 +27,7 @@ suite("WebviewFoundation", () => {
         dailyGoalSeconds: 14_400,
         trackingStatus: "active",
         lastUpdatedAt: Date.UTC(2026, 7, 11),
+        fileDetailAvailable: true,
       },
       {
         nonce: "test-nonce",
@@ -60,6 +61,7 @@ suite("WebviewFoundation", () => {
         dailyGoalSeconds: 14_400,
         trackingStatus: "paused",
         lastUpdatedAt: Date.UTC(2026, 7, 11),
+        fileDetailAvailable: true,
       },
       {
         nonce: "test-nonce",
@@ -77,6 +79,19 @@ suite("WebviewFoundation", () => {
     assert.match(html, /value="project-alpha" selected>Alpha<\/option>/);
     assert.match(html, /id="tracking-status"[^>]+data-status="paused"/);
     assert.match(html, /id="filter-bar"[^>]+aria-label="Date range"/);
+    assert.strictEqual(
+      html.match(/data-primary-metric="true"/g)?.length,
+      3,
+    );
+    assert.match(html, /id="overview-goal-progress"/);
+    assert.match(html, /Today · 15-Minute Activity/);
+    assert.match(html, /id="focus-files-formula"/);
+    assert.match(html, /id="focus-switches-formula"/);
+    assert.match(html, /id="focus-flow-formula"/);
+    assert.match(html, /id="overview-project-distribution"/);
+    assert.match(html, /id="overview-language-distribution"/);
+    assert.match(html, /id="overview-freshness"/);
+    assert.match(html, /id="overview-empty"[^>]+hidden/);
     ["export", "settings", "open-data", "reset"].forEach((action) =>
       assert.match(html, new RegExp(`data-action="${action}"`)),
     );

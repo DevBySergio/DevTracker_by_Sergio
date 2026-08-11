@@ -11,6 +11,11 @@ import {
   DashboardShellState,
   restoreDashboardState,
 } from "../src/webview/shellState";
+import {
+  OverviewDistributionValue,
+  OverviewViewModel,
+  buildOverviewViewModel,
+} from "../src/webview/overviewModel";
 
 declare const Chart: any;
 interface VsCodeApi {
@@ -51,6 +56,8 @@ let rawComparisonProject = null;
 let rawAll = [];
 let rangeDays = [];
 let dailyGoal = initialData.dailyGoalSeconds;
+let runtimeLastUpdatedAt = initialData.lastUpdatedAt;
+let runtimeFileDetailAvailable = initialData.fileDetailAvailable;
 let todayTrendChart = null;
 let projectTrendChart = null;
 let qualityTrendChart = null;
@@ -86,7 +93,12 @@ window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage
     return;
   }
   if (msg.type === 'dashboard/tracking-status') {
+    dailyGoal = msg.dailyGoalSeconds;
+    runtimeFileDetailAvailable = msg.fileDetailAvailable;
     renderTrackingStatus(msg.status, msg.lastUpdatedAt);
+    if (currentTab === 'today' && dashboardData) {
+      renderToday();
+    }
     return;
   }
   if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
@@ -220,10 +232,28 @@ function renderTrackingStatus(
   status: DashboardInitialData['trackingStatus'],
   lastUpdatedAt: number,
 ) {
+  runtimeLastUpdatedAt = lastUpdatedAt;
   const target = document.getElementById('tracking-status')!;
   target.dataset.status = status;
   target.title = `Last updated ${new Date(lastUpdatedAt).toLocaleString()}`;
   document.getElementById('tracking-status-label')!.textContent = EN.status.tracking[status];
+  const overviewStatus = document.getElementById('overview-tracking-status');
+  if (overviewStatus) {
+    overviewStatus.textContent = EN.status.tracking[status];
+  }
+  renderFreshness();
+}
+
+function renderFreshness() {
+  const target = document.getElementById('overview-freshness') as HTMLTimeElement | null;
+  if (!target) { return; }
+  const updated = new Date(runtimeLastUpdatedAt);
+  const elapsedSeconds = Math.max(0, Math.floor((Date.now() - runtimeLastUpdatedAt) / 1000));
+  target.dateTime = updated.toISOString();
+  target.title = updated.toLocaleString();
+  target.textContent = elapsedSeconds < 60
+    ? EN.status.updatedJustNow
+    : `Updated ${Math.floor(elapsedSeconds / 60)}m ago`;
 }
 
 function setBusy(busy: boolean) {
@@ -611,38 +641,65 @@ function addDiagnostics(target, source) {
 }
 
 function renderToday() {
-  const todayKey = getLocalDateKey();
-  const todayDays = allDays().filter(day => day.date === todayKey);
-  const todayAgg = aggregateDays(todayDays);
-  const sessionAgg = sessionAsAgg();
-  const targetSeconds = dailyGoal > 0 ? dailyGoal : 14400;
-  const pct = targetSeconds > 0 ? Math.min(100, Math.round((todayAgg.seconds / targetSeconds) * 100)) : 0;
-  const concentration = topThreeFileShare(todayAgg);
-  const changedCharacters = rawSession.insertedCharacters + rawSession.removedCharacters;
-  const lineActivity = todayAgg.insertedLineBreaksApprox + todayAgg.removedLineBreaksApprox;
-  const quality = rawSession.diagnosticsBySeverity.error + rawSession.diagnosticsBySeverity.warning;
+  if (!dashboardData) { return; }
+  const overview = buildOverviewViewModel(
+    dashboardData.current,
+    dailyGoal,
+    runtimeFileDetailAvailable,
+  );
+  const empty = document.getElementById('overview-empty')!;
+  const content = document.getElementById('overview-content')!;
+  empty.hidden = overview.hasActivity;
+  content.hidden = !overview.hasActivity;
+  if (!overview.hasActivity) {
+    renderFreshness();
+    return;
+  }
 
-  setText('t-active', fmt(todayAgg.seconds));
-  setText('t-active-sub', `${EN.phrases.session} ${fmt(rawSession.seconds)}`);
-  setText('t-goal', pct + '%');
-  setText('t-goal-sub', `${fmt(todayAgg.seconds)} ${EN.phrases.of} ${fmt(targetSeconds)}`);
-  setText('t-focus', concentration + '%');
-  setText('t-focus-sub', topLabel(todayAgg.files, EN.empty.noActiveFile));
-  setText('t-flow', fmt(rawSession.flow.currentSeconds));
-  setText('t-flow-sub', `${EN.phrases.longest} ${fmt(Math.max(rawSession.flow.longestSeconds, todayAgg.flow.longestSeconds))}`);
-  setText('t-edit', compact(changedCharacters));
-  setText('t-edit-sub', `${rawSession.editEvents} ${EN.phrases.editEvents}, ${rawSession.largeEditEvents} ${EN.phrases.largeEditEvents}`);
-  setText('t-churn', compact(lineActivity));
-  setText('t-churn-sub', `${compact(todayAgg.insertedLineBreaksApprox)} ${EN.phrases.inserted}, ${compact(todayAgg.removedLineBreaksApprox)} ${EN.phrases.removedLineBreaksApprox}`);
-  setText('t-quality', quality);
-  setText('t-quality-sub', `${rawSession.diagnosticsBySeverity.error} ${EN.phrases.errors}, ${rawSession.diagnosticsBySeverity.warning} ${EN.phrases.warnings}`);
-  setText('t-git', rawSession.gitDirtyFiles);
-  setText('t-git-sub', topLabel(rawSession.branches, EN.empty.gitUnavailable));
-  setText('t-save-rhythm', saveRhythm(todayAgg));
+  setText('t-active', fmt(overview.activeTimeMs / 1000));
+  const activeProjects = overview.projectDistribution.length;
+  setText(
+    't-active-sub',
+    activeProjects > 0
+      ? `${activeProjects} active ${activeProjects === 1 ? 'project' : 'projects'} today`
+      : EN.status.trackedAcrossProjects,
+  );
+  const goalPercent = overview.dailyGoalCompletionPercent;
+  const roundedGoal = goalPercent === null ? null : Math.round(goalPercent);
+  setText('t-goal', roundedGoal === null ? '—' : `${roundedGoal}%`);
+  setText(
+    't-goal-sub',
+    overview.dailyGoalMs === null
+      ? EN.status.goalNotConfigured
+      : `${fmt(overview.activeTimeMs / 1000)} ${EN.phrases.of} ${fmt(overview.dailyGoalMs / 1000)}`,
+  );
+  const goalProgress = document.getElementById('overview-goal-progress') as HTMLProgressElement;
+  goalProgress.value = roundedGoal ?? 0;
+  goalProgress.setAttribute('aria-valuetext', roundedGoal === null ? EN.status.goalNotConfigured : `${roundedGoal}%`);
 
-  renderTimeline(todayTrendChart, 'todayTrendChart', todayDays, chart => todayTrendChart = chart);
-  renderBarList('today-language-list', sessionAgg.languages, fmt, EN.empty.noSessionLanguages);
-  renderFileTable('today-files-table', mapToRows(todayAgg.files).slice(0, 10), todayAgg.activeFileCounts, EN.empty.noActiveFilesToday);
+  setText('t-files', overview.uniqueActiveFiles ?? '—');
+  setText(
+    't-files-sub',
+    overview.uniqueActiveFiles === null
+      ? EN.status.fileDetailUnavailable
+      : EN.status.exactRetainedFileCount,
+  );
+  setText('t-flow-blocks', overview.flowBlockCount);
+  setText('t-flow-blocks-sub', EN.status.observedFlowBlocks);
+
+  renderOverviewTimeline(overview);
+  renderFocusProfile(overview);
+  renderOverviewDistribution(
+    'overview-project-distribution',
+    overview.projectDistribution,
+    EN.empty.noProjectDistribution,
+  );
+  renderOverviewDistribution(
+    'overview-language-distribution',
+    overview.languageDistribution,
+    EN.empty.noLanguageDistribution,
+  );
+  renderFreshness();
 }
 
 function renderProject() {
@@ -762,6 +819,129 @@ function setDelta(id, delta) {
   const el = document.getElementById(id);
   el.textContent = delta.label;
   el.className = 'delta ' + (delta.value > 0 ? 'good' : delta.value < 0 ? 'bad' : '');
+}
+
+function renderOverviewTimeline(overview: OverviewViewModel) {
+  const labels = overview.timeline.map(bucket => bucket.label);
+  const values = overview.timeline.map(bucket => bucket.activeTimeMs / 60000);
+  const canvas = document.getElementById('todayTrendChart');
+
+  if (todayTrendChart) {
+    todayTrendChart.data.labels = labels;
+    todayTrendChart.data.datasets[0].data = values;
+    todayTrendChart.update('none');
+    return;
+  }
+
+  todayTrendChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: EN.chartLabels.activeMinutes,
+        data: values,
+        backgroundColor: colors[0],
+        borderRadius: 2,
+        barPercentage: 1,
+        categoryPercentage: 1
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true },
+        x: {
+          grid: { display: false },
+          ticks: { autoSkip: true, maxTicksLimit: 12, maxRotation: 0 }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: item => fmt(Number(item.raw) * 60)
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderFocusProfile(overview: OverviewViewModel) {
+  renderFocusMetric(
+    'focus-files',
+    overview.focusProfile.topThreeFileSharePercent,
+    value => `${formatDecimal(value)}%`,
+    EN.focusProfile.topThreeFilesDescription,
+  );
+  renderFocusMetric(
+    'focus-switches',
+    overview.focusProfile.fileSwitchesPerActiveHour,
+    value => formatDecimal(value),
+    EN.focusProfile.fileSwitchesDescription,
+  );
+  renderFocusMetric(
+    'focus-flow',
+    overview.focusProfile.typicalFlowActiveMs,
+    value => fmt(value / 1000),
+    EN.focusProfile.typicalFlowDescription,
+  );
+}
+
+function renderFocusMetric(prefix, insight, formatter, description) {
+  const available = insight.value !== null;
+  setText(
+    `${prefix}-value`,
+    available ? formatter(insight.value) : EN.focusProfile.unavailable,
+  );
+  setText(
+    `${prefix}-description`,
+    available ? description : insight.metadata.unavailableWhen,
+  );
+  setText(`${prefix}-formula`, insight.metadata.formula);
+}
+
+function renderOverviewDistribution(
+  id: string,
+  rows: readonly OverviewDistributionValue[],
+  emptyText: string,
+) {
+  const target = document.getElementById(id)!;
+  target.replaceChildren();
+  if (!rows.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = emptyText;
+    target.append(empty);
+    return;
+  }
+  rows.slice(0, 8).forEach(row => {
+    const item = document.createElement('div');
+    item.className = 'bar-row distribution-row';
+    item.setAttribute(
+      'aria-label',
+      `${row.label}: ${fmt(row.activeTimeMs / 1000)}, ${formatDecimal(row.sharePercent)}%`,
+    );
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = row.label;
+    label.title = row.label;
+    const value = document.createElement('div');
+    value.className = 'value';
+    value.textContent = `${fmt(row.activeTimeMs / 1000)} · ${formatDecimal(row.sharePercent)}%`;
+    const track = document.createElement('progress');
+    track.className = 'bar-track';
+    track.max = 100;
+    track.value = row.sharePercent;
+    track.setAttribute('aria-hidden', 'true');
+    item.append(label, value, track);
+    target.append(item);
+  });
+}
+
+function formatDecimal(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
 function renderTimeline(chart, canvasId, days, assign) {
