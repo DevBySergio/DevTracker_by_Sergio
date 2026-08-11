@@ -10,5 +10,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tsbuildinfo
+media/*.map
 coverage/
 .nyc_output/

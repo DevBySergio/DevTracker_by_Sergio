@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 
 //@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
@@ -45,4 +46,63 @@ const extensionConfig = {
     level: "log", // enables logging required for problem matchers
   },
 };
-module.exports = [ extensionConfig ];
+
+class CopyWebviewCssPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap('CopyWebviewCssPlugin', compilation => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'CopyWebviewCssPlugin',
+          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+        },
+        () => {
+          const stylesheet = fs.readFileSync(
+            path.resolve(__dirname, 'webview', 'styles.css'),
+            'utf8',
+          );
+          compilation.emitAsset(
+            'webview.css',
+            new compiler.webpack.sources.RawSource(stylesheet),
+          );
+        },
+      );
+    });
+  }
+}
+
+/** @type WebpackConfig */
+const webviewConfig = {
+  target: 'web',
+  mode: 'none',
+  entry: './webview/main.ts',
+  output: {
+    path: path.resolve(__dirname, 'media'),
+    filename: 'webview.js',
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              configFile: path.resolve(__dirname, 'tsconfig.webview.json'),
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [new CopyWebviewCssPlugin()],
+  devtool: 'nosources-source-map',
+  infrastructureLogging: {
+    level: 'log',
+  },
+};
+
+module.exports = [extensionConfig, webviewConfig];

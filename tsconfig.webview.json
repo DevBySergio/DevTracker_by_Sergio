@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "types": [],
+    "strict": false,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "webview/**/*.ts",
+    "src/webview/components.ts",
+    "src/webview/strings.ts"
+  ]
+}

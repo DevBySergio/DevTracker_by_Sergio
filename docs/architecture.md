@@ -39,7 +39,7 @@ lifetime through `ExtensionContext.subscriptions`.
 | `DataManager.ts` and `persistence/` | v1 compatibility plus schema-v2 storage and validation boundaries | `domain/`, `platform/`; no VS Code or presentation dependency |
 | `queries/` | Indexed, typed dashboard and range read models assembled from tracking data | `application/ports`, `domain/`; no VS Code, filesystem, or presentation dependency |
 | `integrations/` | Adapters for optional external VS Code capabilities such as Git | VS Code API and `application/ports`; no persistence or presentation dependency |
-| `presentation/` and `ReportPanel.ts` | Status bar and dashboard rendering | VS Code API, presentation ports, query view models, and `domain/`; no persistence writes |
+| `presentation/`, `webview/`, and `ReportPanel.ts` | Status bar, bounded dashboard protocol, host-side HTML template, and browser UI bundle | VS Code API, presentation ports, query view models, and `domain/`; no persistence writes |
 | `tracking/` | Convert VS Code commands/events into typed service calls and own the monotonic activity state machine | VS Code API and application/platform ports; no concrete persistence, query, integration, or presenter class imports |
 | `extension.ts` | Instantiate concrete implementations and register the root disposable | Any concrete module needed for composition; no behavior or mutable module state |
 
@@ -82,6 +82,12 @@ added to an application port first and wired in the composition root.
   a bounded initial snapshot followed by structural deltas at most once per
   second, suspends queries while hidden, and never embeds complete history in
   the HTML document.
+- `ReportPanel` creates only a nonce, local resource URIs, and serialized startup
+  configuration. `src/webview/template.ts` owns HTML, `webview/main.ts` is the
+  separately type-checked browser entry, and `webview/styles.css` owns the
+  reusable VS Code-native design tokens. Webpack emits the browser assets into
+  `media/`; executable JavaScript and CSS are never assembled in template
+  strings.
 - Export commands use the same typed range service. JSON is versioned and
   deterministic; CSV is deliberately a daily summary with explicit units, a
   UTF-8 BOM, RFC-style quoting, and spreadsheet-formula neutralization.
@@ -95,11 +101,11 @@ added to an application port first and wired in the composition root.
 ## Transitional boundaries
 
 `DataManager.ts` and `ReportPanel.ts` retain their root paths so the 1.x API and
-tests remain compatible during the v2 migration. `ReportPanel` now consumes the
-typed range protocol while its HTML remains monolithic until the modular
-webview task. Schema v2 can replace the store behind `TrackingStore`, and the
-modular webview can replace `ReportPanel` behind `DashboardPresentation`,
-without changing the tracking controller.
+tests remain compatible during the v2 migration. `ReportPanel` consumes the
+typed range protocol and delegates markup and browser behavior to the modular
+webview boundary. Schema v2 can replace the store behind `TrackingStore`, and
+the modular webview can evolve behind `DashboardPresentation`, without
+changing the tracking controller.
 
 The schema-v2 [storage layout](storage-v2.md) is initialized asynchronously
 from `ExtensionContext.globalStorageUri`. Strict startup migration imports v1
