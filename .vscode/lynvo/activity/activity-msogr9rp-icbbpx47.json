@@ -1,0 +1,15 @@
+{
+  "id": "activity-msogr9rp-icbbpx47",
+  "type": "task_moved",
+  "message": "Moved \"T20 — Create the modular webview build and native design system\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786440849000,
+  "taskId": "task-msj9x37w-6mpqjf6x",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
