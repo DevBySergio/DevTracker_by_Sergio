@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf3-vrvz1kv5",
+  "type": "checklist_updated",
+  "message": "Completed \"Add a persistent project selector\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906271,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3gy-2ggcx8nj",
+    "done": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf5-dvwsxddd",
+  "type": "checklist_updated",
+  "message": "Completed \"Add an Export, Settings, Open Data, and Reset menu\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906273,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3h0-cduz3kzl",
+    "done": true
+  }
+}

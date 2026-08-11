@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf6-frhtek13",
+  "type": "checklist_updated",
+  "message": "Completed \"Allow opening the dashboard without an active editor\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906274,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3h1-qn0a8osg",
+    "done": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf9-1bkze0kv",
+  "type": "task_moved",
+  "message": "Moved \"T21 — Build the application shell and persistent navigation\" from In Progress to Done",
+  "createdAt": 1786442906277,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

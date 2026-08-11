@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf4-ghdip4fn",
+  "type": "checklist_updated",
+  "message": "Completed \"Add a shared range filter where appropriate\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906272,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3gz-7fu0m7z1",
+    "done": true
+  }
+}

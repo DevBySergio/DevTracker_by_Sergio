@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf7-kdz1yzuu",
+  "type": "checklist_updated",
+  "message": "Completed \"Preserve view, project, and range with getState/setState\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906275,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3h2-16pfpcrq",
+    "done": true
+  }
+}

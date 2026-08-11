@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf2-69kpk0ub",
+  "type": "checklist_updated",
+  "message": "Completed \"Add a visible tracking status\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906270,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3gx-40e40eeq",
+    "done": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohzcf8-ptr9pykj",
+  "type": "checklist_updated",
+  "message": "Completed \"Avoid unexpected changes when the active editor changes\" in \"T21 — Build the application shell and persistent navigation\"",
+  "createdAt": 1786442906276,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "itemId": "check-msj9x3h3-7acqurf0",
+    "done": true
+  }
+}
