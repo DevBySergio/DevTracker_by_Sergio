@@ -1,0 +1,15 @@
+{
+  "id": "activity-msoitox7-ottoen3x",
+  "type": "checklist_updated",
+  "message": "Completed \"Create an active-time and daily-goal hero\" in \"T22 — Implement the Overview view\"",
+  "createdAt": 1786444322155,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37y-gkp9ziqw",
+  "metadata": {
+    "checklistItemId": "check-msj9x3hc-n5tcrgb1",
+    "done": true
+  }
+}

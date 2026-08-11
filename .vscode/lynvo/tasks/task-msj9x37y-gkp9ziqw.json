@@ -2,7 +2,7 @@
   "id": "task-msj9x37y-gkp9ziqw",
   "title": "T22 — Implement the Overview view",
   "description": "## Objective\n\nCreate a clear daily view that prioritizes active time, goals, and context without KPI overload.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T22.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033567,
-  "updatedAt": 1786443465394,
+  "updatedAt": 1786444322163,
   "position": 1786127033567,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
@@ -23,58 +23,58 @@
     {
       "id": "check-msj9x3hc-n5tcrgb1",
       "text": "Create an active-time and daily-goal hero",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033568,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322155
     },
     {
       "id": "check-msj9x3hd-tlt5m1pv",
       "text": "Add a 24-hour timeline with 15-minute buckets",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033569,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322156
     },
     {
       "id": "check-msj9x3he-wppmcte4",
       "text": "Display an explainable Focus Profile",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033570,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322157
     },
     {
       "id": "check-msj9x3hf-krc4wic5",
       "text": "Display distribution by project and language",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033571,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322158
     },
     {
       "id": "check-msj9x3hg-zhto055f",
       "text": "Summarize unique files and flow blocks",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033572,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322159
     },
     {
       "id": "check-msj9x3hh-wr0qpgps",
       "text": "Limit the view to three primary metrics",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033573,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322160
     },
     {
       "id": "check-msj9x3hi-sylh4xed",
       "text": "Display freshness and tracking status",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033574,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322161
     },
     {
       "id": "check-msj9x3hj-eb6vqyo4",
       "text": "Create an empty state for new users",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033575,
-      "updatedAt": 1786127326666
+      "updatedAt": 1786444322162
     }
   ],
   "relations": [

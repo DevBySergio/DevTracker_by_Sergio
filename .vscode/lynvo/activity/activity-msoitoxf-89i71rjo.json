@@ -1,0 +1,15 @@
+{
+  "id": "activity-msoitoxf-89i71rjo",
+  "type": "task_moved",
+  "message": "Moved \"T22 — Implement the Overview view\" from In Progress to Done",
+  "createdAt": 1786444322163,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37y-gkp9ziqw",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
