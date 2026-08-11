@@ -1,0 +1,15 @@
+{
+  "id": "activity-msohkqp1-32slsckc",
+  "type": "task_moved",
+  "message": "Moved \"T21 — Build the application shell and persistent navigation\" from Backlog to In Progress",
+  "createdAt": 1786442224933,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37x-owabv4pf",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
