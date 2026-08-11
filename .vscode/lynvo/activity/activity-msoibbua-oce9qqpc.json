@@ -1,0 +1,15 @@
+{
+  "id": "activity-msoibbua-oce9qqpc",
+  "type": "task_moved",
+  "message": "Moved \"T22 — Implement the Overview view\" from Backlog to In Progress",
+  "createdAt": 1786443465394,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37y-gkp9ziqw",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

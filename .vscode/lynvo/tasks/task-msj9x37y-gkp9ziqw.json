@@ -2,7 +2,7 @@
   "id": "task-msj9x37y-gkp9ziqw",
   "title": "T22 — Implement the Overview view",
   "description": "## Objective\n\nCreate a clear daily view that prioritizes active time, goals, and context without KPI overload.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T22.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033567,
-  "updatedAt": 1786127326666,
+  "updatedAt": 1786443465394,
   "position": 1786127033567,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
