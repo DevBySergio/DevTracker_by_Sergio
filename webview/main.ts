@@ -7,9 +7,19 @@ import type {
   RangeViewModelDelta,
 } from "./types";
 import { ENGLISH_STRINGS as EN } from "../src/webview/strings";
+import {
+  DashboardShellState,
+  restoreDashboardState,
+} from "../src/webview/shellState";
 
 declare const Chart: any;
-declare function acquireVsCodeApi(): { postMessage(message: unknown): void };
+interface VsCodeApi {
+  postMessage(message: unknown): void;
+  getState(): unknown;
+  setState(state: DashboardShellState): void;
+}
+
+declare function acquireVsCodeApi(): VsCodeApi;
 
 const themeColor = (name: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -21,8 +31,17 @@ const initialData = JSON.parse(
   document.getElementById('initial-data')?.textContent ?? "{}",
 ) as DashboardInitialData;
 const vscodeApi = acquireVsCodeApi();
-let currentTab: DashboardViewName = 'today';
-let currentRange: DashboardRangeName = 'week';
+const restoredState = restoreDashboardState(
+  vscodeApi.getState(),
+  initialData.currentProjectId,
+  initialData.projects.map(project => project.id),
+);
+let currentTab: DashboardViewName = restoredState.view;
+let currentRange: DashboardRangeName = restoredState.range;
+let selectedProjectId: string | null = restoredState.projectId;
+const knownProjects = new Map(
+  initialData.projects.map(project => [project.id, project.displayName]),
+);
 let requestSequence = 0;
 let activeRequestId = '';
 let dashboardData: RangeQueryViewModel | null = null;
@@ -43,66 +62,107 @@ const colors = Array.from(
 );
 
 document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach(button => {
-  button.addEventListener('click', () => switchTab(button.dataset.tab as DashboardViewName, button));
+  button.addEventListener('click', () => switchTab(button.dataset.tab as DashboardViewName));
 });
 document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
   button.addEventListener('click', () => setRange(button.dataset.range as DashboardRangeName));
 });
+document.getElementById('project-selector')?.addEventListener('change', event => {
+  const value = (event.currentTarget as HTMLSelectElement).value;
+  selectedProjectId = value || null;
+  persistDashboardState();
+  requestView();
+});
+document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => {
+  button.addEventListener('click', () => {
+    vscodeApi.postMessage({ type: 'dashboard/action', action: button.dataset.action });
+    (document.getElementById('actions-menu') as HTMLDetailsElement).open = false;
+  });
+});
 
 window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage>) => {
   const msg = event.data;
-  if (!msg || msg.protocolVersion !== initialData.protocolVersion || msg.requestId !== activeRequestId || msg.view !== currentTab) {
+  if (!msg || msg.protocolVersion !== initialData.protocolVersion) {
+    return;
+  }
+  if (msg.type === 'dashboard/tracking-status') {
+    renderTrackingStatus(msg.status, msg.lastUpdatedAt);
+    return;
+  }
+  if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
     return;
   }
   if (msg.type === 'dashboard/snapshot') {
     dashboardData = msg.data;
+    rememberProjects(msg.data.current.projects);
     adaptDashboardData();
     render();
   }
   if (msg.type === 'dashboard/live-delta' && dashboardData && dashboardData.revision === msg.baseRevision) {
     applyViewModelDelta(dashboardData, msg.delta, msg.revision);
+    rememberProjects(dashboardData.current.projects);
     adaptDashboardData();
     render();
   }
   if (msg.type === 'dashboard/error') {
     document.getElementById('page-subtitle')!.textContent = `${EN.status.dataUnavailable} (${msg.code}).`;
+    setBusy(false);
   }
 });
 
+renderProjectOptions();
+applyShellState();
+renderTrackingStatus(initialData.trackingStatus, initialData.lastUpdatedAt);
+persistDashboardState();
 requestView();
 
-function switchTab(tab: DashboardViewName, button: HTMLButtonElement) {
+function switchTab(tab: DashboardViewName) {
   currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(item => {
-    item.classList.remove('active');
-    item.setAttribute('aria-selected', 'false');
-  });
-  button.classList.add('active');
-  button.setAttribute('aria-selected', 'true');
-  document.querySelectorAll<HTMLElement>('.view-section').forEach(section => {
-    section.classList.remove('active');
-    section.hidden = true;
-  });
-  const activeSection = document.getElementById('view-' + tab);
-  activeSection.classList.add('active');
-  activeSection.hidden = false;
-  document.getElementById('filter-bar')!.hidden = tab === 'today';
+  persistDashboardState();
+  applyShellState();
   requestView();
+}
+
+function applyShellState() {
+  document.querySelectorAll('.tab-btn').forEach(item => {
+    const active = (item as HTMLElement).dataset.tab === currentTab;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-selected', String(active));
+  });
+  document.querySelectorAll<HTMLElement>('.view-section').forEach(section => {
+    const active = section.id === 'view-' + currentTab;
+    section.classList.toggle('active', active);
+    section.hidden = !active;
+  });
+  document.getElementById('filter-bar')!.hidden = currentTab === 'today';
+  document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
+    button.classList.toggle('active', button.dataset.range === currentRange);
+  });
+  (document.getElementById('project-selector') as HTMLSelectElement).value = selectedProjectId ?? '';
+  updateHeader();
 }
 
 function setRange(range: DashboardRangeName) {
   currentRange = range;
-  document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
-  document.getElementById('btn-' + range).classList.add('active');
+  persistDashboardState();
+  applyShellState();
   requestView();
 }
 
 function requestView() {
+  const needsProject = currentTab === 'project' || currentTab === 'quality';
   activeRequestId = 'request-' + (++requestSequence);
   dashboardData = null;
-  const projectId = currentTab === 'project' || currentTab === 'quality'
-    ? initialData.currentProjectId
-    : null;
+  if (needsProject && !selectedProjectId) {
+    activeRequestId = '';
+    updateHeader();
+    document.getElementById('page-subtitle')!.textContent = EN.status.selectProjectToContinue;
+    setBusy(false);
+    return;
+  }
+  const projectId = needsProject ? selectedProjectId : null;
+  setBusy(true);
+  document.getElementById('page-subtitle')!.textContent = EN.status.loading;
   vscodeApi.postMessage({
     type: 'dashboard/request-view',
     protocolVersion: initialData.protocolVersion,
@@ -116,6 +176,60 @@ function requestView() {
   });
 }
 
+function persistDashboardState() {
+  vscodeApi.setState({
+    view: currentTab,
+    range: currentRange,
+    projectId: selectedProjectId,
+  });
+}
+
+function rememberProjects(projects: RangeQueryViewModel['current']['projects']) {
+  let changed = false;
+  projects.forEach(project => {
+    const { id, displayName } = project.project;
+    if (knownProjects.get(id) !== displayName) {
+      knownProjects.set(id, displayName);
+      changed = true;
+    }
+  });
+  if (changed) {
+    renderProjectOptions();
+  }
+}
+
+function renderProjectOptions() {
+  const selector = document.getElementById('project-selector') as HTMLSelectElement;
+  selector.replaceChildren();
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = EN.selectProject;
+  selector.append(placeholder);
+  [...knownProjects.entries()]
+    .sort((left, right) => left[1].localeCompare(right[1]) || left[0].localeCompare(right[0]))
+    .forEach(([id, displayName]) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = displayName;
+      selector.append(option);
+    });
+  selector.value = selectedProjectId ?? '';
+}
+
+function renderTrackingStatus(
+  status: DashboardInitialData['trackingStatus'],
+  lastUpdatedAt: number,
+) {
+  const target = document.getElementById('tracking-status')!;
+  target.dataset.status = status;
+  target.title = `Last updated ${new Date(lastUpdatedAt).toLocaleString()}`;
+  document.getElementById('tracking-status-label')!.textContent = EN.status.tracking[status];
+}
+
+function setBusy(busy: boolean) {
+  document.getElementById('dashboard-content')!.setAttribute('aria-busy', String(busy));
+}
+
 function rangePreset(range: DashboardRangeName) {
   if (range === 'today') { return 'today'; }
   if (range === 'month') { return '30-days'; }
@@ -124,6 +238,7 @@ function rangePreset(range: DashboardRangeName) {
 }
 
 function render() {
+  setBusy(false);
   updateHeader();
   renderToday();
   if (currentTab === 'project') { renderProject(); }

@@ -75,10 +75,15 @@ body {
   position: absolute;
   width: 1px;
 }
-.navbar {
-  align-items: center;
+.app-shell {
   background: var(--surface);
   border-bottom: 1px solid var(--card-border);
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 10;
+}
+.navbar {
+  align-items: center;
   display: flex;
   gap: var(--space-4);
   justify-content: space-between;
@@ -110,6 +115,90 @@ body {
   border-radius: var(--radius-lg);
   padding: var(--space-1);
 }
+.navbar-actions, .shell-controls, .project-control, .tracking-status {
+  align-items: center;
+  display: flex;
+}
+.navbar-actions { gap: var(--space-3); }
+.shell-controls {
+  border-top: 1px solid var(--card-border);
+  gap: var(--space-4);
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+}
+.project-control {
+  color: var(--text-secondary);
+  font-size: var(--font-size-body-sm);
+  gap: var(--space-2);
+  min-width: 0;
+}
+.project-control select {
+  background: var(--vscode-dropdown-background);
+  border: 1px solid var(--vscode-dropdown-border);
+  color: var(--vscode-dropdown-foreground);
+  font: inherit;
+  max-width: min(360px, 42vw);
+  min-height: 30px;
+  padding: var(--space-1) var(--space-2);
+}
+.project-control select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.tracking-status {
+  color: var(--text-secondary);
+  font-size: var(--font-size-body-sm);
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+.status-dot {
+  background: var(--muted);
+  border-radius: var(--radius-pill);
+  height: 8px;
+  width: 8px;
+}
+.tracking-status[data-status="active"] .status-dot { background: var(--success); }
+.tracking-status[data-status="paused"] .status-dot { background: var(--warning); }
+.tracking-status[data-status="unfocused"] .status-dot { background: var(--info); }
+.actions-menu { position: relative; }
+.actions-menu summary {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-body-sm);
+  list-style: none;
+  min-height: 30px;
+  padding: var(--space-1) var(--space-3);
+}
+.actions-menu summary::-webkit-details-marker { display: none; }
+.actions-menu summary:hover { background: var(--vscode-toolbar-hoverBackground); }
+.actions-menu summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.actions-popover {
+  background: var(--vscode-menu-background);
+  border: 1px solid var(--vscode-menu-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow);
+  display: grid;
+  min-width: 170px;
+  padding: var(--space-1);
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-1));
+}
+.actions-popover button {
+  color: var(--vscode-menu-foreground);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+}
+.actions-popover button:hover,
+.actions-popover button:focus-visible {
+  background: var(--vscode-menu-selectionBackground);
+  color: var(--vscode-menu-selectionForeground);
+}
+.actions-popover .danger-action { color: var(--danger); }
 button {
   background: transparent;
   border: 0;
@@ -193,6 +282,10 @@ button:focus-visible, .skip-link:focus-visible {
 @media (max-width: 980px) {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .navbar, .view-header { align-items: flex-start; flex-direction: column; }
+  .navbar-actions { justify-content: space-between; width: 100%; }
+  .shell-controls { align-items: flex-start; flex-direction: column; }
+  .project-control { justify-content: space-between; width: 100%; }
+  .project-control select { max-width: 70vw; }
   .tabs, .filters { flex-wrap: wrap; }
 }
 .card {

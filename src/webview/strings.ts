@@ -4,11 +4,20 @@ export const ENGLISH_STRINGS = {
   skipToDashboard: "Skip to dashboard",
   dashboardViews: "Dashboard views",
   dateRange: "Date range",
+  projectSelector: "Project",
+  selectProject: "Select a project",
+  actions: "Actions",
+  actionItems: {
+    export: "Export",
+    settings: "Settings",
+    openData: "Open Data",
+    reset: "Reset",
+  },
   views: {
-    today: "Today",
-    project: "Project",
+    today: "Overview",
+    project: "Trends",
     quality: "Workflow",
-    global: "Global",
+    global: "Projects",
   },
   ranges: {
     today: "Today",
@@ -17,12 +26,12 @@ export const ENGLISH_STRINGS = {
     all: "Last 90 Days",
   },
   subtitles: {
-    today: "Live view of your current coding rhythm.",
+    today: "Live view of today’s coding activity across tracked projects.",
     project:
-      "Range-based activity time, concentration, editor changes, languages, and active files.",
+      "Range-based activity time and patterns for the selected project.",
     quality:
       "Descriptive diagnostics, saves, debug time, and Git branch context.",
-    global: "Your long-term work patterns across tracked projects.",
+    global: "Activity across every tracked project in the selected range.",
   },
   metrics: {
     activeToday: "Active Today",
@@ -135,6 +144,14 @@ export const ENGLISH_STRINGS = {
     targetZeroMinutes: "Target 0m",
     sessionZeroMinutes: "Session 0m",
     longestZeroMinutes: "Longest 0m",
+    selectProjectToContinue: "Select a project to view project-specific data.",
+    loading: "Loading dashboard data…",
+    tracking: {
+      active: "Tracking",
+      inactive: "Inactive",
+      paused: "Paused",
+      unfocused: "Unfocused",
+    },
   },
 } as const;
 

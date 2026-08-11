@@ -82,12 +82,21 @@ added to an application port first and wired in the composition root.
   a bounded initial snapshot followed by structural deltas at most once per
   second, suspends queries while hidden, and never embeds complete history in
   the HTML document.
+- The application shell owns the selected dashboard view, project, and range.
+  It restores and persists those values with the VS Code webview
+  `getState`/`setState` API, so editor changes cannot silently replace a user's
+  dashboard context. Overview, Trends, Projects, and Workflow remain available
+  from the persistent shell even when no text editor is active.
 - `ReportPanel` creates only a nonce, local resource URIs, and serialized startup
   configuration. `src/webview/template.ts` owns HTML, `webview/main.ts` is the
   separately type-checked browser entry, and `webview/styles.css` owns the
   reusable VS Code-native design tokens. Webpack emits the browser assets into
   `media/`; executable JavaScript and CSS are never assembled in template
   strings.
+- `ReportPanel` keeps one panel instance until the user closes it, forwards live
+  tracking status independently from range data, and maps the shell's Export,
+  Settings, Open Data, and Reset actions through a fixed command allowlist.
+  Arbitrary command names from the webview are never executed.
 - Export commands use the same typed range service. JSON is versioned and
   deterministic; CSV is deliberately a daily summary with explicit units, a
   UTF-8 BOM, RFC-style quoting, and spreadsheet-formula neutralization.

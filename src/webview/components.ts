@@ -80,6 +80,6 @@ export function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-function escapeAttribute(value: string): string {
+export function escapeAttribute(value: string): string {
   return escapeHtml(value).replace(/"/g, "&quot;");
 }

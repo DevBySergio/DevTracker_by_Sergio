@@ -4,14 +4,29 @@ import {
   EmptyState,
   Metric,
   Toolbar,
+  escapeAttribute,
   escapeHtml,
 } from "./components";
 import { ENGLISH_STRINGS as EN } from "./strings";
 
+export type DashboardTrackingStatus =
+  | "active"
+  | "inactive"
+  | "paused"
+  | "unfocused";
+
+export interface DashboardProjectOption {
+  id: string;
+  displayName: string;
+}
+
 export interface DashboardInitialData {
   protocolVersion: number;
-  currentProjectId: string;
+  currentProjectId: string | null;
+  projects: readonly DashboardProjectOption[];
   dailyGoalSeconds: number;
+  trackingStatus: DashboardTrackingStatus;
+  lastUpdatedAt: number;
 }
 
 export interface DashboardResources {
@@ -34,12 +49,16 @@ export function renderDashboardHtml(
     role: "tablist",
     dataAttribute: "tab",
     items: [
-      { id: "tab-today", label: EN.views.today, value: "today", active: true },
-      { id: "tab-project", label: EN.views.project, value: "project" },
-      { id: "tab-quality", label: EN.views.quality, value: "quality" },
-      { id: "tab-global", label: EN.views.global, value: "global" },
+      { id: "tab-overview", label: EN.views.today, value: "today", active: true },
+      { id: "tab-trends", label: EN.views.project, value: "project" },
+      { id: "tab-projects", label: EN.views.global, value: "global" },
+      { id: "tab-workflow", label: EN.views.quality, value: "quality" },
     ],
   });
+  const projectOptions = initialData.projects.map((project) =>
+    `<option value="${escapeAttribute(project.id)}"${project.id === initialData.currentProjectId ? " selected" : ""}>${escapeHtml(project.displayName)}</option>`
+  ).join("");
+  const trackingLabel = EN.status.tracking[initialData.trackingStatus];
   const filters = Toolbar({
     id: "filter-bar",
     hidden: true,
@@ -70,12 +89,37 @@ export function renderDashboardHtml(
 <body>
   <a class="skip-link" href="#dashboard-content">${EN.skipToDashboard}</a>
   <script id="initial-data" nonce="${resources.nonce}" type="application/json">${serializedData}</script>
-  <header class="navbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>${EN.appName}</span></div>
-    ${tabs}
+  <header class="app-shell">
+    <div class="navbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>${EN.appName}</span></div>
+      ${tabs}
+      <div class="navbar-actions">
+        <div id="tracking-status" class="tracking-status" data-status="${escapeAttribute(initialData.trackingStatus)}" title="Last updated ${escapeAttribute(new Date(initialData.lastUpdatedAt).toISOString())}">
+          <span class="status-dot" aria-hidden="true"></span><span id="tracking-status-label">${escapeHtml(trackingLabel)}</span>
+        </div>
+        <details id="actions-menu" class="actions-menu">
+          <summary>${EN.actions}</summary>
+          <div class="actions-popover">
+            <button type="button" data-action="export">${EN.actionItems.export}</button>
+            <button type="button" data-action="settings">${EN.actionItems.settings}</button>
+            <button type="button" data-action="open-data">${EN.actionItems.openData}</button>
+            <button type="button" data-action="reset" class="danger-action">${EN.actionItems.reset}</button>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="shell-controls">
+      <label class="project-control" for="project-selector">
+        <span>${EN.projectSelector}</span>
+        <select id="project-selector">
+          <option value="">${EN.selectProject}</option>
+          ${projectOptions}
+        </select>
+      </label>
+    </div>
   </header>
 
-  <main id="dashboard-content" class="container" tabindex="-1">
+  <main id="dashboard-content" class="container" tabindex="-1" aria-busy="true">
     <div class="view-header">
       <div>
         <h1 id="page-title" class="page-title">${EN.views.today}</h1>
@@ -84,7 +128,7 @@ export function renderDashboardHtml(
       ${filters}
     </div>
 
-    <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-today">
+    <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-overview">
       <div class="grid-4">
         ${Metric({ id: "t-active", title: EN.metrics.activeToday, value: "0m", subtitle: EN.status.sessionZeroMinutes, ariaLabel: EN.aria.activeTimeToday, tone: "success" })}
         ${Metric({ id: "t-goal", title: EN.metrics.dailyGoal, value: "0%", subtitle: EN.status.targetZeroMinutes, ariaLabel: EN.aria.dailyGoalProgress })}
@@ -104,7 +148,7 @@ export function renderDashboardHtml(
       ${Card(`<div class="card-title">${EN.panels.activeFiles}</div><div class="table-wrapper"><table id="today-files-table"></table></div>`)}
     </section>
 
-    <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-project" hidden>
+    <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-trends" hidden>
       <div class="grid-4">
         ${Card(`<div class="card-title">${EN.metrics.projectTime}</div><div class="metric-row"><div class="metric-big" id="p-time">0m</div><span class="delta" id="p-time-delta">0%</span></div><div class="metric-sub" id="p-time-sub">${EN.status.selectedRange}</div>`, "metric-card")}
         ${Metric({ id: "p-focus", title: EN.metrics.topThreeFileShare, value: "0%", subtitle: EN.initial.zeroObservedEditorTransitions })}
@@ -118,7 +162,7 @@ export function renderDashboardHtml(
       ${Card(`<div class="card-title">${EN.panels.mostActiveFiles}</div><div class="table-wrapper"><table id="project-files-table"></table></div>`)}
     </section>
 
-    <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-quality" hidden>
+    <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-workflow" hidden>
       <div class="grid-4">
         ${Metric({ id: "q-errors", title: EN.metrics.errors, value: "0", subtitle: EN.status.currentSnapshot, tone: "danger" })}
         ${Metric({ id: "q-warnings", title: EN.metrics.warnings, value: "0", subtitle: EN.status.currentSnapshot, tone: "warning" })}
@@ -132,7 +176,7 @@ export function renderDashboardHtml(
       ${Card(`<div class="card-title">${EN.panels.currentSignals}</div><div class="list" id="quality-breakdown">${EmptyState(EN.empty.diagnosticsUnavailable)}</div>`)}
     </section>
 
-    <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-global" hidden>
+    <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-projects" hidden>
       <div class="grid-4">
         ${Metric({ id: "g-time", title: EN.metrics.trackedTime, value: "0m", subtitle: EN.status.allTrackedActivity })}
         ${Metric({ id: "g-projects", title: EN.metrics.projects, value: "0", subtitle: EN.status.withActivity })}

@@ -4,8 +4,18 @@ export type RangePreset = "today" | "7-days" | "30-days" | "90-days";
 
 export interface DashboardInitialData {
   protocolVersion: number;
-  currentProjectId: string;
+  currentProjectId: string | null;
+  projects: Array<{ id: string; displayName: string }>;
   dailyGoalSeconds: number;
+  trackingStatus: "active" | "inactive" | "paused" | "unfocused";
+  lastUpdatedAt: number;
+}
+
+export interface DashboardTrackingStatusMessage {
+  type: "dashboard/tracking-status";
+  protocolVersion: number;
+  status: DashboardInitialData["trackingStatus"];
+  lastUpdatedAt: number;
 }
 
 export interface SeverityCounts {
@@ -146,4 +156,5 @@ export interface DashboardErrorMessage {
 export type DashboardResponseMessage =
   | DashboardSnapshotMessage
   | DashboardLiveDeltaMessage
-  | DashboardErrorMessage;
+  | DashboardErrorMessage
+  | DashboardTrackingStatusMessage;

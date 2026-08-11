@@ -118,17 +118,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       const folder = vscode.workspace.workspaceFolders?.find(
         (candidate) => candidate.uri.fsPath === projectPath,
       );
-      if (!folder) {
-        return undefined;
-      }
+      const projectUri = folder?.uri ?? vscode.Uri.file(projectPath);
       return identityService.createProjectIdentity(
         {
-          scheme: folder.uri.scheme,
-          authority: folder.uri.authority,
-          path: folder.uri.path,
-          fsPath: folder.uri.fsPath,
+          scheme: projectUri.scheme,
+          authority: projectUri.authority,
+          path: projectUri.path,
+          fsPath: projectUri.fsPath,
         },
-        folder.name,
+        folder?.name ?? path.basename(projectPath) ?? projectPath,
       ).id;
     },
   });

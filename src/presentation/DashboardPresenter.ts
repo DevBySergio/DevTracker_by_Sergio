@@ -6,6 +6,7 @@ import {
 } from "../application/ports";
 import { Clock } from "../platform/ports";
 import { ReportPanel } from "../ReportPanel";
+import { buildDashboardShellModel } from "./DashboardShellModel";
 
 const DEFAULT_DAILY_GOAL_SECONDS = 14400;
 
@@ -53,35 +54,32 @@ export class DashboardPresenter implements DashboardPresentation {
     this.statusBarItem.tooltip = `Tracking: ${tracking.label}\nLast update: ${lastUpdate}\nCurrent session: ${formatted}\nCurrent flow: ${currentFlow}\nFile switches: ${snapshot.session.fileSwitchEvents}\nProject switches: ${snapshot.session.projectSwitchEvents}\nFile switches per active hour: ${switchRate}\nTotal today: ${Math.floor(snapshot.todayTotalSeconds / 60)} min\nDaily goal: ${progressPercent}%\nPersistence: ${persistence}`;
     this.statusBarItem.show();
 
-    if (ReportPanel.currentPanel && snapshot.project) {
+    if (ReportPanel.currentPanel) {
+      ReportPanel.currentPanel.updateTrackingStatus(
+        snapshot.trackingStatus,
+        snapshot.lastUpdatedAt,
+      );
       ReportPanel.currentPanel.notifyDataChanged();
     }
   }
 
   public open(snapshot: DashboardSnapshot): void {
-    if (!snapshot.project) {
-      vscode.window.showWarningMessage(
-        "DevTracker: Start programming to view data.",
-      );
-      return;
-    }
-
-    const projectId = this.options.resolveProjectId(snapshot.project.path);
-    if (!projectId) {
-      vscode.window.showWarningMessage(
-        "DevTracker: The active project does not have an analytics identity yet.",
-      );
-      return;
-    }
+    const shell = buildDashboardShellModel(
+      snapshot,
+      this.options.resolveProjectId,
+    );
 
     ReportPanel.createOrShow({
       extensionUri: this.options.extensionUri,
       queryService: this.options.rangeQueries,
       clock: this.options.clock,
-      currentProjectId: projectId,
+      currentProjectId: shell.currentProjectId,
+      projects: shell.projects,
       dailyGoalSeconds: snapshot.dailyGoalSeconds > 0
         ? snapshot.dailyGoalSeconds
         : DEFAULT_DAILY_GOAL_SECONDS,
+      trackingStatus: snapshot.trackingStatus,
+      lastUpdatedAt: snapshot.lastUpdatedAt,
     });
   }
 

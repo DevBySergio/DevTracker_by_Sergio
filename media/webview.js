@@ -15,11 +15,20 @@ const ENGLISH_STRINGS = {
     skipToDashboard: "Skip to dashboard",
     dashboardViews: "Dashboard views",
     dateRange: "Date range",
+    projectSelector: "Project",
+    selectProject: "Select a project",
+    actions: "Actions",
+    actionItems: {
+        export: "Export",
+        settings: "Settings",
+        openData: "Open Data",
+        reset: "Reset",
+    },
     views: {
-        today: "Today",
-        project: "Project",
+        today: "Overview",
+        project: "Trends",
         quality: "Workflow",
-        global: "Global",
+        global: "Projects",
     },
     ranges: {
         today: "Today",
@@ -28,10 +37,10 @@ const ENGLISH_STRINGS = {
         all: "Last 90 Days",
     },
     subtitles: {
-        today: "Live view of your current coding rhythm.",
-        project: "Range-based activity time, concentration, editor changes, languages, and active files.",
+        today: "Live view of today’s coding activity across tracked projects.",
+        project: "Range-based activity time and patterns for the selected project.",
         quality: "Descriptive diagnostics, saves, debug time, and Git branch context.",
-        global: "Your long-term work patterns across tracked projects.",
+        global: "Activity across every tracked project in the selected range.",
     },
     metrics: {
         activeToday: "Active Today",
@@ -144,8 +153,54 @@ const ENGLISH_STRINGS = {
         targetZeroMinutes: "Target 0m",
         sessionZeroMinutes: "Session 0m",
         longestZeroMinutes: "Longest 0m",
+        selectProjectToContinue: "Select a project to view project-specific data.",
+        loading: "Loading dashboard data…",
+        tracking: {
+            active: "Tracking",
+            inactive: "Inactive",
+            paused: "Paused",
+            unfocused: "Unfocused",
+        },
     },
 };
+
+
+/***/ }),
+/* 2 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   restoreDashboardState: () => (/* binding */ restoreDashboardState)
+/* harmony export */ });
+function restoreDashboardState(value, fallbackProjectId, availableProjectIds) {
+    const record = isRecord(value) ? value : {};
+    const view = isView(record.view) ? record.view : "today";
+    const range = isRange(record.range) ? record.range : "week";
+    const available = new Set(availableProjectIds);
+    const restoredProjectId = safeProjectId(record.projectId);
+    const projectId = restoredProjectId &&
+        (available.size === 0 || available.has(restoredProjectId))
+        ? restoredProjectId
+        : fallbackProjectId;
+    return { view, range, projectId };
+}
+function isView(value) {
+    return value === "today" || value === "project" ||
+        value === "quality" || value === "global";
+}
+function isRange(value) {
+    return value === "today" || value === "week" ||
+        value === "month" || value === "all";
+}
+function safeProjectId(value) {
+    return typeof value === "string" && value.length > 0 && value.length <= 128
+        ? value
+        : null;
+}
+function isRecord(value) {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 
 /***/ })
@@ -210,6 +265,8 @@ var __webpack_exports__ = {};
 (() => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _src_webview_shellState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+
 
 const themeColor = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 Chart.defaults.color = themeColor('--text-secondary');
@@ -217,8 +274,11 @@ Chart.defaults.borderColor = themeColor('--card-border');
 Chart.defaults.font.family = themeColor('--font-family');
 const initialData = JSON.parse(document.getElementById('initial-data')?.textContent ?? "{}");
 const vscodeApi = acquireVsCodeApi();
-let currentTab = 'today';
-let currentRange = 'week';
+const restoredState = (0,_src_webview_shellState__WEBPACK_IMPORTED_MODULE_1__.restoreDashboardState)(vscodeApi.getState(), initialData.currentProjectId, initialData.projects.map(project => project.id));
+let currentTab = restoredState.view;
+let currentRange = restoredState.range;
+let selectedProjectId = restoredState.projectId;
+const knownProjects = new Map(initialData.projects.map(project => [project.id, project.displayName]));
 let requestSequence = 0;
 let activeRequestId = '';
 let dashboardData = null;
@@ -234,61 +294,101 @@ let qualityTrendChart = null;
 const dayNames = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.dayNames;
 const colors = Array.from({ length: 8 }, (_value, index) => themeColor(`--chart-${index + 1}`));
 document.querySelectorAll('.tab-btn').forEach(button => {
-    button.addEventListener('click', () => switchTab(button.dataset.tab, button));
+    button.addEventListener('click', () => switchTab(button.dataset.tab));
 });
 document.querySelectorAll('.filter-btn').forEach(button => {
     button.addEventListener('click', () => setRange(button.dataset.range));
 });
+document.getElementById('project-selector')?.addEventListener('change', event => {
+    const value = event.currentTarget.value;
+    selectedProjectId = value || null;
+    persistDashboardState();
+    requestView();
+});
+document.querySelectorAll('[data-action]').forEach(button => {
+    button.addEventListener('click', () => {
+        vscodeApi.postMessage({ type: 'dashboard/action', action: button.dataset.action });
+        document.getElementById('actions-menu').open = false;
+    });
+});
 window.addEventListener('message', (event) => {
     const msg = event.data;
-    if (!msg || msg.protocolVersion !== initialData.protocolVersion || msg.requestId !== activeRequestId || msg.view !== currentTab) {
+    if (!msg || msg.protocolVersion !== initialData.protocolVersion) {
+        return;
+    }
+    if (msg.type === 'dashboard/tracking-status') {
+        renderTrackingStatus(msg.status, msg.lastUpdatedAt);
+        return;
+    }
+    if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
         return;
     }
     if (msg.type === 'dashboard/snapshot') {
         dashboardData = msg.data;
+        rememberProjects(msg.data.current.projects);
         adaptDashboardData();
         render();
     }
     if (msg.type === 'dashboard/live-delta' && dashboardData && dashboardData.revision === msg.baseRevision) {
         applyViewModelDelta(dashboardData, msg.delta, msg.revision);
+        rememberProjects(dashboardData.current.projects);
         adaptDashboardData();
         render();
     }
     if (msg.type === 'dashboard/error') {
         document.getElementById('page-subtitle').textContent = `${_src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.dataUnavailable} (${msg.code}).`;
+        setBusy(false);
     }
 });
+renderProjectOptions();
+applyShellState();
+renderTrackingStatus(initialData.trackingStatus, initialData.lastUpdatedAt);
+persistDashboardState();
 requestView();
-function switchTab(tab, button) {
+function switchTab(tab) {
     currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(item => {
-        item.classList.remove('active');
-        item.setAttribute('aria-selected', 'false');
-    });
-    button.classList.add('active');
-    button.setAttribute('aria-selected', 'true');
-    document.querySelectorAll('.view-section').forEach(section => {
-        section.classList.remove('active');
-        section.hidden = true;
-    });
-    const activeSection = document.getElementById('view-' + tab);
-    activeSection.classList.add('active');
-    activeSection.hidden = false;
-    document.getElementById('filter-bar').hidden = tab === 'today';
+    persistDashboardState();
+    applyShellState();
     requestView();
+}
+function applyShellState() {
+    document.querySelectorAll('.tab-btn').forEach(item => {
+        const active = item.dataset.tab === currentTab;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+    });
+    document.querySelectorAll('.view-section').forEach(section => {
+        const active = section.id === 'view-' + currentTab;
+        section.classList.toggle('active', active);
+        section.hidden = !active;
+    });
+    document.getElementById('filter-bar').hidden = currentTab === 'today';
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.range === currentRange);
+    });
+    document.getElementById('project-selector').value = selectedProjectId ?? '';
+    updateHeader();
 }
 function setRange(range) {
     currentRange = range;
-    document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
-    document.getElementById('btn-' + range).classList.add('active');
+    persistDashboardState();
+    applyShellState();
     requestView();
 }
 function requestView() {
+    const needsProject = currentTab === 'project' || currentTab === 'quality';
     activeRequestId = 'request-' + (++requestSequence);
     dashboardData = null;
-    const projectId = currentTab === 'project' || currentTab === 'quality'
-        ? initialData.currentProjectId
-        : null;
+    if (needsProject && !selectedProjectId) {
+        activeRequestId = '';
+        updateHeader();
+        document.getElementById('page-subtitle').textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.selectProjectToContinue;
+        setBusy(false);
+        return;
+    }
+    const projectId = needsProject ? selectedProjectId : null;
+    setBusy(true);
+    document.getElementById('page-subtitle').textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.loading;
     vscodeApi.postMessage({
         type: 'dashboard/request-view',
         protocolVersion: initialData.protocolVersion,
@@ -300,6 +400,52 @@ function requestView() {
         },
         projectId
     });
+}
+function persistDashboardState() {
+    vscodeApi.setState({
+        view: currentTab,
+        range: currentRange,
+        projectId: selectedProjectId,
+    });
+}
+function rememberProjects(projects) {
+    let changed = false;
+    projects.forEach(project => {
+        const { id, displayName } = project.project;
+        if (knownProjects.get(id) !== displayName) {
+            knownProjects.set(id, displayName);
+            changed = true;
+        }
+    });
+    if (changed) {
+        renderProjectOptions();
+    }
+}
+function renderProjectOptions() {
+    const selector = document.getElementById('project-selector');
+    selector.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.selectProject;
+    selector.append(placeholder);
+    [...knownProjects.entries()]
+        .sort((left, right) => left[1].localeCompare(right[1]) || left[0].localeCompare(right[0]))
+        .forEach(([id, displayName]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = displayName;
+        selector.append(option);
+    });
+    selector.value = selectedProjectId ?? '';
+}
+function renderTrackingStatus(status, lastUpdatedAt) {
+    const target = document.getElementById('tracking-status');
+    target.dataset.status = status;
+    target.title = `Last updated ${new Date(lastUpdatedAt).toLocaleString()}`;
+    document.getElementById('tracking-status-label').textContent = _src_webview_strings__WEBPACK_IMPORTED_MODULE_0__.ENGLISH_STRINGS.status.tracking[status];
+}
+function setBusy(busy) {
+    document.getElementById('dashboard-content').setAttribute('aria-busy', String(busy));
 }
 function rangePreset(range) {
     if (range === 'today') {
@@ -314,6 +460,7 @@ function rangePreset(range) {
     return '7-days';
 }
 function render() {
+    setBusy(false);
     updateHeader();
     renderToday();
     if (currentTab === 'project') {

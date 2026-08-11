@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { RangeAnalyticsQueryService } from "./application/ports";
 import { Clock } from "./platform/ports";
+import { TrackingStatus } from "./domain/types";
+import { dashboardActionCommand } from "./presentation/DashboardActions";
 import {
   DASHBOARD_PROTOCOL_VERSION,
   DashboardProtocolController,
@@ -13,15 +15,16 @@ export interface ReportPanelOptions {
   extensionUri: vscode.Uri;
   queryService: RangeAnalyticsQueryService;
   clock: Clock;
-  currentProjectId: string;
+  currentProjectId: string | null;
+  projects: ReadonlyArray<{ id: string; displayName: string }>;
   dailyGoalSeconds: number;
+  trackingStatus: TrackingStatus;
+  lastUpdatedAt: number;
 }
 
 export class ReportPanel {
   public static currentPanel: ReportPanel | undefined;
   public static readonly viewType = "devTrackerStats";
-  public readonly currentProjectId: string;
-
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private readonly protocol: DashboardProtocolController;
@@ -33,14 +36,9 @@ export class ReportPanel {
       : undefined;
 
     if (ReportPanel.currentPanel) {
-      if (
-        ReportPanel.currentPanel.currentProjectId === options.currentProjectId
-      ) {
-        ReportPanel.currentPanel._panel.reveal(column);
-        ReportPanel.currentPanel.notifyDataChanged();
-        return;
-      }
-      ReportPanel.currentPanel._panel.dispose();
+      ReportPanel.currentPanel._panel.reveal();
+      ReportPanel.currentPanel.notifyDataChanged();
+      return;
     }
 
     const panel = vscode.window.createWebviewPanel(
@@ -63,7 +61,6 @@ export class ReportPanel {
   ) {
     this._panel = panel;
     this._extensionUri = options.extensionUri;
-    this.currentProjectId = options.currentProjectId;
     this.protocol = new DashboardProtocolController({
       query: async (request, view) =>
         projectDashboardViewModel(
@@ -87,6 +84,11 @@ export class ReportPanel {
     );
     this._panel.webview.onDidReceiveMessage(
       (message: unknown) => {
+        const action = dashboardActionCommand(message);
+        if (action) {
+          void vscode.commands.executeCommand(action.command, ...action.args);
+          return;
+        }
         void this.protocol.handleMessage(message);
       },
       null,
@@ -94,12 +96,27 @@ export class ReportPanel {
     );
     this._panel.webview.html = this._getWebviewContent(
       options.currentProjectId,
+      options.projects,
       options.dailyGoalSeconds,
+      options.trackingStatus,
+      options.lastUpdatedAt,
     );
   }
 
   public notifyDataChanged(): void {
     this.protocol.notifyDataChanged();
+  }
+
+  public updateTrackingStatus(
+    status: TrackingStatus,
+    lastUpdatedAt: number,
+  ): void {
+    void this._panel.webview.postMessage({
+      type: "dashboard/tracking-status",
+      protocolVersion: DASHBOARD_PROTOCOL_VERSION,
+      status,
+      lastUpdatedAt,
+    });
   }
 
   public dispose() {
@@ -114,8 +131,11 @@ export class ReportPanel {
   }
 
   private _getWebviewContent(
-    currentProjectId: string,
+    currentProjectId: string | null,
+    projects: ReadonlyArray<{ id: string; displayName: string }>,
     dailyGoalSeconds: number,
+    trackingStatus: TrackingStatus,
+    lastUpdatedAt: number,
   ): string {
     const webview = this._panel.webview;
     const nonce = getNonce();
@@ -125,7 +145,10 @@ export class ReportPanel {
       {
         protocolVersion: DASHBOARD_PROTOCOL_VERSION,
         currentProjectId,
+        projects,
         dailyGoalSeconds,
+        trackingStatus,
+        lastUpdatedAt,
       },
       {
         nonce,
