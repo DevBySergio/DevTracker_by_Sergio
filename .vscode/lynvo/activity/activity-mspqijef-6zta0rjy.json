@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspqijef-6zta0rjy",
+  "type": "task_moved",
+  "message": "Moved \"T13 — Track concurrent debug sessions\" from In Progress to Done",
+  "createdAt": 1786517704887,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37p-o57jtvmi",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
