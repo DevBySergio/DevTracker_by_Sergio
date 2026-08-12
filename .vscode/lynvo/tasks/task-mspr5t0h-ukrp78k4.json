@@ -2,7 +2,7 @@
   "id": "task-mspr5t0h-ukrp78k4",
   "title": "BUG — Restore runtime metric tracking",
   "description": "## Objective\n\nFind and fix the activation or data-flow regression that prevents DevTracker from recording and displaying time and activity metrics in a launched extension host.\n\n## Definition of done\n\nRuntime-level verification proves activation, editor attribution, elapsed and active time accrual, edit and save activity, persistence, dashboard visibility, pause/resume, privacy exclusions, and reload continuity. Existing unrelated worktree changes remain intact.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786518790433,
-  "updatedAt": 1786518790433,
+  "updatedAt": 1786520481932,
   "position": 1786518790433,
   "labelIds": [
     "bug",
@@ -28,51 +28,51 @@
     {
       "id": "check-mspr5t0h-seseygae",
       "text": "Reproduce the failure through the real activation and persistence path",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481925
     },
     {
       "id": "check-mspr5t0h-lyfyryqs",
       "text": "Verify workspace and editor attribution",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481926
     },
     {
       "id": "check-mspr5t0h-gl5gwgxu",
       "text": "Verify elapsed time and human activity accrual",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481927
     },
     {
       "id": "check-mspr5t0h-gegk0jft",
       "text": "Verify edit, save, diagnostic, and optional debug metrics",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481928
     },
     {
       "id": "check-mspr5t0h-hildusqo",
       "text": "Verify persistence and dashboard visibility before shutdown",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481929
     },
     {
       "id": "check-mspr5t0h-h4ck81md",
       "text": "Verify pause, resume, privacy exclusions, and reload continuity",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481930
     },
     {
       "id": "check-mspr5t0h-3zqtxpkz",
       "text": "Run focused, integration, and full validation gates",
-      "done": false,
+      "done": true,
       "createdAt": 1786518790433,
-      "updatedAt": 1786518790433
+      "updatedAt": 1786520481931
     }
   ],
   "relations": [

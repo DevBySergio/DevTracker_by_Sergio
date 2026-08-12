@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspr893s-runtimedone",
+  "type": "task_moved",
+  "message": "Moved \"BUG — Restore runtime metric tracking\" from In Progress to Done",
+  "createdAt": 1786520481932,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-mspr5t0h-ukrp78k4",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
