@@ -285,6 +285,21 @@ suite("DashboardProtocol", () => {
       { id: "src/third.ts", activeTimeMs: 2 },
       { id: "src/fourth.ts", activeTimeMs: 1 },
     ];
+    source.current.tasks = [
+      {
+        configuredName: "npm: test",
+        classification: "test",
+        runCount: 2,
+        completedRunCount: 2,
+        succeededRunCount: 1,
+        failedRunCount: 1,
+        cancelledRunCount: 0,
+        unknownRunCount: 0,
+        successRatePercent: 50,
+        medianDurationMs: 250,
+      },
+    ];
+    source.current.projects[0].tasks = [...source.current.tasks];
 
     const quality = projectDashboardViewModel(source, "quality");
     const global = projectDashboardViewModel(source, "global");
@@ -294,15 +309,21 @@ suite("DashboardProtocol", () => {
     assert.deepStrictEqual(quality.current.languages, []);
     assert.deepStrictEqual(quality.current.files, []);
     assert.deepStrictEqual(quality.current.branches, source.current.branches);
+    assert.deepStrictEqual(quality.current.tasks, source.current.tasks);
     assert.deepStrictEqual(
       quality.current.projects[0].branches,
       source.current.projects[0].branches,
+    );
+    assert.deepStrictEqual(
+      quality.current.projects[0].tasks,
+      source.current.projects[0].tasks,
     );
     assert.deepStrictEqual(quality.current.quarterHours, []);
     assert.deepStrictEqual(global.current.quarterHours, []);
     assert.deepStrictEqual(global.current.projects[0].languages, []);
     assert.deepStrictEqual(global.current.projects[0].files, []);
     assert.deepStrictEqual(global.current.branches, []);
+    assert.deepStrictEqual(global.current.tasks, []);
     assert.deepStrictEqual(global.current.languages, [
       { id: "typescript", activeTimeMs: 1 },
     ]);
@@ -452,11 +473,13 @@ function period(value: RangeAggregateMetrics): RangePeriodViewModel {
         languages: [{ id: "typescript", activeTimeMs: 0 }],
         files: [{ id: "src/index.ts", activeTimeMs: 0 }],
         branches: [{ id: "main", activeTimeMs: 0 }],
+        tasks: [],
       },
     ],
     languages: [{ id: "typescript", activeTimeMs: 0 }],
     files: [{ id: "src/index.ts", activeTimeMs: 0 }],
     branches: [{ id: "main", activeTimeMs: 0 }],
+    tasks: [],
     quarterHours: [
       {
         key: "1786104000000",

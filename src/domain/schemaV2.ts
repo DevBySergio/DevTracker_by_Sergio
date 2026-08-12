@@ -1,5 +1,6 @@
 import { DiagnosticsBySeverity } from "./types";
 import { GitTrackingStatus } from "./git";
+import { TaskRunRecord } from "./tasks";
 
 export const SCHEMA_VERSION = 2 as const;
 
@@ -94,6 +95,7 @@ export interface DailyRollup {
   activeTimeByDocumentMs: Record<string, number>;
   activeTimeByQuarterHourMs: Record<string, number>;
   activeTimeByGitBranchMs: Record<string, number>;
+  taskRuns: TaskRunRecord[];
   legacyApproximate: boolean;
   updatedAt: number;
 }
@@ -148,6 +150,7 @@ export function createEmptyDailyRollup(
     activeTimeByDocumentMs: {},
     activeTimeByQuarterHourMs: {},
     activeTimeByGitBranchMs: {},
+    taskRuns: [],
     legacyApproximate: false,
     updatedAt,
   };

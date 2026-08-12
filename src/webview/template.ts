@@ -203,7 +203,10 @@ export function renderDashboardHtml(
         ${ChartPanel({ title: EN.panels.diagnosticsTrend, canvasId: "qualityTrendChart", ariaLabel: EN.aria.diagnosticsChart })}
         ${Card(`<div class="card-title">${EN.panels.branchMix}</div><div class="list" id="branch-list">${EmptyState(EN.empty.gitUnavailable)}</div>`)}
       </div>
-      ${Card(`<div class="card-title">${EN.panels.currentSignals}</div><div class="list" id="quality-breakdown">${EmptyState(EN.empty.diagnosticsUnavailable)}</div>`)}
+      <div class="grid-2">
+        ${Card(`<div class="card-title">${EN.panels.currentSignals}</div><div class="list" id="quality-breakdown">${EmptyState(EN.empty.diagnosticsUnavailable)}</div>`)}
+        ${Card(`<div class="card-title">${EN.panels.taskRuns}</div><div class="list" id="task-runs">${EmptyState(EN.empty.noTrackedTaskRuns)}</div>`)}
+      </div>
     </section>
 
     <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-projects" hidden>

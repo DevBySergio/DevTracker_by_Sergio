@@ -22,8 +22,10 @@ import {
   assertDiagnosticTimeBucket,
   assertProjectIdentity,
   assertSchemaMetadata,
+  assertTaskRunRecord,
   assertTrackingSession,
 } from "./schemaV2Validation";
+import { TaskRunRecord } from "../domain/tasks";
 
 const DIRECTORY_MODE = 0o700;
 const FILE_MODE = 0o600;
@@ -631,6 +633,34 @@ export class SessionStoreV2 {
         debugActiveTimeMs,
         "debugActiveTimeMs",
       );
+      rollup.updatedAt = this.clock.nowMs();
+      return this.writeDailyRollupRecord(rollup);
+    });
+  }
+
+  public addTaskRun(
+    projectId: string,
+    localDate: string,
+    value: TaskRunRecord,
+  ): Promise<DailyRollup> {
+    this.requireSafeStorageKey(projectId, "project id");
+    this.requireLocalDateKey(localDate);
+    const taskRun = this.clone(assertTaskRunRecord(value));
+    return this.runRollupOperation(projectId, localDate, async () => {
+      let rollup: DailyRollup;
+      try {
+        rollup = await this.readDailyRollup(projectId, localDate);
+      } catch (error) {
+        if (!this.hasErrorCode(error, "ENOENT")) {
+          throw error;
+        }
+        rollup = createEmptyDailyRollup(
+          projectId,
+          localDate,
+          this.clock.nowMs(),
+        );
+      }
+      rollup.taskRuns.push(taskRun);
       rollup.updatedAt = this.clock.nowMs();
       return this.writeDailyRollupRecord(rollup);
     });

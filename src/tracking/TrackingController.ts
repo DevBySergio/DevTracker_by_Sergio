@@ -12,6 +12,7 @@ import {
   GitMetricSink,
   GitState,
   GitStateChange,
+  TaskMetricSink,
   TrackingStore,
   TrackingPrivacyPolicy,
 } from "../application/ports";
@@ -31,6 +32,7 @@ import {
 import { summarizeEditorEdit } from "./EditMetrics";
 import { DiagnosticBucketUpdate, DiagnosticsTracker } from "./DiagnosticsTracker";
 import { DebugSessionTracker } from "./DebugSessionTracker";
+import { TaskRunTracker } from "./TaskRunTracker";
 
 const TRACKING_INTERVAL_MS = 1000;
 
@@ -54,12 +56,14 @@ export interface TrackingControllerDependencies {
   activityIntervals: ActivityIntervalSink;
   dailyMetrics: DailyMetricSink;
   debugMetrics: DebugMetricSink;
+  taskMetrics: TaskMetricSink;
   gitMetrics: GitMetricSink;
   diagnostics: DiagnosticsTracker;
   diagnosticBuckets: DiagnosticBucketSink;
   privacy: TrackingPrivacyPolicy;
   activityStateMachine?: ActivityStateMachine;
   debugSessions?: DebugSessionTracker;
+  taskRuns?: TaskRunTracker;
 }
 
 /**
@@ -78,13 +82,17 @@ export class TrackingController implements vscode.Disposable {
   private readonly activityIntervals: ActivityIntervalSink;
   private readonly dailyMetrics: DailyMetricSink;
   private readonly debugMetrics: DebugMetricSink;
+  private readonly taskMetrics: TaskMetricSink;
   private readonly gitMetrics: GitMetricSink;
   private readonly debugSessions: DebugSessionTracker;
+  private readonly taskRuns: TaskRunTracker;
   private readonly diagnostics: DiagnosticsTracker;
   private readonly diagnosticBuckets: DiagnosticBucketSink;
   private readonly privacy: TrackingPrivacyPolicy;
   private readonly projectIdentityIds = new Map<string, string>();
   private readonly projectPathsById = new Map<string, string>();
+  private readonly taskExecutionIds = new WeakMap<object, string>();
+  private nextTaskExecutionId = 0;
 
   private trackingInterval: NodeJS.Timeout | undefined;
   private lastKnownProject: string | undefined;
@@ -107,6 +115,7 @@ export class TrackingController implements vscode.Disposable {
     this.activityIntervals = dependencies.activityIntervals;
     this.dailyMetrics = dependencies.dailyMetrics;
     this.debugMetrics = dependencies.debugMetrics;
+    this.taskMetrics = dependencies.taskMetrics;
     this.gitMetrics = dependencies.gitMetrics;
     this.diagnostics = dependencies.diagnostics;
     this.diagnosticBuckets = dependencies.diagnosticBuckets;
@@ -120,6 +129,11 @@ export class TrackingController implements vscode.Disposable {
         clock: this.clock,
         privacyEnabled: this.privacy.isDebugTrackingEnabled(),
       });
+    this.taskRuns = dependencies.taskRuns ?? new TaskRunTracker(this.clock);
+    this.taskRuns.configure(
+      this.privacy.isTaskTrackingEnabled(),
+      this.privacy.getTrackedTasks(),
+    );
     this.syncTrackingState(this.activityStateMachine.getSnapshot());
   }
 
@@ -173,6 +187,11 @@ export class TrackingController implements vscode.Disposable {
       vscode.debug.onDidTerminateDebugSession((session) =>
         this.onDebugSessionTerminated(session),
       ),
+      vscode.tasks.onDidStartTask((event) => this.onTaskStarted(event)),
+      vscode.tasks.onDidEndTaskProcess((event) =>
+        this.onTaskProcessEnded(event),
+      ),
+      vscode.tasks.onDidEndTask((event) => this.onTaskEnded(event)),
       this.git.onDidChange((change) => this.onGitStateChanged(change)),
       this.git,
     );
@@ -194,6 +213,7 @@ export class TrackingController implements vscode.Disposable {
     }
     this.applyActivityTransition(this.activityStateMachine.pause());
     this.recordDebugMetricUpdates(this.debugSessions.stopAll());
+    this.taskRuns.stopAll();
     this.disposed = true;
 
     if (this.trackingInterval) {
@@ -210,6 +230,7 @@ export class TrackingController implements vscode.Disposable {
       this.activityIntervals.flush(),
       this.dailyMetrics.flush(),
       this.debugMetrics.flush(),
+      this.taskMetrics.flush(),
       this.gitMetrics.flush(),
       this.diagnosticBuckets.flush(),
     ]).then(() => undefined);
@@ -221,6 +242,7 @@ export class TrackingController implements vscode.Disposable {
     }
     this.applyActivityTransition(this.activityStateMachine.pause());
     this.recordDebugMetricUpdates(this.debugSessions.setPaused(true));
+    this.taskRuns.setPaused(true);
     this.updateState();
     await this.flush();
   }
@@ -230,6 +252,7 @@ export class TrackingController implements vscode.Disposable {
       return;
     }
     this.recordDebugMetricUpdates(this.debugSessions.setPaused(false));
+    this.taskRuns.setPaused(false);
     this.applyActivityTransition(this.activityStateMachine.resume());
     this.updateState();
   }
@@ -243,6 +266,10 @@ export class TrackingController implements vscode.Disposable {
       this.debugSessions.setPrivacyEnabled(
         this.privacy.isDebugTrackingEnabled(),
       ),
+    );
+    this.taskRuns.configure(
+      this.privacy.isTaskTrackingEnabled(),
+      this.privacy.getTrackedTasks(),
     );
     void this.configureGit();
     this.onActiveTextEditorChanged(vscode.window.activeTextEditor);
@@ -615,6 +642,80 @@ export class TrackingController implements vscode.Disposable {
     updates.forEach((update) => {
       this.debugMetrics.recordDebugMetrics(update);
     });
+  }
+
+  private onTaskStarted(event: vscode.TaskStartEvent): void {
+    if (this.disposed) {
+      return;
+    }
+    const projectId = this.taskProjectId(event.execution.task);
+    if (!projectId) {
+      return;
+    }
+    this.taskRuns.start({
+      id: this.taskExecutionId(event.execution),
+      projectId,
+      observedName: event.execution.task.name,
+    });
+  }
+
+  private onTaskProcessEnded(event: vscode.TaskProcessEndEvent): void {
+    if (this.disposed) {
+      return;
+    }
+    this.taskRuns.recordProcessEnd(
+      this.taskExecutionId(event.execution),
+      event.exitCode,
+    );
+  }
+
+  private onTaskEnded(event: vscode.TaskEndEvent): void {
+    if (this.disposed) {
+      return;
+    }
+    const observation = this.taskRuns.end(
+      this.taskExecutionId(event.execution),
+    );
+    if (observation) {
+      this.taskMetrics.recordTaskRun(observation);
+      this.updateState();
+    }
+  }
+
+  /**
+   * Only public task name and workspace scope are inspected here. Task
+   * definitions, executions, commands, variables, terminals, and output are
+   * intentionally outside this adapter boundary.
+   */
+  private taskProjectId(task: vscode.Task): string | null {
+    let folder: vscode.WorkspaceFolder | undefined;
+    if (task.scope && typeof task.scope === "object") {
+      folder = task.scope;
+    } else if (task.scope !== vscode.TaskScope.Global) {
+      const folders = vscode.workspace.workspaceFolders ?? [];
+      folder = folders.length === 1 ? folders[0] : undefined;
+    }
+    if (!folder) {
+      return null;
+    }
+    if (
+      folder.uri.scheme === "file" &&
+      this.privacy.isProjectExcluded(folder.uri.fsPath)
+    ) {
+      return null;
+    }
+    return this.projectIdentityId(folder);
+  }
+
+  private taskExecutionId(execution: vscode.TaskExecution): string {
+    const key = execution as object;
+    const existing = this.taskExecutionIds.get(key);
+    if (existing) {
+      return existing;
+    }
+    const id = `task-execution-${this.nextTaskExecutionId++}`;
+    this.taskExecutionIds.set(key, id);
+    return id;
   }
 
   private editorAttribution(

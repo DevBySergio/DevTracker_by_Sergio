@@ -9,6 +9,7 @@ import {
   RangeQueryRequest,
   RangeQueryViewModel,
   RangeQuarterHourBucket,
+  RangeTaskSummary,
 } from "../domain/rangeQuery";
 import {
   DailyRollup,
@@ -256,6 +257,7 @@ export class RangeQueryEngine {
             projectRecords,
             "activeTimeByGitBranchMs",
           ),
+          tasks: this.aggregateTasks(projectRecords),
         };
       })
       .filter((value): value is RangeProjectViewModel => value !== undefined)
@@ -272,6 +274,7 @@ export class RangeQueryEngine {
       languages: this.aggregateDimension(records, "activeTimeByLanguageMs"),
       files: this.aggregateDimension(records, "activeTimeByDocumentMs"),
       branches: this.aggregateDimension(records, "activeTimeByGitBranchMs"),
+      tasks: this.aggregateTasks(records),
       quarterHours: this.aggregateQuarterHours(range, records),
     };
   }
@@ -402,6 +405,112 @@ export class RangeQueryEngine {
         activeTimeMs: totals.get(bucket.key) ?? 0,
       })),
     );
+  }
+
+  private aggregateTasks(
+    records: readonly DailyRollup[],
+  ): RangeTaskSummary[] {
+    const groups = new Map<
+      string,
+      {
+        summary: Omit<
+          RangeTaskSummary,
+          "successRatePercent" | "medianDurationMs"
+        >;
+        completedDurationsMs: number[];
+      }
+    >();
+    records.forEach((record) => {
+      record.taskRuns.forEach((run) => {
+        const key = `${run.classification}\0${run.configuredName}`;
+        const group = groups.get(key) ?? {
+          summary: {
+            configuredName: run.configuredName,
+            classification: run.classification,
+            runCount: 0,
+            completedRunCount: 0,
+            succeededRunCount: 0,
+            failedRunCount: 0,
+            cancelledRunCount: 0,
+            unknownRunCount: 0,
+          },
+          completedDurationsMs: [],
+        };
+        group.summary.runCount = this.safeAdd(
+          group.summary.runCount,
+          1,
+          `task.${key}.runCount`,
+        );
+        switch (run.result) {
+          case "succeeded":
+            group.summary.succeededRunCount = this.safeAdd(
+              group.summary.succeededRunCount,
+              1,
+              `task.${key}.succeededRunCount`,
+            );
+            group.summary.completedRunCount = this.safeAdd(
+              group.summary.completedRunCount,
+              1,
+              `task.${key}.completedRunCount`,
+            );
+            group.completedDurationsMs.push(run.durationMs);
+            break;
+          case "failed":
+            group.summary.failedRunCount = this.safeAdd(
+              group.summary.failedRunCount,
+              1,
+              `task.${key}.failedRunCount`,
+            );
+            group.summary.completedRunCount = this.safeAdd(
+              group.summary.completedRunCount,
+              1,
+              `task.${key}.completedRunCount`,
+            );
+            group.completedDurationsMs.push(run.durationMs);
+            break;
+          case "cancelled":
+            group.summary.cancelledRunCount = this.safeAdd(
+              group.summary.cancelledRunCount,
+              1,
+              `task.${key}.cancelledRunCount`,
+            );
+            break;
+          case "unknown":
+            group.summary.unknownRunCount = this.safeAdd(
+              group.summary.unknownRunCount,
+              1,
+              `task.${key}.unknownRunCount`,
+            );
+            break;
+        }
+        groups.set(key, group);
+      });
+    });
+    return [...groups.values()]
+      .map(({ summary, completedDurationsMs }) => ({
+        ...summary,
+        successRatePercent:
+          summary.completedRunCount === 0
+            ? null
+            : (summary.succeededRunCount / summary.completedRunCount) * 100,
+        medianDurationMs: this.median(completedDurationsMs),
+      }))
+      .sort(
+        (left, right) =>
+          left.classification.localeCompare(right.classification) ||
+          left.configuredName.localeCompare(right.configuredName),
+      );
+  }
+
+  private median(values: readonly number[]): number | null {
+    if (values.length === 0) {
+      return null;
+    }
+    const sorted = [...values].sort((left, right) => left - right);
+    const middle = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 1
+      ? sorted[middle]
+      : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
   }
 
   private quarterHoursForDay(

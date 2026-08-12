@@ -243,6 +243,7 @@ function period(
       { id: "README.md", activeTimeMs: activeTimeMs - 1 },
     ],
     branches: [{ id: "main", activeTimeMs }],
+    tasks: [],
     quarterHours: [
       {
         key: "later",
@@ -279,6 +280,7 @@ function project(
       { id: "README.md", activeTimeMs: activeTimeMs - 1 },
     ],
     branches: [{ id: "main", activeTimeMs }],
+    tasks: [],
   };
 }
 

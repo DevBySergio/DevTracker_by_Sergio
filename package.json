@@ -120,7 +120,36 @@
         "devtracker.taskTrackingEnabled": {
           "type": "boolean",
           "default": false,
-          "description": "Collect task lifecycle aggregates when task tracking is available."
+          "description": "Collect outcomes and monotonic durations for explicitly configured VS Code tasks. Disabled by default."
+        },
+        "devtracker.trackedTasks": {
+          "type": "array",
+          "default": [],
+          "description": "Exact VS Code task names eligible for tracking and their build or test classification. Commands, variables, terminals, and output are never read or stored.",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "configuredName",
+              "classification"
+            ],
+            "properties": {
+              "configuredName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256,
+                "description": "The exact task name shown by VS Code."
+              },
+              "classification": {
+                "type": "string",
+                "enum": [
+                  "build",
+                  "test"
+                ]
+              }
+            }
+          }
         }
       }
     }

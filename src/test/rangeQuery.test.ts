@@ -135,6 +135,72 @@ suite("RangeQueryEngine", () => {
     );
   });
 
+  test("aggregates task success rate and median by configured task and class", () => {
+    const engine = new RangeQueryEngine(clock);
+    const alpha = project("project-alpha", "Alpha");
+    engine.setProjectIdentities([alpha]);
+    const first = rollup(alpha.id, "2026-08-06", 0);
+    first.taskRuns = [
+      {
+        configuredName: "npm: test",
+        classification: "test",
+        durationMs: 100,
+        result: "succeeded",
+      },
+      {
+        configuredName: "npm: test",
+        classification: "test",
+        durationMs: 300,
+        result: "failed",
+      },
+    ];
+    const second = rollup(alpha.id, "2026-08-07", 0);
+    second.taskRuns = [
+      {
+        configuredName: "npm: test",
+        classification: "test",
+        durationMs: 50,
+        result: "cancelled",
+      },
+      {
+        configuredName: "compile",
+        classification: "build",
+        durationMs: 10,
+        result: "unknown",
+      },
+    ];
+    engine.applyDelta({ upsert: [first, second] });
+
+    const result = engine.query({ preset: "7-days" });
+    assert.deepStrictEqual(result.current.tasks, [
+      {
+        configuredName: "compile",
+        classification: "build",
+        runCount: 1,
+        completedRunCount: 0,
+        succeededRunCount: 0,
+        failedRunCount: 0,
+        cancelledRunCount: 0,
+        unknownRunCount: 1,
+        successRatePercent: null,
+        medianDurationMs: null,
+      },
+      {
+        configuredName: "npm: test",
+        classification: "test",
+        runCount: 3,
+        completedRunCount: 2,
+        succeededRunCount: 1,
+        failedRunCount: 1,
+        cancelledRunCount: 1,
+        unknownRunCount: 0,
+        successRatePercent: 50,
+        medianDurationMs: 200,
+      },
+    ]);
+    assert.deepStrictEqual(result.current.projects[0].tasks, result.current.tasks);
+  });
+
   test("compares equal complete periods and refuses an incomplete comparison", () => {
     const engine = new RangeQueryEngine(clock);
     const alpha = project("project-alpha", "Alpha");

@@ -200,6 +200,7 @@ function rangePeriod(
     languages: [],
     files,
     branches: [],
+    tasks: [],
     quarterHours: [],
   };
 }

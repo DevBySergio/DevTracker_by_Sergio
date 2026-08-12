@@ -70,6 +70,11 @@ added to an application port first and wired in the composition root.
   pause boundaries, and the intersection with emitted human-active slices. It
   emits aggregate durations only; launch configuration and arguments never
   enter persistence.
+- `TaskRunTracker` owns ephemeral task execution IDs and accepts only an exact
+  configured name, project ID, lifecycle timing, and process exit code. The VS
+  Code adapter never passes task definitions, commands, variables, terminals,
+  or output across this boundary. `SessionTaskMetricsRecorder` serializes the
+  resulting name/classification/duration/result records into daily rollups.
 - The store owns persisted data, pending mutations, atomic file replacement,
   write-queue health, and legacy compatibility. Mutations update memory first;
   record writes are debounced, serialized, and flushed at lifecycle boundaries.

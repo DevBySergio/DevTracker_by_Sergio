@@ -488,6 +488,12 @@ button:focus-visible, .skip-link:focus-visible {
   grid-template-columns: minmax(0, 1fr) 86px;
   padding: var(--space-1) 0;
 }
+.task-row {
+  grid-template-columns: minmax(0, 1fr) minmax(180px, auto);
+}
+.task-row .value {
+  white-space: normal;
+}
 .bar-label {
   overflow: hidden;
   text-overflow: ellipsis;

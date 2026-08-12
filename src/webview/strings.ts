@@ -68,6 +68,7 @@ export const ENGLISH_STRINGS = {
     diagnosticsTrend: "Diagnostics Trend",
     branchMix: "Branch Mix",
     currentSignals: "Current Signals",
+    taskRuns: "Task Outcomes",
     weeklyHeatmap: "Weekly Heatmap",
     topProjects: "Top Projects",
     globalLanguages: "Global Languages",
@@ -90,6 +91,7 @@ export const ENGLISH_STRINGS = {
       "DevTracker will show active time, focus context, and distributions here after your first tracked interaction.",
     noProjectDistribution: "No project activity yet",
     noLanguageDistribution: "No language activity yet",
+    noTrackedTaskRuns: "No configured task runs in this range",
   },
   dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   chartLabels: {
@@ -109,6 +111,13 @@ export const ENGLISH_STRINGS = {
     info: "Info",
     hints: "Hints",
     dirtyFiles: "Dirty files",
+  },
+  tasks: {
+    build: "Build",
+    test: "Test",
+    successRate: "Success rate",
+    medianDuration: "Median duration",
+    unavailable: "Unavailable",
   },
   phrases: {
     session: "Session",

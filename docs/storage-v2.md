@@ -68,7 +68,7 @@ write lock, so concurrent extension hosts cannot duplicate the seed.
 | `ProjectIdentity` | Stable SHA-256 project ID and canonical URI metadata |
 | `TrackingSession` | One extension-host lifetime with its own instance ID, lifecycle timestamps, and intervals |
 | `ActivityInterval` | A closed wall-clock and monotonic interval attributed to one project and optional document/language |
-| `DailyRollup` | Contracted per-project, per-local-day counters, diagnostic rollups, and time distributions |
+| `DailyRollup` | Contracted per-project, per-local-day counters, diagnostic rollups, time distributions, and opt-in configured task outcomes |
 
 All records have exact key sets and `schemaVersion: 2`. Readers reject unknown
 keys, missing keys, unsafe identifiers, invalid dates, negative or non-integer

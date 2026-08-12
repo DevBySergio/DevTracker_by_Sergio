@@ -1,3 +1,5 @@
+import { TrackedTaskConfiguration } from "../domain/tasks";
+
 export type FileIdentityMode = "relative" | "hashed" | "none";
 
 export interface PrivacySettings {
@@ -8,6 +10,7 @@ export interface PrivacySettings {
   readonly gitTrackingEnabled: boolean;
   readonly debugTrackingEnabled: boolean;
   readonly taskTrackingEnabled: boolean;
+  readonly trackedTasks: readonly TrackedTaskConfiguration[];
 }
 
 export interface PrivacySettingsIssue {
@@ -24,6 +27,8 @@ export const DEFAULT_DETAILED_DATA_RETENTION_DAYS = 30;
 export const MAX_DETAILED_DATA_RETENTION_DAYS = 3650;
 export const MAX_EXCLUSION_GLOBS = 256;
 export const MAX_GLOB_LENGTH = 512;
+export const MAX_TRACKED_TASKS = 64;
+export const MAX_TRACKED_TASK_NAME_LENGTH = 256;
 
 export const PRIVACY_CONFIGURATION_KEYS = Object.freeze({
   projectExclusionGlobs: "devtracker.projectExclusionGlobs",
@@ -33,6 +38,7 @@ export const PRIVACY_CONFIGURATION_KEYS = Object.freeze({
   gitTrackingEnabled: "devtracker.gitTrackingEnabled",
   debugTrackingEnabled: "devtracker.debugTrackingEnabled",
   taskTrackingEnabled: "devtracker.taskTrackingEnabled",
+  trackedTasks: "devtracker.trackedTasks",
 } as const);
 
 export const DEFAULT_PRIVACY_SETTINGS: PrivacySettings = Object.freeze({
@@ -43,6 +49,7 @@ export const DEFAULT_PRIVACY_SETTINGS: PrivacySettings = Object.freeze({
   gitTrackingEnabled: false,
   debugTrackingEnabled: false,
   taskTrackingEnabled: false,
+  trackedTasks: Object.freeze([]),
 });
 
 type UnknownRecord = Record<string, unknown>;
@@ -94,6 +101,7 @@ export function sanitizePrivacySettings(
       "taskTrackingEnabled",
       issues,
     ),
+    trackedTasks: sanitizeTrackedTasks(source.trackedTasks, issues),
   });
 
   return { settings, issues: Object.freeze(issues) };
@@ -197,6 +205,77 @@ function sanitizeBoolean(
   }
   issues.push({ key, message: "Expected a boolean." });
   return DEFAULT_PRIVACY_SETTINGS[key];
+}
+
+function sanitizeTrackedTasks(
+  value: unknown,
+  issues: PrivacySettingsIssue[],
+): readonly TrackedTaskConfiguration[] {
+  if (value === undefined) {
+    return DEFAULT_PRIVACY_SETTINGS.trackedTasks;
+  }
+  if (!Array.isArray(value)) {
+    issues.push({
+      key: "trackedTasks",
+      message: "Expected an array of task name and classification objects.",
+    });
+    return DEFAULT_PRIVACY_SETTINGS.trackedTasks;
+  }
+
+  const tasks: TrackedTaskConfiguration[] = [];
+  const seen = new Set<string>();
+  for (const candidate of value.slice(0, MAX_TRACKED_TASKS)) {
+    if (!isRecord(candidate)) {
+      issues.push({
+        key: "trackedTasks",
+        message: "Ignored a non-object task configuration.",
+      });
+      continue;
+    }
+    const keys = Object.keys(candidate);
+    if (
+      keys.some((key) => key !== "configuredName" && key !== "classification")
+    ) {
+      issues.push({
+        key: "trackedTasks",
+        message: "Ignored a task configuration with unsupported fields.",
+      });
+      continue;
+    }
+    const configuredName =
+      typeof candidate.configuredName === "string"
+        ? candidate.configuredName.trim()
+        : "";
+    const classification = candidate.classification;
+    if (
+      configuredName.length === 0 ||
+      configuredName.length > MAX_TRACKED_TASK_NAME_LENGTH ||
+      configuredName.includes("\0") ||
+      (classification !== "build" && classification !== "test")
+    ) {
+      issues.push({
+        key: "trackedTasks",
+        message: "Ignored a task with an invalid name or classification.",
+      });
+      continue;
+    }
+    if (seen.has(configuredName)) {
+      issues.push({
+        key: "trackedTasks",
+        message: `Ignored duplicate task name ${configuredName}.`,
+      });
+      continue;
+    }
+    seen.add(configuredName);
+    tasks.push(Object.freeze({ configuredName, classification }));
+  }
+  if (value.length > MAX_TRACKED_TASKS) {
+    issues.push({
+      key: "trackedTasks",
+      message: `Only the first ${MAX_TRACKED_TASKS} task configurations were considered.`,
+    });
+  }
+  return Object.freeze(tasks);
 }
 
 function isRecord(value: unknown): value is UnknownRecord {

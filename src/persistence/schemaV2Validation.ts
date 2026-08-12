@@ -10,6 +10,7 @@ import {
   TrackingSession,
 } from "../domain/schemaV2";
 import { DiagnosticsBySeverity } from "../domain/types";
+import { TaskRunRecord } from "../domain/tasks";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -176,6 +177,7 @@ export function assertDailyRollup(value: unknown): DailyRollup {
     gitBranchChanges: 0,
     gitDetectedCommits: 0,
     activeTimeByGitBranchMs: {},
+    taskRuns: [],
     ...source,
   };
   requireExactKeys(record, "DailyRollup", [
@@ -207,6 +209,7 @@ export function assertDailyRollup(value: unknown): DailyRollup {
     "activeTimeByDocumentMs",
     "activeTimeByQuarterHourMs",
     "activeTimeByGitBranchMs",
+    "taskRuns",
     "legacyApproximate",
     "updatedAt",
   ]);
@@ -276,12 +279,51 @@ export function assertDailyRollup(value: unknown): DailyRollup {
     record.activeTimeByGitBranchMs,
     "DailyRollup.activeTimeByGitBranchMs",
   );
+  if (!Array.isArray(record.taskRuns)) {
+    fail("DailyRollup.taskRuns", "expected an array");
+  }
+  record.taskRuns.forEach((candidate, index) =>
+    assertTaskRunRecord(candidate, `DailyRollup.taskRuns[${index}]`),
+  );
   if (typeof record.legacyApproximate !== "boolean") {
     fail("DailyRollup", "legacyApproximate must be boolean");
   }
   requireTimestamp(record.updatedAt, "DailyRollup.updatedAt");
 
   return record as unknown as DailyRollup;
+}
+
+export function assertTaskRunRecord(
+  value: unknown,
+  name = "TaskRunRecord",
+): TaskRunRecord {
+  const record = requireRecord(value, name);
+  requireExactKeys(record, name, [
+    "configuredName",
+    "classification",
+    "durationMs",
+    "result",
+  ]);
+  requireNonEmptyString(record.configuredName, `${name}.configuredName`);
+  if (
+    (record.configuredName as string).length > 256 ||
+    (record.configuredName as string).includes("\0")
+  ) {
+    fail(name, "configuredName is too long or contains a null byte");
+  }
+  if (record.classification !== "build" && record.classification !== "test") {
+    fail(name, "classification must be build or test");
+  }
+  requireNonNegativeInteger(record.durationMs, `${name}.durationMs`);
+  if (
+    record.result !== "succeeded" &&
+    record.result !== "failed" &&
+    record.result !== "cancelled" &&
+    record.result !== "unknown"
+  ) {
+    fail(name, "result is invalid");
+  }
+  return record as unknown as TaskRunRecord;
 }
 
 export function assertSchemaMetadata(value: unknown): SchemaMetadataV2 {

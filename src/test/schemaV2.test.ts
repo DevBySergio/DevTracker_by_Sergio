@@ -572,7 +572,7 @@ suite("Schema v2", () => {
     );
   });
 
-  test("upgrades earlier schema-v2 rollups with Git defaults", () => {
+  test("upgrades earlier schema-v2 rollups with Git and task defaults", () => {
     const rollup = createEmptyDailyRollup(
       "project-alpha",
       "2026-08-07",
@@ -583,6 +583,7 @@ suite("Schema v2", () => {
     delete rollup.gitBranchChanges;
     delete rollup.gitDetectedCommits;
     delete rollup.activeTimeByGitBranchMs;
+    delete rollup.taskRuns;
 
     const validated = assertDailyRollup(rollup);
 
@@ -591,6 +592,7 @@ suite("Schema v2", () => {
     assert.strictEqual(validated.gitBranchChanges, 0);
     assert.strictEqual(validated.gitDetectedCommits, 0);
     assert.deepStrictEqual(validated.activeTimeByGitBranchMs, {});
+    assert.deepStrictEqual(validated.taskRuns, []);
   });
 
   function createStore(

@@ -92,6 +92,8 @@ suite("WebviewFoundation", () => {
     assert.match(html, /id="overview-language-distribution"/);
     assert.match(html, /id="overview-freshness"/);
     assert.match(html, /id="overview-empty"[^>]+hidden/);
+    assert.match(html, /id="task-runs"/);
+    assert.match(html, /Task Outcomes/);
     ["export", "settings", "open-data", "reset"].forEach((action) =>
       assert.match(html, new RegExp(`data-action="${action}"`)),
     );

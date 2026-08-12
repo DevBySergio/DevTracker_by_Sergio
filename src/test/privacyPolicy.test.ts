@@ -24,6 +24,7 @@ suite("Privacy settings and policy", () => {
     assert.strictEqual(result.settings.gitTrackingEnabled, false);
     assert.strictEqual(result.settings.debugTrackingEnabled, false);
     assert.strictEqual(result.settings.taskTrackingEnabled, false);
+    assert.deepStrictEqual(result.settings.trackedTasks, []);
     assert.deepStrictEqual(PRIVACY_CONFIGURATION_KEYS, {
       projectExclusionGlobs: "devtracker.projectExclusionGlobs",
       documentExclusionGlobs: "devtracker.documentExclusionGlobs",
@@ -32,6 +33,7 @@ suite("Privacy settings and policy", () => {
       gitTrackingEnabled: "devtracker.gitTrackingEnabled",
       debugTrackingEnabled: "devtracker.debugTrackingEnabled",
       taskTrackingEnabled: "devtracker.taskTrackingEnabled",
+      trackedTasks: "devtracker.trackedTasks",
     });
     assert.ok(Object.isFrozen(result.settings));
     assert.ok(Object.isFrozen(result.settings.projectExclusionGlobs));
@@ -51,6 +53,10 @@ suite("Privacy settings and policy", () => {
       gitTrackingEnabled: true,
       debugTrackingEnabled: true,
       taskTrackingEnabled: true,
+      trackedTasks: [
+        { configuredName: "npm: test", classification: "test" },
+        { configuredName: "compile", classification: "build" },
+      ],
     });
 
     assert.deepStrictEqual(result.settings, {
@@ -61,6 +67,10 @@ suite("Privacy settings and policy", () => {
       gitTrackingEnabled: true,
       debugTrackingEnabled: true,
       taskTrackingEnabled: true,
+      trackedTasks: [
+        { configuredName: "npm: test", classification: "test" },
+        { configuredName: "compile", classification: "build" },
+      ],
     });
     assert.strictEqual(result.issues.length, 2);
   });
@@ -78,6 +88,11 @@ suite("Privacy settings and policy", () => {
       gitTrackingEnabled: "true",
       debugTrackingEnabled: 1,
       taskTrackingEnabled: null,
+      trackedTasks: [
+        { configuredName: "", classification: "build" },
+        { configuredName: "compile", classification: "other" },
+        { configuredName: "compile", classification: "build", command: "x" },
+      ],
     });
 
     assert.deepStrictEqual(invalid.settings, {
@@ -88,6 +103,7 @@ suite("Privacy settings and policy", () => {
       gitTrackingEnabled: false,
       debugTrackingEnabled: false,
       taskTrackingEnabled: false,
+      trackedTasks: [],
     });
     assert.ok(invalid.issues.length >= 8);
 

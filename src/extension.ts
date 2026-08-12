@@ -17,6 +17,7 @@ import { SessionActivityRecorder } from "./persistence/SessionActivityRecorder";
 import { SessionDailyMetricsRecorder } from "./persistence/SessionDailyMetricsRecorder";
 import { SessionDebugMetricsRecorder } from "./persistence/SessionDebugMetricsRecorder";
 import { SessionGitMetricsRecorder } from "./persistence/SessionGitMetricsRecorder";
+import { SessionTaskMetricsRecorder } from "./persistence/SessionTaskMetricsRecorder";
 import { SessionDiagnosticsRecorder } from "./persistence/SessionDiagnosticsRecorder";
 import {
   LegacyMigration,
@@ -157,6 +158,7 @@ export async function activate(
   const diagnosticBuckets = new SessionDiagnosticsRecorder(sessionStore);
   const debugMetrics = new SessionDebugMetricsRecorder(sessionStore);
   const gitMetrics = new SessionGitMetricsRecorder(sessionStore);
+  const taskMetrics = new SessionTaskMetricsRecorder(sessionStore);
   const controller = new TrackingController({
     store,
     queries,
@@ -168,6 +170,7 @@ export async function activate(
     activityIntervals,
     dailyMetrics,
     debugMetrics,
+    taskMetrics,
     gitMetrics,
     diagnostics,
     diagnosticBuckets,

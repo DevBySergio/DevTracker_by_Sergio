@@ -17,6 +17,10 @@ import {
   RangeQueryViewModel,
 } from "../domain/rangeQuery";
 import { GitTrackingStatus } from "../domain/git";
+import {
+  TaskRunRecord,
+  TrackedTaskConfiguration,
+} from "../domain/tasks";
 
 export interface TrackingReader {
   getDailyGoal(): number;
@@ -182,6 +186,16 @@ export interface DebugMetricSink {
   flush(): Promise<void>;
 }
 
+export interface TaskMetricObservation extends TaskRunRecord {
+  projectId: string;
+  localDate: string;
+}
+
+export interface TaskMetricSink {
+  recordTaskRun(value: TaskMetricObservation): void;
+  flush(): Promise<void>;
+}
+
 export interface TrackingDocumentPrivacyDecision {
   excluded: boolean;
   documentIdentity: string | null;
@@ -196,6 +210,7 @@ export interface TrackingPrivacyPolicy {
   isGitTrackingEnabled(): boolean;
   isDebugTrackingEnabled(): boolean;
   isTaskTrackingEnabled(): boolean;
+  getTrackedTasks(): readonly TrackedTaskConfiguration[];
   getDetailedDataRetentionDays(): number;
 }
 

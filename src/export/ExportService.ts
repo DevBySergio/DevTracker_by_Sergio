@@ -6,6 +6,7 @@ import {
   RangePeriodViewModel,
   RangeProjectViewModel,
   RangeQuarterHourBucket,
+  RangeTaskSummary,
   RangeQueryRequest,
   RangeQueryViewModel,
 } from "../domain/rangeQuery";
@@ -55,6 +56,9 @@ export const EXPORT_METRIC_DEFINITIONS: readonly ExportMetricDefinition[] = [
   metric("gitDirtyFiles", "files", "current-snapshot"),
   metric("gitBranchChanges", "events", "exact-event-count"),
   metric("gitDetectedCommits", "commits", "exact-event-count"),
+  metric("tasks[].runCount", "runs", "exact-event-count"),
+  metric("tasks[].successRatePercent", "percent", "derived"),
+  metric("tasks[].medianDurationMs", "milliseconds", "derived"),
   metric("diagnostics.current.error", "diagnostics", "current-snapshot"),
   metric("diagnostics.current.warning", "diagnostics", "current-snapshot"),
   metric("diagnostics.current.info", "diagnostics", "current-snapshot"),
@@ -298,6 +302,7 @@ function normalizePeriod(source: RangePeriodViewModel): RangePeriodViewModel {
     languages: cloneDimensions(source.languages),
     files: cloneDimensions(source.files),
     branches: cloneDimensions(source.branches),
+    tasks: cloneTaskSummaries(source.tasks),
     quarterHours: source.quarterHours
       .map(cloneQuarterHour)
       .sort(
@@ -330,7 +335,20 @@ function cloneProject(source: RangeProjectViewModel): RangeProjectViewModel {
     languages: cloneDimensions(source.languages),
     files: cloneDimensions(source.files),
     branches: cloneDimensions(source.branches),
+    tasks: cloneTaskSummaries(source.tasks),
   };
+}
+
+function cloneTaskSummaries(
+  source: readonly RangeTaskSummary[],
+): RangeTaskSummary[] {
+  return source
+    .map((task) => ({ ...task }))
+    .sort(
+      (left, right) =>
+        compareText(left.classification, right.classification) ||
+        compareText(left.configuredName, right.configuredName),
+    );
 }
 
 function cloneDimensions(

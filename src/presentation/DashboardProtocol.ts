@@ -10,6 +10,7 @@ import {
   RangeQueryRequest,
   RangeQueryViewModel,
   RangeQuarterHourBucket,
+  RangeTaskSummary,
 } from "../domain/rangeQuery";
 
 export const DASHBOARD_PROTOCOL_VERSION = 1 as const;
@@ -93,6 +94,7 @@ export interface RangePeriodDelta {
   languages: CollectionDelta<RangeDimensionValue> | null;
   files: CollectionDelta<RangeDimensionValue> | null;
   branches: CollectionDelta<RangeDimensionValue> | null;
+  tasks: CollectionDelta<RangeTaskSummary> | null;
   quarterHours: CollectionDelta<RangeQuarterHourBucket> | null;
 }
 
@@ -578,10 +580,12 @@ function projectPeriod(
           : [],
       branches:
         view === "quality" ? project.branches.map(cloneJson) : [],
+      tasks: view === "quality" ? project.tasks.map(cloneJson) : [],
     })),
     languages: includeDistributions ? source.languages.map(cloneJson) : [],
     files: files.map(cloneJson),
     branches: view === "quality" ? source.branches.map(cloneJson) : [],
+    tasks: view === "quality" ? source.tasks.map(cloneJson) : [],
     quarterHours: includeQuarterHours
       ? source.quarterHours
           .filter((bucket) => bucket.activeTimeMs > 0)
@@ -816,6 +820,7 @@ function assertPeriod(value: unknown, location: string): void {
     "languages",
     "files",
     "branches",
+    "tasks",
     "quarterHours",
   ]);
   assertNormalizedRange(period.range, `${location}.range`);
@@ -834,6 +839,9 @@ function assertPeriod(value: unknown, location: string): void {
   );
   arrayValue(period.branches, `${location}.branches`).forEach((entry, index) =>
     assertDimension(entry, `${location}.branches[${index}]`),
+  );
+  arrayValue(period.tasks, `${location}.tasks`).forEach((entry, index) =>
+    assertTaskSummary(entry, `${location}.tasks[${index}]`),
   );
   arrayValue(period.quarterHours, `${location}.quarterHours`).forEach(
     (entry, index) =>
@@ -905,6 +913,7 @@ function assertProject(value: unknown, location: string): void {
     "languages",
     "files",
     "branches",
+    "tasks",
   ]);
   const identity = exactRecord(project.project, `${location}.project`, [
     "id",
@@ -922,6 +931,90 @@ function assertProject(value: unknown, location: string): void {
   arrayValue(project.branches, `${location}.branches`).forEach((entry, index) =>
     assertDimension(entry, `${location}.branches[${index}]`),
   );
+  arrayValue(project.tasks, `${location}.tasks`).forEach((entry, index) =>
+    assertTaskSummary(entry, `${location}.tasks[${index}]`),
+  );
+}
+
+function assertTaskSummary(value: unknown, location: string): void {
+  const task = exactRecord(value, location, [
+    "configuredName",
+    "classification",
+    "runCount",
+    "completedRunCount",
+    "succeededRunCount",
+    "failedRunCount",
+    "cancelledRunCount",
+    "unknownRunCount",
+    "successRatePercent",
+    "medianDurationMs",
+  ]);
+  const configuredName = stringValue(
+    task.configuredName,
+    `${location}.configuredName`,
+  );
+  if (
+    configuredName.trim().length === 0 ||
+    configuredName.length > 256 ||
+    configuredName.includes("\0")
+  ) {
+    fail(`${location}.configuredName is invalid`);
+  }
+  enumValue(
+    task.classification,
+    ["build", "test"] as const,
+    `${location}.classification`,
+  );
+  const runCount = nonNegativeInteger(task.runCount, `${location}.runCount`);
+  const completed = nonNegativeInteger(
+    task.completedRunCount,
+    `${location}.completedRunCount`,
+  );
+  const succeeded = nonNegativeInteger(
+    task.succeededRunCount,
+    `${location}.succeededRunCount`,
+  );
+  const failed = nonNegativeInteger(
+    task.failedRunCount,
+    `${location}.failedRunCount`,
+  );
+  const cancelled = nonNegativeInteger(
+    task.cancelledRunCount,
+    `${location}.cancelledRunCount`,
+  );
+  const unknown = nonNegativeInteger(
+    task.unknownRunCount,
+    `${location}.unknownRunCount`,
+  );
+  if (completed !== succeeded + failed) {
+    fail(`${location}.completedRunCount does not match outcomes`);
+  }
+  if (runCount !== completed + cancelled + unknown) {
+    fail(`${location}.runCount does not match outcomes`);
+  }
+  if (task.successRatePercent === null) {
+    if (completed !== 0) {
+      fail(`${location}.successRatePercent is missing for completed runs`);
+    }
+  } else {
+    const rate = nonNegativeNumber(
+      task.successRatePercent,
+      `${location}.successRatePercent`,
+    );
+    if (completed === 0 || rate > 100) {
+      fail(`${location}.successRatePercent is invalid`);
+    }
+  }
+  if (task.medianDurationMs === null) {
+    if (completed !== 0) {
+      fail(`${location}.medianDurationMs is missing for completed runs`);
+    }
+  } else {
+    nonNegativeInteger(task.medianDurationMs, `${location}.medianDurationMs`);
+    if (completed === 0) {
+      fail(`${location}.medianDurationMs requires completed runs`);
+    }
+  }
 }
 
 function assertDimension(value: unknown, location: string): void {
@@ -971,6 +1064,7 @@ function assertPeriodDelta(value: unknown, location: string): void {
     "languages",
     "files",
     "branches",
+    "tasks",
     "quarterHours",
   ]);
   if (delta.range !== null) {
@@ -995,6 +1089,11 @@ function assertPeriodDelta(value: unknown, location: string): void {
     delta.branches,
     `${location}.branches`,
     assertDimension,
+  );
+  assertOptionalCollectionDelta(
+    delta.tasks,
+    `${location}.tasks`,
+    assertTaskSummary,
   );
   assertOptionalCollectionDelta(
     delta.quarterHours,
@@ -1059,6 +1158,11 @@ function diffPeriod(
     languages: diffCollection(previous.languages, next.languages, (value) => value.id),
     files: diffCollection(previous.files, next.files, (value) => value.id),
     branches: diffCollection(previous.branches, next.branches, (value) => value.id),
+    tasks: diffCollection(
+      previous.tasks,
+      next.tasks,
+      (value) => `${value.classification}\0${value.configuredName}`,
+    ),
     quarterHours: diffCollection(
       previous.quarterHours,
       next.quarterHours,
@@ -1111,6 +1215,7 @@ function isEmptyPeriodDelta(value: RangePeriodDelta): boolean {
     value.languages === null &&
     value.files === null &&
     value.branches === null &&
+    value.tasks === null &&
     value.quarterHours === null
   );
 }

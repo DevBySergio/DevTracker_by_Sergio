@@ -390,6 +390,7 @@ suite("Personal insights", () => {
       languages: options.languages ?? [],
       files: options.files ?? [],
       branches: options.branches ?? [],
+      tasks: [],
       quarterHours: options.quarterHours ?? [],
     };
   }
@@ -401,6 +402,7 @@ suite("Personal insights", () => {
       languages: [],
       files: [],
       branches: [],
+      tasks: [],
     };
   }
 

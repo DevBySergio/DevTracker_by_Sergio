@@ -23,6 +23,7 @@ suite("OverviewView", () => {
             languages: [],
             files: [],
             branches: [],
+            tasks: [],
           },
           {
             project: { id: "beta", displayName: "Beta" },
@@ -30,6 +31,7 @@ suite("OverviewView", () => {
             languages: [],
             files: [],
             branches: [],
+            tasks: [],
           },
         ],
         languages: [
@@ -144,6 +146,7 @@ function period(options: {
   languages?: RangePeriodViewModel["languages"];
   files?: RangePeriodViewModel["files"];
   branches?: RangePeriodViewModel["branches"];
+  tasks?: RangePeriodViewModel["tasks"];
   quarterHours?: RangeQuarterHourBucket[];
 } = {}): RangePeriodViewModel {
   const aggregate = metrics(
@@ -163,6 +166,7 @@ function period(options: {
     languages: options.languages ?? [],
     files: options.files ?? [],
     branches: options.branches ?? [],
+    tasks: options.tasks ?? [],
     quarterHours: options.quarterHours ?? [],
   };
 }

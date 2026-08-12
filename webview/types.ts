@@ -62,6 +62,19 @@ export interface RangeDimensionValue {
   activeTimeMs: number;
 }
 
+export interface RangeTaskSummary {
+  configuredName: string;
+  classification: "build" | "test";
+  runCount: number;
+  completedRunCount: number;
+  succeededRunCount: number;
+  failedRunCount: number;
+  cancelledRunCount: number;
+  unknownRunCount: number;
+  successRatePercent: number | null;
+  medianDurationMs: number | null;
+}
+
 export interface RangeDayViewModel {
   localDate: string;
   metrics: RangeMetrics;
@@ -73,6 +86,7 @@ export interface RangeProjectViewModel {
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];
+  tasks: RangeTaskSummary[];
 }
 
 export interface RangeQuarterHourBucket {
@@ -96,6 +110,7 @@ export interface RangePeriodViewModel {
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];
+  tasks: RangeTaskSummary[];
   quarterHours: RangeQuarterHourBucket[];
 }
 
@@ -122,6 +137,7 @@ export interface RangePeriodDelta {
   languages: CollectionDelta<RangeDimensionValue> | null;
   files: CollectionDelta<RangeDimensionValue> | null;
   branches: CollectionDelta<RangeDimensionValue> | null;
+  tasks: CollectionDelta<RangeTaskSummary> | null;
   quarterHours: CollectionDelta<RangeQuarterHourBucket> | null;
 }
 

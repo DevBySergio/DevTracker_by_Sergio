@@ -386,6 +386,7 @@ function metricsAsLegacy(metrics, period, localDate = undefined) {
     languages,
     activeTimeByDocumentMs: files,
     branches,
+    taskSummaries: period.tasks || [],
     gitStatus: safe.gitStatus || 'disabled',
     gitDirtyFiles: Number(safe.gitDirtyFiles || 0),
     hours: {}
@@ -420,6 +421,7 @@ function applyPeriodDelta(target, delta) {
   if (delta.languages !== null) { target.languages = patchCollection(target.languages, delta.languages, item => item.id); }
   if (delta.files !== null) { target.files = patchCollection(target.files, delta.files, item => item.id); }
   if (delta.branches !== null) { target.branches = patchCollection(target.branches, delta.branches, item => item.id); }
+  if (delta.tasks !== null) { target.tasks = patchCollection(target.tasks, delta.tasks, item => `${item.classification}\0${item.configuredName}`); }
   if (delta.quarterHours !== null) { target.quarterHours = patchCollection(target.quarterHours, delta.quarterHours, item => item.key); }
 }
 
@@ -452,6 +454,7 @@ function normalizeSession(session: Record<string, any> = {}) {
     diagnosticsBySeverity: normalizeDiagnostics(safe.diagnosticsBySeverity),
     contextSwitches: safe.contextSwitches || 0,
     branches: safe.branches || {},
+    taskSummaries: safe.taskSummaries || [],
     gitStatus: safe.gitStatus || 'disabled',
     gitDirtyFiles: safe.gitDirtyFiles || 0,
     flow: normalizeFlow(safe.flow)
@@ -751,6 +754,7 @@ function renderQuality() {
         ? EN.empty.gitUnavailable
         : EN.empty.noBranchActivity;
   renderBarList('branch-list', rawSession.branches, fmt, gitEmpty);
+  renderTaskSummaries(rawSession.taskSummaries);
   renderBarList('quality-breakdown', {
     [EN.signals.errors]: currentDiagnostics.error,
     [EN.signals.warnings]: currentDiagnostics.warning,
@@ -758,6 +762,42 @@ function renderQuality() {
     [EN.signals.hints]: currentDiagnostics.hint,
     [EN.signals.dirtyFiles]: rawSession.gitDirtyFiles
   }, compact, EN.empty.diagnosticsUnavailable);
+}
+
+function renderTaskSummaries(tasks) {
+  const target = document.getElementById('task-runs');
+  target.replaceChildren();
+  if (!tasks.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = EN.empty.noTrackedTaskRuns;
+    target.append(empty);
+    return;
+  }
+  tasks.forEach(task => {
+    const item = document.createElement('div');
+    item.className = 'bar-row task-row';
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = `${task.classification === 'build' ? EN.tasks.build : EN.tasks.test} · ${task.configuredName}`;
+    label.title = task.configuredName;
+    const value = document.createElement('div');
+    value.className = 'value';
+    const success = task.successRatePercent === null
+      ? EN.tasks.unavailable
+      : `${formatDecimal(task.successRatePercent)}%`;
+    const median = task.medianDurationMs === null
+      ? EN.tasks.unavailable
+      : fmt(task.medianDurationMs / 1000);
+    value.textContent = `${EN.tasks.successRate}: ${success} · ${EN.tasks.medianDuration}: ${median}`;
+    item.title = `${task.runCount} runs; ${task.succeededRunCount} succeeded; ${task.failedRunCount} failed; ${task.cancelledRunCount} cancelled; ${task.unknownRunCount} unknown`;
+    item.setAttribute(
+      'aria-label',
+      `${task.configuredName}: ${EN.tasks.successRate} ${success}, ${EN.tasks.medianDuration} ${median}`,
+    );
+    item.append(label, value);
+    target.append(item);
+  });
 }
 
 function renderGlobal() {

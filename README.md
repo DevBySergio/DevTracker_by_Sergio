@@ -68,6 +68,7 @@ Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`) and type:
 - `devtracker.detailedDataRetentionDays`: Retains completed session detail for 30 days by default; aggregate daily rollups remain available.
 - `devtracker.fileIdentityMode`: Stores project-relative identities by default, profile-salted hashes in `hashed` mode, or no document detail in `none` mode.
 - `devtracker.gitTrackingEnabled`, `devtracker.debugTrackingEnabled`, and `devtracker.taskTrackingEnabled`: Independent opt-ins that are all disabled by default.
+- `devtracker.trackedTasks`: Exact task-name allowlist with an explicit `build` or `test` classification. See [VS Code Tasks tracking](docs/task-tracking.md).
 
 ---
 

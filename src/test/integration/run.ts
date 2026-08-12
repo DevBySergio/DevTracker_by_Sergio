@@ -26,12 +26,33 @@ export async function run(): Promise<void> {
     );
     assert.ok(retained.editEvents >= 2, "Reload lost persisted edit activity");
     assert.ok(retained.saveEvents >= 2, "Reload lost persisted save activity");
+    const retainedTask = await taskSummary(api, folder.name);
+    assert.strictEqual(retainedTask?.succeededRunCount, 1);
+    assert.ok(
+      retainedTask?.medianDurationMs !== null,
+      "Reload lost persisted task duration",
+    );
     return;
   }
   const configuration = vscode.workspace.getConfiguration("devtracker");
   await configuration.update(
     "gitTrackingEnabled",
     true,
+    vscode.ConfigurationTarget.Workspace,
+  );
+  await configuration.update(
+    "taskTrackingEnabled",
+    true,
+    vscode.ConfigurationTarget.Workspace,
+  );
+  await configuration.update(
+    "trackedTasks",
+    [
+      {
+        configuredName: "DevTracker integration test",
+        classification: "test",
+      },
+    ],
     vscode.ConfigurationTarget.Workspace,
   );
   const documentUri = vscode.Uri.joinPath(folder.uri, "tracked.ts");
@@ -56,7 +77,6 @@ export async function run(): Promise<void> {
     ),
     "Active time was not attributed to the containing Git branch",
   );
-
   await vscode.commands.executeCommand("devtracker.pauseTracking");
   const paused = await projectMetrics(api, folder.name);
   await insert(document, "const paused = true;\n");
@@ -71,6 +91,11 @@ export async function run(): Promise<void> {
   );
 
   await vscode.commands.executeCommand("devtracker.resumeTracking");
+  await vscode.window.showTextDocument(document, {
+    preview: false,
+    preserveFocus: false,
+  });
+  await delay(100);
   await insert(document, "const resumed = true;\n");
   await delay(1_100);
   await document.save();
@@ -99,6 +124,50 @@ export async function run(): Promise<void> {
     "documentExclusionGlobs",
     undefined,
     vscode.ConfigurationTarget.Workspace,
+  );
+  await runConfiguredTask(folder);
+  await api.flush();
+  const task = await taskSummary(api, folder.name);
+  assert.strictEqual(task?.runCount, 1);
+  assert.strictEqual(task?.succeededRunCount, 1);
+  assert.strictEqual(task?.successRatePercent, 100);
+  assert.ok(
+    task?.medianDurationMs !== null,
+    "Completed task did not expose a median duration",
+  );
+}
+
+async function runConfiguredTask(folder: vscode.WorkspaceFolder): Promise<void> {
+  const task = new vscode.Task(
+    { type: "devtracker-integration" },
+    folder,
+    "DevTracker integration test",
+    "DevTracker integration",
+    new vscode.ProcessExecution("/usr/bin/true"),
+  );
+  const ended = new Promise<void>((resolve) => {
+    const disposable = vscode.tasks.onDidEndTask((event) => {
+      if (event.execution.task.name === task.name) {
+        disposable.dispose();
+        resolve();
+      }
+    });
+  });
+  await vscode.tasks.executeTask(task);
+  await ended;
+}
+
+async function taskSummary(
+  api: DevTrackerDevelopmentApi,
+  displayName: string,
+) {
+  const view = await api.query({ preset: "today" });
+  const project = view.current.projects.find(
+    (candidate) => candidate.project.displayName === displayName,
+  );
+  assert.ok(project, `Project ${displayName} was not present in the dashboard query`);
+  return project.tasks.find(
+    (task) => task.configuredName === "DevTracker integration test",
   );
 }
 

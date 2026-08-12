@@ -48,6 +48,7 @@ export class VscodePrivacySettings implements TrackingPrivacyPolicy {
       gitTrackingEnabled: configuration.get("gitTrackingEnabled"),
       debugTrackingEnabled: configuration.get("debugTrackingEnabled"),
       taskTrackingEnabled: configuration.get("taskTrackingEnabled"),
+      trackedTasks: configuration.get("trackedTasks"),
     });
     this.settings = sanitized.settings;
     this.policy = new PrivacyPolicy({
@@ -80,6 +81,10 @@ export class VscodePrivacySettings implements TrackingPrivacyPolicy {
 
   public isTaskTrackingEnabled(): boolean {
     return this.settings.taskTrackingEnabled;
+  }
+
+  public getTrackedTasks(): PrivacySettings["trackedTasks"] {
+    return this.settings.trackedTasks;
   }
 
   public isFileDetailAvailable(): boolean {

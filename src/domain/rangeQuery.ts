@@ -1,5 +1,6 @@
 import { DiagnosticRollup } from "./schemaV2";
 import { GitTrackingStatus } from "./git";
+import { TaskClassification } from "./tasks";
 
 export type RangePreset =
   | "today"
@@ -68,6 +69,19 @@ export interface RangeQuarterHourBucket {
   activeTimeMs: number;
 }
 
+export interface RangeTaskSummary {
+  configuredName: string;
+  classification: TaskClassification;
+  runCount: number;
+  completedRunCount: number;
+  succeededRunCount: number;
+  failedRunCount: number;
+  cancelledRunCount: number;
+  unknownRunCount: number;
+  successRatePercent: number | null;
+  medianDurationMs: number | null;
+}
+
 export interface RangeDayViewModel {
   localDate: string;
   metrics: RangeAggregateMetrics;
@@ -79,6 +93,7 @@ export interface RangeProjectViewModel {
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];
+  tasks: RangeTaskSummary[];
 }
 
 export interface RangePeriodViewModel {
@@ -89,6 +104,7 @@ export interface RangePeriodViewModel {
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];
+  tasks: RangeTaskSummary[];
   quarterHours: RangeQuarterHourBucket[];
 }
 
