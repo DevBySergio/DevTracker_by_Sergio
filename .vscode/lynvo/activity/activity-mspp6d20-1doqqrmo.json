@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspp6d20-1doqqrmo",
+  "type": "task_moved",
+  "message": "Moved \"T31 — Add large-history performance fixtures and budgets\" from Backlog to In Progress",
+  "createdAt": 1786515457176,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
