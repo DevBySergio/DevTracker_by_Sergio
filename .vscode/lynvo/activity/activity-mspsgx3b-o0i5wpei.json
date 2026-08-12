@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspsgx3b-o0i5wpei",
+  "type": "task_moved",
+  "message": "Moved \"T27 — Add unit tests for storage and activity tracking\" from Backlog to In Progress",
+  "createdAt": 1786520988551,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x383-hzb03uu7",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

@@ -2,7 +2,7 @@
   "id": "task-msj9x383-hzb03uu7",
   "title": "T27 — Add unit tests for storage and activity tracking",
   "description": "## Objective\n\nCover states, concurrency, and persistence with fake clocks and filesystems beyond the current suite.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T27.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033672,
-  "updatedAt": 1786136304851,
+  "updatedAt": 1786520988551,
   "position": 1786127033672,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
