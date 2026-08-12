@@ -28,6 +28,12 @@ export async function run(): Promise<void> {
     assert.ok(retained.saveEvents >= 2, "Reload lost persisted save activity");
     return;
   }
+  const configuration = vscode.workspace.getConfiguration("devtracker");
+  await configuration.update(
+    "gitTrackingEnabled",
+    true,
+    vscode.ConfigurationTarget.Workspace,
+  );
   const documentUri = vscode.Uri.joinPath(folder.uri, "tracked.ts");
   const document = await vscode.workspace.openTextDocument(documentUri);
   await vscode.window.showTextDocument(document);
@@ -41,6 +47,15 @@ export async function run(): Promise<void> {
   assert.ok(first.activeTimeMs >= 1_000, "Active time did not reach the dashboard query");
   assert.ok(first.editEvents >= 1, "Edit activity did not reach the dashboard query");
   assert.ok(first.saveEvents >= 1, "Save activity did not reach the dashboard query");
+  const git = await waitForGitMetrics(api, folder.name);
+  assert.strictEqual(git.status, "available");
+  assert.ok(git.dirtyFiles >= 1, "Git dirty-file state did not reach the range query");
+  assert.ok(
+    git.branches.some(
+      (branch) => branch.id === "main" && branch.activeTimeMs > 0,
+    ),
+    "Active time was not attributed to the containing Git branch",
+  );
 
   await vscode.commands.executeCommand("devtracker.pauseTracking");
   const paused = await projectMetrics(api, folder.name);
@@ -64,7 +79,6 @@ export async function run(): Promise<void> {
   assert.ok(resumed.activeTimeMs > paused.activeTimeMs, "Resume did not restart active time");
   assert.ok(resumed.editEvents > paused.editEvents, "Resume did not restart edit tracking");
 
-  const configuration = vscode.workspace.getConfiguration("devtracker");
   await configuration.update(
     "documentExclusionGlobs",
     ["**/tracked.ts"],
@@ -86,6 +100,37 @@ export async function run(): Promise<void> {
     undefined,
     vscode.ConfigurationTarget.Workspace,
   );
+}
+
+async function waitForGitMetrics(
+  api: DevTrackerDevelopmentApi,
+  displayName: string,
+): Promise<{
+  status: string;
+  dirtyFiles: number;
+  branches: Array<{ id: string; activeTimeMs: number }>;
+}> {
+  const deadline = Date.now() + 10_000;
+  do {
+    await api.flush();
+    const view = await api.query({ preset: "today" });
+    const project = view.current.projects.find(
+      (candidate) => candidate.project.displayName === displayName,
+    );
+    if (
+      project?.metrics.gitStatus === "available" &&
+      project.metrics.gitDirtyFiles >= 1 &&
+      project.branches.some((branch) => branch.activeTimeMs > 0)
+    ) {
+      return {
+        status: project.metrics.gitStatus,
+        dirtyFiles: project.metrics.gitDirtyFiles,
+        branches: project.branches,
+      };
+    }
+    await delay(250);
+  } while (Date.now() < deadline);
+  throw new Error("Git metrics did not become available before the deadline");
 }
 
 async function insert(

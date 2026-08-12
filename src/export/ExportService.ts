@@ -51,6 +51,10 @@ export const EXPORT_METRIC_DEFINITIONS: readonly ExportMetricDefinition[] = [
   metric("flowBlockCount", "blocks", "derived"),
   metric("flowActiveMs", "milliseconds", "monotonic-duration"),
   metric("longestFlowActiveMs", "milliseconds", "derived"),
+  metric("gitStatus", "state", "current-snapshot"),
+  metric("gitDirtyFiles", "files", "current-snapshot"),
+  metric("gitBranchChanges", "events", "exact-event-count"),
+  metric("gitDetectedCommits", "commits", "exact-event-count"),
   metric("diagnostics.current.error", "diagnostics", "current-snapshot"),
   metric("diagnostics.current.warning", "diagnostics", "current-snapshot"),
   metric("diagnostics.current.info", "diagnostics", "current-snapshot"),
@@ -118,6 +122,10 @@ const CSV_HEADERS = [
   "Flow Blocks (count)",
   "Flow Active Time (milliseconds)",
   "Longest Flow Active Time (milliseconds)",
+  "Git Status",
+  "Git Dirty Files (current count)",
+  "Git Branch Changes (count)",
+  "Git Detected Commits (count)",
   "Current Diagnostics - Errors (count)",
   "Current Diagnostics - Warnings (count)",
   "Current Diagnostics - Information (count)",
@@ -214,6 +222,10 @@ function dayToCsvRow(day: RangeDayViewModel): CsvCell[] {
     metrics.flowBlockCount,
     metrics.flowActiveMs,
     metrics.longestFlowActiveMs,
+    metrics.gitStatus,
+    metrics.gitDirtyFiles,
+    metrics.gitBranchChanges,
+    metrics.gitDetectedCommits,
     metrics.diagnostics.current.error,
     metrics.diagnostics.current.warning,
     metrics.diagnostics.current.info,
@@ -285,6 +297,7 @@ function normalizePeriod(source: RangePeriodViewModel): RangePeriodViewModel {
       ),
     languages: cloneDimensions(source.languages),
     files: cloneDimensions(source.files),
+    branches: cloneDimensions(source.branches),
     quarterHours: source.quarterHours
       .map(cloneQuarterHour)
       .sort(
@@ -316,6 +329,7 @@ function cloneProject(source: RangeProjectViewModel): RangeProjectViewModel {
     metrics: cloneMetrics(source.metrics),
     languages: cloneDimensions(source.languages),
     files: cloneDimensions(source.files),
+    branches: cloneDimensions(source.branches),
   };
 }
 
@@ -362,6 +376,10 @@ function cloneMetrics(source: RangeAggregateMetrics): RangeAggregateMetrics {
     flowBlockCount: source.flowBlockCount,
     flowActiveMs: source.flowActiveMs,
     longestFlowActiveMs: source.longestFlowActiveMs,
+    gitStatus: source.gitStatus,
+    gitDirtyFiles: source.gitDirtyFiles,
+    gitBranchChanges: source.gitBranchChanges,
+    gitDetectedCommits: source.gitDetectedCommits,
     diagnostics: {
       current: { ...source.diagnostics.current },
       introduced: { ...source.diagnostics.introduced },

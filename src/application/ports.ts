@@ -16,6 +16,7 @@ import {
   RangeQueryRequest,
   RangeQueryViewModel,
 } from "../domain/rangeQuery";
+import { GitTrackingStatus } from "../domain/git";
 
 export interface TrackingReader {
   getDailyGoal(): number;
@@ -83,6 +84,7 @@ export interface ActivityIntervalObservation {
   localDate: string;
   documentId: string | null;
   languageId: string | null;
+  gitBranch: string | null;
   startedAt: number;
   endedAt: number;
   monotonicStartedAt: number;
@@ -122,6 +124,36 @@ export interface DailyMetricSink {
   recordFlowBlock(value: DailyEventMetricObservation): void;
   recordFlowActiveTime(value: DailyFlowMetricObservation): void;
   closeFlow(value: DailyEventMetricObservation): void;
+  flush(): Promise<void>;
+}
+
+export interface GitState {
+  status: GitTrackingStatus;
+  repositoryUri: string | null;
+  repositoryRootPath: string | null;
+  branch: string | null;
+  headCommit: string | null;
+  dirtyFiles: number;
+}
+
+export interface GitStateChange {
+  previous: GitState | null;
+  current: GitState;
+  branchChanged: boolean;
+  commitDetected: boolean;
+}
+
+export interface GitMetricObservation {
+  projectId: string;
+  localDate: string;
+  status: GitTrackingStatus;
+  dirtyFiles: number;
+  branchChanges: number;
+  detectedCommits: number;
+}
+
+export interface GitMetricSink {
+  recordGitMetrics(value: GitMetricObservation): void;
   flush(): Promise<void>;
 }
 
@@ -184,15 +216,11 @@ export interface DashboardQueryService {
   getSnapshot(projectPath?: string): DashboardSnapshot;
 }
 
-export interface GitState {
-  branch: string;
-  dirtyFiles: number;
-}
-
 export interface GitAdapter {
-  getCurrentState(): GitState;
-  refresh(projectPath: string): Promise<GitState>;
-  refreshIfStale(projectPath: string): Promise<GitState | undefined>;
+  configure(enabled: boolean): Promise<void>;
+  getState(resourcePath: string): GitState;
+  onDidChange(listener: (change: GitStateChange) => void): { dispose(): void };
+  dispose(): void;
 }
 
 export interface DashboardPresentation {

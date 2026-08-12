@@ -17,11 +17,13 @@ VS Code activation
      -> ActivityStateMachine (monotonic activity lifecycle)
      -> SessionActivityRecorder (validated intervals and active-time rollups)
      -> SessionDailyMetricsRecorder (edit, save, switch, and flow rollups)
+     -> SessionGitMetricsRecorder (Git snapshots and transition rollups)
      -> TrackingStore (DataManager persistence boundary)
      -> DashboardQueryService (DevTrackerQueries)
      -> RangeAnalyticsQueryService (RangeQueryService -> RangeQueryEngine)
      -> PersonalInsightsService (calendar goals, baselines, distributions)
      -> GitAdapter (VscodeGitIntegration)
+        -> GitRepositoryTracker (repository selection and transition semantics)
      -> DashboardPresentation (DashboardPresenter -> ReportPanel)
         -> DashboardProtocolController (bounded snapshots and live deltas)
      -> ExportService (versioned JSON and safe daily CSV)
@@ -78,8 +80,15 @@ added to an application port first and wired in the composition root.
 - Activity interval boundaries are rounded to integer milliseconds at the
   schema-v2 adapter boundary. Every accepted interval updates both retained
   session detail and the active-time language, document, and quarter-hour
-  rollup dimensions; editor, save, switch, and flow events update the same
-  rollup path before dashboard cache invalidation.
+  rollup dimensions, including the opt-in Git branch when available; editor,
+  save, switch, flow, and Git events update the same rollup path before
+  dashboard cache invalidation.
+- `VscodeGitIntegration` owns built-in Git API activation and repository event
+  subscriptions. `GitRepositoryTracker` keeps snapshots keyed by repository
+  URI, selects the most-specific root containing an active document, counts
+  unique dirty resources, and emits branch/commit transitions. Repository
+  roots, resource URIs, and commit identifiers remain ephemeral; persistence
+  receives only status, counts, and the opted-in branch dimension.
 - Query services receive the narrower `TrackingReader` port and cannot call
   persistence mutations.
 - Range queries receive `DailyRollupRangeReader`, load only explicit
@@ -142,9 +151,9 @@ snapshot. A private completion marker makes that import one-time so later
 activations cannot replace newer v2 metrics. Schema v2 is the live tracking and
 query path; the compatibility snapshot does not feed dashboard range queries.
 
-The current Git adapter intentionally preserves 1.x collection behavior. The
-later opt-in Git task may replace it behind `GitAdapter` without leaking Git API
-types into tracking, queries, persistence, or presentation.
+The Git integration is event-driven and opt-in. It remains behind `GitAdapter`,
+so VS Code Git API types do not leak into tracking, queries, persistence, or
+presentation.
 
 `WorkspaceIdentityRegistrar` adapts initial and newly added VS Code workspace
 folders to the URI identity service and the `ProjectIdentityRegistry` port; the

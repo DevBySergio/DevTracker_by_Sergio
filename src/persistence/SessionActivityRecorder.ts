@@ -69,6 +69,10 @@ export class SessionActivityRecorder implements ActivityIntervalSink {
               snapshot.startedAt,
               snapshot.endedAt,
             ),
+            activeTimeByGitBranchMs:
+              snapshot.gitBranch === null
+                ? {}
+                : { [snapshot.gitBranch]: durationMs },
           },
         );
       })

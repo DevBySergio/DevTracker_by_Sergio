@@ -16,6 +16,7 @@ import { SessionStoreV2 } from "./persistence/SessionStoreV2";
 import { SessionActivityRecorder } from "./persistence/SessionActivityRecorder";
 import { SessionDailyMetricsRecorder } from "./persistence/SessionDailyMetricsRecorder";
 import { SessionDebugMetricsRecorder } from "./persistence/SessionDebugMetricsRecorder";
+import { SessionGitMetricsRecorder } from "./persistence/SessionGitMetricsRecorder";
 import { SessionDiagnosticsRecorder } from "./persistence/SessionDiagnosticsRecorder";
 import {
   LegacyMigration,
@@ -124,7 +125,7 @@ export async function activate(
     sessionStore,
     new RangeQueryEngine(systemClock),
   );
-  const git = new VscodeGitIntegration(systemClock);
+  const git = new VscodeGitIntegration();
   const presentation = new DashboardPresenter({
     extensionUri: context.extensionUri,
     rangeQueries,
@@ -155,6 +156,7 @@ export async function activate(
   const diagnostics = new DiagnosticsTracker({ clock: systemClock });
   const diagnosticBuckets = new SessionDiagnosticsRecorder(sessionStore);
   const debugMetrics = new SessionDebugMetricsRecorder(sessionStore);
+  const gitMetrics = new SessionGitMetricsRecorder(sessionStore);
   const controller = new TrackingController({
     store,
     queries,
@@ -166,6 +168,7 @@ export async function activate(
     activityIntervals,
     dailyMetrics,
     debugMetrics,
+    gitMetrics,
     diagnostics,
     diagnosticBuckets,
     privacy,

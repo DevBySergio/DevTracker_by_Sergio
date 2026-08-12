@@ -363,6 +363,7 @@ suite("Personal insights", () => {
       projects?: RangeProjectViewModel[];
       languages?: RangeDimensionValue[];
       files?: RangeDimensionValue[];
+      branches?: RangeDimensionValue[];
       quarterHours?: RangeQuarterHourBucket[];
     } = {},
   ): RangePeriodViewModel {
@@ -388,6 +389,7 @@ suite("Personal insights", () => {
       projects: options.projects ?? [],
       languages: options.languages ?? [],
       files: options.files ?? [],
+      branches: options.branches ?? [],
       quarterHours: options.quarterHours ?? [],
     };
   }
@@ -398,6 +400,7 @@ suite("Personal insights", () => {
       metrics: metrics(activeTimeMs),
       languages: [],
       files: [],
+      branches: [],
     };
   }
 
@@ -435,6 +438,10 @@ suite("Personal insights", () => {
       flowBlockCount: 0,
       flowActiveMs: 0,
       longestFlowActiveMs: 0,
+      gitStatus: "disabled",
+      gitDirtyFiles: 0,
+      gitBranchChanges: 0,
+      gitDetectedCommits: 0,
       diagnostics: {
         current: { error: 0, warning: 0, info: 0, hint: 0 },
         introduced: { error: 0, warning: 0, info: 0, hint: 0 },

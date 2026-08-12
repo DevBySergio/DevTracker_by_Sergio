@@ -31,6 +31,12 @@ const COMPARISON_STATUSES = [
   "not-requested",
   "current-period-incomplete",
 ] as const;
+const GIT_STATUSES = [
+  "disabled",
+  "unavailable",
+  "no-repository",
+  "available",
+] as const;
 const METRIC_FIELDS = [
   "activeTimeMs",
   "debugElapsedMs",
@@ -47,6 +53,9 @@ const METRIC_FIELDS = [
   "flowBlockCount",
   "flowActiveMs",
   "longestFlowActiveMs",
+  "gitDirtyFiles",
+  "gitBranchChanges",
+  "gitDetectedCommits",
 ] as const;
 const SEVERITIES = ["error", "warning", "info", "hint"] as const;
 
@@ -83,6 +92,7 @@ export interface RangePeriodDelta {
   projects: CollectionDelta<RangeProjectViewModel> | null;
   languages: CollectionDelta<RangeDimensionValue> | null;
   files: CollectionDelta<RangeDimensionValue> | null;
+  branches: CollectionDelta<RangeDimensionValue> | null;
   quarterHours: CollectionDelta<RangeQuarterHourBucket> | null;
 }
 
@@ -566,9 +576,12 @@ function projectPeriod(
         includeProjectDetails && includeDistributions
           ? project.files.map(cloneJson)
           : [],
+      branches:
+        view === "quality" ? project.branches.map(cloneJson) : [],
     })),
     languages: includeDistributions ? source.languages.map(cloneJson) : [],
     files: files.map(cloneJson),
+    branches: view === "quality" ? source.branches.map(cloneJson) : [],
     quarterHours: includeQuarterHours
       ? source.quarterHours
           .filter((bucket) => bucket.activeTimeMs > 0)
@@ -595,6 +608,9 @@ function hasObservedDay(day: RangeDayViewModel): boolean {
     metrics.flowBlockCount > 0 ||
     metrics.flowActiveMs > 0 ||
     metrics.longestFlowActiveMs > 0 ||
+    metrics.gitDirtyFiles > 0 ||
+    metrics.gitBranchChanges > 0 ||
+    metrics.gitDetectedCommits > 0 ||
     metrics.legacyApproximate ||
     SEVERITIES.some(
       (severity) =>
@@ -799,6 +815,7 @@ function assertPeriod(value: unknown, location: string): void {
     "projects",
     "languages",
     "files",
+    "branches",
     "quarterHours",
   ]);
   assertNormalizedRange(period.range, `${location}.range`);
@@ -814,6 +831,9 @@ function assertPeriod(value: unknown, location: string): void {
   );
   arrayValue(period.files, `${location}.files`).forEach((entry, index) =>
     assertDimension(entry, `${location}.files[${index}]`),
+  );
+  arrayValue(period.branches, `${location}.branches`).forEach((entry, index) =>
+    assertDimension(entry, `${location}.branches[${index}]`),
   );
   arrayValue(period.quarterHours, `${location}.quarterHours`).forEach(
     (entry, index) =>
@@ -839,12 +859,14 @@ function assertNormalizedRange(value: unknown, location: string): void {
 function assertMetrics(value: unknown, location: string): void {
   const metrics = exactRecord(value, location, [
     ...METRIC_FIELDS,
+    "gitStatus",
     "diagnostics",
     "legacyApproximate",
   ]);
   METRIC_FIELDS.forEach((field) =>
     nonNegativeNumber(metrics[field], `${location}.${field}`),
   );
+  enumValue(metrics.gitStatus, GIT_STATUSES, `${location}.gitStatus`);
   assertDiagnostics(metrics.diagnostics, `${location}.diagnostics`);
   booleanValue(metrics.legacyApproximate, `${location}.legacyApproximate`);
 }
@@ -882,6 +904,7 @@ function assertProject(value: unknown, location: string): void {
     "metrics",
     "languages",
     "files",
+    "branches",
   ]);
   const identity = exactRecord(project.project, `${location}.project`, [
     "id",
@@ -895,6 +918,9 @@ function assertProject(value: unknown, location: string): void {
   );
   arrayValue(project.files, `${location}.files`).forEach((entry, index) =>
     assertDimension(entry, `${location}.files[${index}]`),
+  );
+  arrayValue(project.branches, `${location}.branches`).forEach((entry, index) =>
+    assertDimension(entry, `${location}.branches[${index}]`),
   );
 }
 
@@ -944,6 +970,7 @@ function assertPeriodDelta(value: unknown, location: string): void {
     "projects",
     "languages",
     "files",
+    "branches",
     "quarterHours",
   ]);
   if (delta.range !== null) {
@@ -964,6 +991,11 @@ function assertPeriodDelta(value: unknown, location: string): void {
     assertDimension,
   );
   assertOptionalCollectionDelta(delta.files, `${location}.files`, assertDimension);
+  assertOptionalCollectionDelta(
+    delta.branches,
+    `${location}.branches`,
+    assertDimension,
+  );
   assertOptionalCollectionDelta(
     delta.quarterHours,
     `${location}.quarterHours`,
@@ -1026,6 +1058,7 @@ function diffPeriod(
     ),
     languages: diffCollection(previous.languages, next.languages, (value) => value.id),
     files: diffCollection(previous.files, next.files, (value) => value.id),
+    branches: diffCollection(previous.branches, next.branches, (value) => value.id),
     quarterHours: diffCollection(
       previous.quarterHours,
       next.quarterHours,
@@ -1077,6 +1110,7 @@ function isEmptyPeriodDelta(value: RangePeriodDelta): boolean {
     value.projects === null &&
     value.languages === null &&
     value.files === null &&
+    value.branches === null &&
     value.quarterHours === null
   );
 }

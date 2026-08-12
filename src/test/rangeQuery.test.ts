@@ -28,10 +28,18 @@ suite("RangeQueryEngine", () => {
     alphaDay.activeTimeByQuarterHourMs = { [bucketKey]: 1200 };
     alphaDay.diagnostics.current.error = 3;
     alphaDay.diagnostics.peak.error = 3;
+    alphaDay.gitStatus = "available";
+    alphaDay.gitBranchChanges = 1;
+    alphaDay.activeTimeByGitBranchMs = { main: 1200 };
     const laterAlpha = rollup(alpha.id, "2026-08-07", 300);
     laterAlpha.diagnostics.current.error = 1;
     laterAlpha.diagnostics.resolved.error = 2;
     laterAlpha.diagnostics.peak.error = 3;
+    laterAlpha.gitStatus = "available";
+    laterAlpha.gitDirtyFiles = 3;
+    laterAlpha.gitBranchChanges = 2;
+    laterAlpha.gitDetectedCommits = 1;
+    laterAlpha.activeTimeByGitBranchMs = { "feature/git": 300 };
     const betaDay = rollup(beta.id, "2026-08-05", 500);
     betaDay.activeTimeByLanguageMs = { typescript: 500 };
     betaDay.activeTimeByDocumentMs = { "README.md": 500 };
@@ -55,6 +63,10 @@ suite("RangeQueryEngine", () => {
     assert.strictEqual(result.current.metrics.diagnostics.current.error, 1);
     assert.strictEqual(result.current.metrics.diagnostics.resolved.error, 2);
     assert.strictEqual(result.current.metrics.diagnostics.peak.error, 3);
+    assert.strictEqual(result.current.metrics.gitStatus, "available");
+    assert.strictEqual(result.current.metrics.gitDirtyFiles, 3);
+    assert.strictEqual(result.current.metrics.gitBranchChanges, 3);
+    assert.strictEqual(result.current.metrics.gitDetectedCommits, 1);
     assert.deepStrictEqual(result.current.languages, [
       { id: "typescript", activeTimeMs: 1500 },
       { id: "json", activeTimeMs: 200 },
@@ -62,6 +74,10 @@ suite("RangeQueryEngine", () => {
     assert.deepStrictEqual(result.current.files, [
       { id: "src/index.ts", activeTimeMs: 1200 },
       { id: "README.md", activeTimeMs: 500 },
+    ]);
+    assert.deepStrictEqual(result.current.branches, [
+      { id: "main", activeTimeMs: 1200 },
+      { id: "feature/git", activeTimeMs: 300 },
     ]);
     assert.deepStrictEqual(
       result.current.projects.map(({ project, metrics }) => ({

@@ -34,6 +34,8 @@ const ADDITIVE_FIELDS = [
   "projectSwitchEvents",
   "flowBlockCount",
   "flowActiveMs",
+  "gitBranchChanges",
+  "gitDetectedCommits",
 ] as const;
 const SEVERITIES = ["error", "warning", "info", "hint"] as const;
 
@@ -250,6 +252,10 @@ export class RangeQueryEngine {
             projectRecords,
             "activeTimeByDocumentMs",
           ),
+          branches: this.aggregateDimension(
+            projectRecords,
+            "activeTimeByGitBranchMs",
+          ),
         };
       })
       .filter((value): value is RangeProjectViewModel => value !== undefined)
@@ -265,6 +271,7 @@ export class RangeQueryEngine {
       projects,
       languages: this.aggregateDimension(records, "activeTimeByLanguageMs"),
       files: this.aggregateDimension(records, "activeTimeByDocumentMs"),
+      branches: this.aggregateDimension(records, "activeTimeByGitBranchMs"),
       quarterHours: this.aggregateQuarterHours(range, records),
     };
   }
@@ -326,6 +333,14 @@ export class RangeQueryEngine {
       }
     });
     latestByProject.forEach((record) => {
+      result.gitDirtyFiles = this.safeAdd(
+        result.gitDirtyFiles,
+        record.gitDirtyFiles,
+        "gitDirtyFiles",
+      );
+      if (this.gitStatusRank(record.gitStatus) > this.gitStatusRank(result.gitStatus)) {
+        result.gitStatus = record.gitStatus;
+      }
       SEVERITIES.forEach((severity) => {
         result.diagnostics.current[severity] = this.safeAdd(
           result.diagnostics.current[severity],
@@ -339,7 +354,10 @@ export class RangeQueryEngine {
 
   private aggregateDimension(
     records: readonly DailyRollup[],
-    field: "activeTimeByLanguageMs" | "activeTimeByDocumentMs",
+    field:
+      | "activeTimeByLanguageMs"
+      | "activeTimeByDocumentMs"
+      | "activeTimeByGitBranchMs",
   ): RangeDimensionValue[] {
     const totals = new Map<string, number>();
     records.forEach((record) => {
@@ -539,9 +557,26 @@ export class RangeQueryEngine {
       flowBlockCount: 0,
       flowActiveMs: 0,
       longestFlowActiveMs: 0,
+      gitStatus: "disabled",
+      gitDirtyFiles: 0,
+      gitBranchChanges: 0,
+      gitDetectedCommits: 0,
       diagnostics,
       legacyApproximate: false,
     };
+  }
+
+  private gitStatusRank(value: RangeAggregateMetrics["gitStatus"]): number {
+    switch (value) {
+      case "available":
+        return 3;
+      case "no-repository":
+        return 2;
+      case "unavailable":
+        return 1;
+      case "disabled":
+        return 0;
+    }
   }
 
   private safeAdd(left: number, right: number, field: string): number {

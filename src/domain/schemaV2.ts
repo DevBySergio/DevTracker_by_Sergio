@@ -1,4 +1,5 @@
 import { DiagnosticsBySeverity } from "./types";
+import { GitTrackingStatus } from "./git";
 
 export const SCHEMA_VERSION = 2 as const;
 
@@ -83,11 +84,16 @@ export interface DailyRollup {
   flowBlockCount: number;
   flowActiveMs: number;
   longestFlowActiveMs: number;
+  gitStatus: GitTrackingStatus;
+  gitDirtyFiles: number;
+  gitBranchChanges: number;
+  gitDetectedCommits: number;
   diagnostics: DiagnosticRollup;
   diagnosticBuckets: Record<string, DiagnosticTimeBucket>;
   activeTimeByLanguageMs: Record<string, number>;
   activeTimeByDocumentMs: Record<string, number>;
   activeTimeByQuarterHourMs: Record<string, number>;
+  activeTimeByGitBranchMs: Record<string, number>;
   legacyApproximate: boolean;
   updatedAt: number;
 }
@@ -127,6 +133,10 @@ export function createEmptyDailyRollup(
     flowBlockCount: 0,
     flowActiveMs: 0,
     longestFlowActiveMs: 0,
+    gitStatus: "disabled",
+    gitDirtyFiles: 0,
+    gitBranchChanges: 0,
+    gitDetectedCommits: 0,
     diagnostics: {
       current: createEmptyDiagnostics(),
       introduced: createEmptyDiagnostics(),
@@ -137,6 +147,7 @@ export function createEmptyDailyRollup(
     activeTimeByLanguageMs: {},
     activeTimeByDocumentMs: {},
     activeTimeByQuarterHourMs: {},
+    activeTimeByGitBranchMs: {},
     legacyApproximate: false,
     updatedAt,
   };

@@ -327,6 +327,7 @@ function projectAsLegacy(project, localDate) {
     range: { localDates: [localDate] },
     languages: project.languages,
     files: project.files,
+    branches: project.branches,
     quarterHours: []
   }, localDate);
   return {
@@ -362,6 +363,7 @@ function metricsAsLegacy(metrics, period, localDate = undefined) {
     seconds: Number(item.activeTimeMs || 0) / 1000
   }]));
   const files = Object.fromEntries((period.files || []).map(item => [item.id, Number(item.activeTimeMs || 0)]));
+  const branches = Object.fromEntries((period.branches || []).map(item => [item.id, Number(item.activeTimeMs || 0) / 1000]));
   return {
     date: localDate || (period.range && period.range.endLocalDate) || getLocalDateKey(),
     seconds: Number(safe.activeTimeMs || 0) / 1000,
@@ -383,8 +385,9 @@ function metricsAsLegacy(metrics, period, localDate = undefined) {
     },
     languages,
     activeTimeByDocumentMs: files,
-    branches: {},
-    gitDirtyFiles: 0,
+    branches,
+    gitStatus: safe.gitStatus || 'disabled',
+    gitDirtyFiles: Number(safe.gitDirtyFiles || 0),
     hours: {}
   };
 }
@@ -416,6 +419,7 @@ function applyPeriodDelta(target, delta) {
   if (delta.projects !== null) { target.projects = patchCollection(target.projects, delta.projects, item => item.project.id); }
   if (delta.languages !== null) { target.languages = patchCollection(target.languages, delta.languages, item => item.id); }
   if (delta.files !== null) { target.files = patchCollection(target.files, delta.files, item => item.id); }
+  if (delta.branches !== null) { target.branches = patchCollection(target.branches, delta.branches, item => item.id); }
   if (delta.quarterHours !== null) { target.quarterHours = patchCollection(target.quarterHours, delta.quarterHours, item => item.key); }
 }
 
@@ -448,6 +452,7 @@ function normalizeSession(session: Record<string, any> = {}) {
     diagnosticsBySeverity: normalizeDiagnostics(safe.diagnosticsBySeverity),
     contextSwitches: safe.contextSwitches || 0,
     branches: safe.branches || {},
+    gitStatus: safe.gitStatus || 'disabled',
     gitDirtyFiles: safe.gitDirtyFiles || 0,
     flow: normalizeFlow(safe.flow)
   };
@@ -476,6 +481,7 @@ function normalizeDay(day) {
     diagnosticsBySeverity: normalizeDiagnostics(safe.diagnosticsBySeverity),
     contextSwitches: safe.contextSwitches || 0,
     branches: safe.branches || {},
+    gitStatus: safe.gitStatus || 'disabled',
     gitDirtyFiles: safe.gitDirtyFiles || 0,
     flow: normalizeFlow(safe.flow)
   };
@@ -737,7 +743,14 @@ function renderQuality() {
   setText('q-debug', fmt(agg.debugSeconds));
 
   renderDiagnosticsChart(days);
-  renderBarList('branch-list', agg.branches, fmt, EN.empty.gitUnavailable);
+  const gitEmpty = rawSession.gitStatus === 'disabled'
+    ? EN.empty.gitDisabled
+    : rawSession.gitStatus === 'no-repository'
+      ? EN.empty.noRepository
+      : rawSession.gitStatus === 'unavailable'
+        ? EN.empty.gitUnavailable
+        : EN.empty.noBranchActivity;
+  renderBarList('branch-list', rawSession.branches, fmt, gitEmpty);
   renderBarList('quality-breakdown', {
     [EN.signals.errors]: currentDiagnostics.error,
     [EN.signals.warnings]: currentDiagnostics.warning,

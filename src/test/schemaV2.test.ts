@@ -572,6 +572,27 @@ suite("Schema v2", () => {
     );
   });
 
+  test("upgrades earlier schema-v2 rollups with Git defaults", () => {
+    const rollup = createEmptyDailyRollup(
+      "project-alpha",
+      "2026-08-07",
+      nowMs,
+    ) as unknown as Record<string, unknown>;
+    delete rollup.gitStatus;
+    delete rollup.gitDirtyFiles;
+    delete rollup.gitBranchChanges;
+    delete rollup.gitDetectedCommits;
+    delete rollup.activeTimeByGitBranchMs;
+
+    const validated = assertDailyRollup(rollup);
+
+    assert.strictEqual(validated.gitStatus, "disabled");
+    assert.strictEqual(validated.gitDirtyFiles, 0);
+    assert.strictEqual(validated.gitBranchChanges, 0);
+    assert.strictEqual(validated.gitDetectedCommits, 0);
+    assert.deepStrictEqual(validated.activeTimeByGitBranchMs, {});
+  });
+
   function createStore(
     fileSystem: FileSystemAdapter = nodeFileSystem,
   ): SessionStoreV2 {

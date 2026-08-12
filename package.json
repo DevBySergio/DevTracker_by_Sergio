@@ -110,7 +110,7 @@
         "devtracker.gitTrackingEnabled": {
           "type": "boolean",
           "default": false,
-          "description": "Collect local Git branch and dirty-file aggregates."
+          "description": "Collect local Git branch names, commit-event counts, and unique dirty-file aggregates. Data stays in DevTracker's local storage."
         },
         "devtracker.debugTrackingEnabled": {
           "type": "boolean",

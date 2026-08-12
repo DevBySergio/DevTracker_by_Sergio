@@ -199,6 +199,7 @@ function rangePeriod(
     projects: [],
     languages: [],
     files,
+    branches: [],
     quarterHours: [],
   };
 }
@@ -220,6 +221,10 @@ function metrics(activeTimeMs: number): RangeAggregateMetrics {
     flowBlockCount: 0,
     flowActiveMs: 0,
     longestFlowActiveMs: 0,
+    gitStatus: "disabled",
+    gitDirtyFiles: 0,
+    gitBranchChanges: 0,
+    gitDetectedCommits: 0,
     diagnostics: {
       current: { error: 0, warning: 0, info: 0, hint: 0 },
       introduced: { error: 0, warning: 0, info: 0, hint: 0 },

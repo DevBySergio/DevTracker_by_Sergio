@@ -44,6 +44,10 @@ export interface RangeMetrics {
   flowBlockCount: number;
   flowActiveMs: number;
   longestFlowActiveMs: number;
+  gitStatus: "disabled" | "unavailable" | "no-repository" | "available";
+  gitDirtyFiles: number;
+  gitBranchChanges: number;
+  gitDetectedCommits: number;
   diagnostics: {
     current: SeverityCounts;
     introduced: SeverityCounts;
@@ -68,6 +72,7 @@ export interface RangeProjectViewModel {
   metrics: RangeMetrics;
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
+  branches: RangeDimensionValue[];
 }
 
 export interface RangeQuarterHourBucket {
@@ -90,6 +95,7 @@ export interface RangePeriodViewModel {
   projects: RangeProjectViewModel[];
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
+  branches: RangeDimensionValue[];
   quarterHours: RangeQuarterHourBucket[];
 }
 
@@ -115,6 +121,7 @@ export interface RangePeriodDelta {
   projects: CollectionDelta<RangeProjectViewModel> | null;
   languages: CollectionDelta<RangeDimensionValue> | null;
   files: CollectionDelta<RangeDimensionValue> | null;
+  branches: CollectionDelta<RangeDimensionValue> | null;
   quarterHours: CollectionDelta<RangeQuarterHourBucket> | null;
 }
 

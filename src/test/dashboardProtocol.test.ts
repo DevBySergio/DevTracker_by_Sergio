@@ -293,10 +293,16 @@ suite("DashboardProtocol", () => {
     assert.deepStrictEqual(quality.current.days, []);
     assert.deepStrictEqual(quality.current.languages, []);
     assert.deepStrictEqual(quality.current.files, []);
+    assert.deepStrictEqual(quality.current.branches, source.current.branches);
+    assert.deepStrictEqual(
+      quality.current.projects[0].branches,
+      source.current.projects[0].branches,
+    );
     assert.deepStrictEqual(quality.current.quarterHours, []);
     assert.deepStrictEqual(global.current.quarterHours, []);
     assert.deepStrictEqual(global.current.projects[0].languages, []);
     assert.deepStrictEqual(global.current.projects[0].files, []);
+    assert.deepStrictEqual(global.current.branches, []);
     assert.deepStrictEqual(global.current.languages, [
       { id: "typescript", activeTimeMs: 1 },
     ]);
@@ -445,10 +451,12 @@ function period(value: RangeAggregateMetrics): RangePeriodViewModel {
         metrics: JSON.parse(JSON.stringify(value)) as RangeAggregateMetrics,
         languages: [{ id: "typescript", activeTimeMs: 0 }],
         files: [{ id: "src/index.ts", activeTimeMs: 0 }],
+        branches: [{ id: "main", activeTimeMs: 0 }],
       },
     ],
     languages: [{ id: "typescript", activeTimeMs: 0 }],
     files: [{ id: "src/index.ts", activeTimeMs: 0 }],
+    branches: [{ id: "main", activeTimeMs: 0 }],
     quarterHours: [
       {
         key: "1786104000000",
@@ -478,6 +486,10 @@ function metrics(): RangeAggregateMetrics {
     flowBlockCount: 0,
     flowActiveMs: 0,
     longestFlowActiveMs: 0,
+    gitStatus: "disabled",
+    gitDirtyFiles: 0,
+    gitBranchChanges: 0,
+    gitDetectedCommits: 0,
     diagnostics: {
       current: { error: 0, warning: 0, info: 0, hint: 0 },
       introduced: { error: 0, warning: 0, info: 0, hint: 0 },

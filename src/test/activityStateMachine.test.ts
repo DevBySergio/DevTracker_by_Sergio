@@ -158,6 +158,46 @@ suite("ActivityStateMachine", () => {
     ]);
   });
 
+  test("counts spring-forward elapsed time once across the skipped local hour", () => {
+    withTimezone("Europe/Madrid", () => {
+      const startedAt = Date.parse("2026-03-29T00:59:59.500Z");
+      const clock = new FakeClock(startedAt);
+      const machine = new ActivityStateMachine({ clock });
+      machine.interact("edit");
+
+      clock.advance(1_000);
+      const transition = machine.tick();
+
+      assert.deepStrictEqual(transition.slices, [
+        slice("2026-03-29", startedAt, 0, 1_000, startedAt),
+      ]);
+      assert.strictEqual(new Date(startedAt).getHours(), 1);
+      assert.strictEqual(new Date(startedAt + 1_000).getHours(), 3);
+    });
+  });
+
+  test("counts fall-back elapsed time once across the repeated local hour", () => {
+    withTimezone("Europe/Madrid", () => {
+      const startedAt = Date.parse("2026-10-25T00:59:59.500Z");
+      const clock = new FakeClock(startedAt);
+      const machine = new ActivityStateMachine({ clock });
+      machine.interact("edit");
+
+      clock.advance(1_000);
+      const transition = machine.tick();
+
+      assert.deepStrictEqual(transition.slices, [
+        slice("2026-10-25", startedAt, 0, 1_000, startedAt),
+      ]);
+      assert.strictEqual(new Date(startedAt).getHours(), 2);
+      assert.strictEqual(new Date(startedAt + 1_000).getHours(), 2);
+      assert.notStrictEqual(
+        new Date(startedAt).getTimezoneOffset(),
+        new Date(startedAt + 1_000).getTimezoneOffset(),
+      );
+    });
+  });
+
   function slice(
     localDateKey: string,
     startedAt: number,
@@ -177,6 +217,20 @@ suite("ActivityStateMachine", () => {
   }
 
 });
+
+function withTimezone<T>(timeZone: string, callback: () => T): T {
+  const previous = process.env.TZ;
+  process.env.TZ = timeZone;
+  try {
+    return callback();
+  } finally {
+    if (previous === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = previous;
+    }
+  }
+}
 
 class FakeClock implements Clock {
   private monotonicMs = 0;

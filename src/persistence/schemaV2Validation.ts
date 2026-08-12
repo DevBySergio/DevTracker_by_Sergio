@@ -166,7 +166,18 @@ export function assertTrackingSession(value: unknown): TrackingSession {
 }
 
 export function assertDailyRollup(value: unknown): DailyRollup {
-  const record = requireRecord(value, "DailyRollup");
+  const source = requireRecord(value, "DailyRollup");
+  // Schema-v2 rollups written before Git metrics were introduced remain valid.
+  // Defaults are applied during validation so the persisted contract can grow
+  // without silently accepting unknown fields.
+  const record: JsonRecord = {
+    gitStatus: "disabled",
+    gitDirtyFiles: 0,
+    gitBranchChanges: 0,
+    gitDetectedCommits: 0,
+    activeTimeByGitBranchMs: {},
+    ...source,
+  };
   requireExactKeys(record, "DailyRollup", [
     "schemaVersion",
     "projectId",
@@ -186,11 +197,16 @@ export function assertDailyRollup(value: unknown): DailyRollup {
     "flowBlockCount",
     "flowActiveMs",
     "longestFlowActiveMs",
+    "gitStatus",
+    "gitDirtyFiles",
+    "gitBranchChanges",
+    "gitDetectedCommits",
     "diagnostics",
     "diagnosticBuckets",
     "activeTimeByLanguageMs",
     "activeTimeByDocumentMs",
     "activeTimeByQuarterHourMs",
+    "activeTimeByGitBranchMs",
     "legacyApproximate",
     "updatedAt",
   ]);
@@ -213,9 +229,20 @@ export function assertDailyRollup(value: unknown): DailyRollup {
     "flowBlockCount",
     "flowActiveMs",
     "longestFlowActiveMs",
+    "gitDirtyFiles",
+    "gitBranchChanges",
+    "gitDetectedCommits",
   ].forEach((key) =>
     requireNonNegativeInteger(record[key], `DailyRollup.${key}`),
   );
+  if (
+    record.gitStatus !== "disabled" &&
+    record.gitStatus !== "unavailable" &&
+    record.gitStatus !== "no-repository" &&
+    record.gitStatus !== "available"
+  ) {
+    fail("DailyRollup", "gitStatus is invalid");
+  }
   assertDiagnosticRollup(record.diagnostics);
   const diagnosticBuckets = requireRecord(
     record.diagnosticBuckets,
@@ -244,6 +271,10 @@ export function assertDailyRollup(value: unknown): DailyRollup {
   requireNumericMap(
     record.activeTimeByQuarterHourMs,
     "DailyRollup.activeTimeByQuarterHourMs",
+  );
+  requireNumericMap(
+    record.activeTimeByGitBranchMs,
+    "DailyRollup.activeTimeByGitBranchMs",
   );
   if (typeof record.legacyApproximate !== "boolean") {
     fail("DailyRollup", "legacyApproximate must be boolean");

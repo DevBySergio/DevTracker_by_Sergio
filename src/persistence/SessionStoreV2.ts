@@ -12,6 +12,7 @@ import {
   createEmptyDailyRollup,
 } from "../domain/schemaV2";
 import { PersistenceHealth } from "../domain/types";
+import { GitTrackingStatus } from "../domain/git";
 import { Clock, FileSystemAdapter } from "../platform/ports";
 import { AsyncWriteQueue } from "./AsyncWriteQueue";
 import {
@@ -55,9 +56,14 @@ export interface DailyRollupMetricDelta {
   flowBlockCount?: number;
   flowActiveMs?: number;
   longestFlowActiveMs?: number;
+  gitStatus?: GitTrackingStatus;
+  gitDirtyFiles?: number;
+  gitBranchChanges?: number;
+  gitDetectedCommits?: number;
   activeTimeByLanguageMs?: Readonly<Record<string, number>>;
   activeTimeByDocumentMs?: Readonly<Record<string, number>>;
   activeTimeByQuarterHourMs?: Readonly<Record<string, number>>;
+  activeTimeByGitBranchMs?: Readonly<Record<string, number>>;
 }
 
 /**
@@ -500,6 +506,8 @@ export class SessionStoreV2 {
         "projectSwitchEvents",
         "flowBlockCount",
         "flowActiveMs",
+        "gitBranchChanges",
+        "gitDetectedCommits",
       ] as const;
       additiveFields.forEach((field) => {
         rollup[field] = this.addMetricDuration(
@@ -513,6 +521,12 @@ export class SessionStoreV2 {
         rollup.longestFlowActiveMs,
         delta.longestFlowActiveMs ?? 0,
       );
+      if (delta.gitStatus !== undefined) {
+        rollup.gitStatus = delta.gitStatus;
+      }
+      if (delta.gitDirtyFiles !== undefined) {
+        rollup.gitDirtyFiles = delta.gitDirtyFiles;
+      }
       this.mergeMetricMap(
         rollup.activeTimeByLanguageMs,
         delta.activeTimeByLanguageMs,
@@ -527,6 +541,11 @@ export class SessionStoreV2 {
         rollup.activeTimeByQuarterHourMs,
         delta.activeTimeByQuarterHourMs,
         "activeTimeByQuarterHourMs",
+      );
+      this.mergeMetricMap(
+        rollup.activeTimeByGitBranchMs,
+        delta.activeTimeByGitBranchMs,
+        "activeTimeByGitBranchMs",
       );
       rollup.updatedAt = this.clock.nowMs();
       return this.writeDailyRollupRecord(rollup);
@@ -1011,9 +1030,14 @@ export class SessionStoreV2 {
       "flowBlockCount",
       "flowActiveMs",
       "longestFlowActiveMs",
+      "gitStatus",
+      "gitDirtyFiles",
+      "gitBranchChanges",
+      "gitDetectedCommits",
       "activeTimeByLanguageMs",
       "activeTimeByDocumentMs",
       "activeTimeByQuarterHourMs",
+      "activeTimeByGitBranchMs",
     ]);
     const extra = Object.keys(value).filter((key) => !allowed.has(key));
     if (extra.length > 0) {
@@ -1023,6 +1047,20 @@ export class SessionStoreV2 {
       );
     }
     Object.entries(value).forEach(([key, candidate]) => {
+      if (key === "gitStatus") {
+        if (
+          candidate !== "disabled" &&
+          candidate !== "unavailable" &&
+          candidate !== "no-repository" &&
+          candidate !== "available"
+        ) {
+          throw new SchemaValidationError(
+            "DailyMetricDelta",
+            "gitStatus is invalid",
+          );
+        }
+        return;
+      }
       if (key.startsWith("activeTimeBy")) {
         if (
           !candidate ||

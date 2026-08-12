@@ -1,90 +1,197 @@
 import * as vscode from "vscode";
-import { GitAdapter, GitState } from "../application/ports";
-import { Clock } from "../platform/ports";
+import {
+  GitAdapter,
+  GitState,
+  GitStateChange,
+} from "../application/ports";
+import {
+  GitRepositoryObservation,
+  GitRepositoryTracker,
+} from "./GitRepositoryTracker";
+
+interface GitChange {
+  uri: vscode.Uri;
+}
 
 interface GitRepository {
-  rootUri?: vscode.Uri;
+  rootUri: vscode.Uri;
   state: {
-    HEAD?: { name?: string };
-    workingTreeChanges: readonly unknown[];
-    indexChanges: readonly unknown[];
-    untrackedChanges: readonly unknown[];
+    readonly onDidChange: vscode.Event<void>;
+    readonly HEAD: { name?: string; commit?: string } | undefined;
+    readonly workingTreeChanges: readonly GitChange[];
+    readonly indexChanges: readonly GitChange[];
+    readonly mergeChanges: readonly GitChange[];
+    readonly untrackedChanges: readonly GitChange[];
   };
+  readonly onDidCommit?: vscode.Event<void>;
+  readonly onDidCheckout?: vscode.Event<void>;
 }
 
 interface GitApi {
-  repositories: readonly GitRepository[];
+  readonly repositories: readonly GitRepository[];
+  readonly onDidOpenRepository: vscode.Event<GitRepository>;
+  readonly onDidCloseRepository: vscode.Event<GitRepository>;
 }
 
 interface GitExtensionExports {
+  readonly enabled?: boolean;
+  readonly onDidChangeEnablement?: vscode.Event<boolean>;
   getAPI(version: 1): GitApi;
 }
 
-const REFRESH_INTERVAL_MS = 5000;
-const DEFAULT_STATE: GitState = {
-  branch: "No branch",
-  dirtyFiles: 0,
-};
-
+/** Event-driven adapter for VS Code's built-in Git extension API. */
 export class VscodeGitIntegration implements GitAdapter {
-  private currentState: GitState = { ...DEFAULT_STATE };
-  private lastRefreshAt = 0;
+  private readonly tracker = new GitRepositoryTracker();
+  private readonly sourceDisposables: vscode.Disposable[] = [];
+  private readonly repositoryDisposables = new Map<
+    string,
+    vscode.Disposable[]
+  >();
+  private configurationGeneration = 0;
+  private enabled = false;
+  private disposed = false;
 
-  constructor(private readonly clock: Clock) {}
-
-  public getCurrentState(): GitState {
-    return { ...this.currentState };
-  }
-
-  public async refreshIfStale(
-    projectPath: string,
-  ): Promise<GitState | undefined> {
-    const now = this.clock.nowMs();
-    if (now - this.lastRefreshAt < REFRESH_INTERVAL_MS) {
-      return undefined;
+  public async configure(enabled: boolean): Promise<void> {
+    if (this.disposed) {
+      return;
+    }
+    const generation = ++this.configurationGeneration;
+    this.enabled = enabled;
+    this.disposeBindings();
+    if (!enabled) {
+      this.tracker.setMode("disabled");
+      return;
     }
 
-    return this.refresh(projectPath);
-  }
-
-  public async refresh(projectPath: string): Promise<GitState> {
-    this.lastRefreshAt = this.clock.nowMs();
+    this.tracker.setMode("unavailable");
     try {
       const extension = vscode.extensions.getExtension<GitExtensionExports>(
         "vscode.git",
       );
       if (!extension) {
-        return this.setState("Git unavailable", 0);
+        return;
       }
-
-      const extensionApi = extension.isActive
+      const exports = extension.isActive
         ? extension.exports
         : await extension.activate();
-      const git = extensionApi.getAPI(1);
-      const repository = git.repositories.find(
-        (candidate) => candidate.rootUri?.fsPath === projectPath,
-      );
-
-      if (!repository) {
-        return this.setState("No repository", 0);
+      if (!this.isCurrent(generation)) {
+        return;
+      }
+      if (exports.enabled === false) {
+        exports.onDidChangeEnablement &&
+          this.sourceDisposables.push(
+            exports.onDidChangeEnablement(() => this.reconfigure()),
+          );
+        return;
       }
 
-      const dirtyFiles =
-        repository.state.workingTreeChanges.length +
-        repository.state.indexChanges.length +
-        repository.state.untrackedChanges.length;
-
-      return this.setState(
-        repository.state.HEAD?.name || "Detached HEAD",
-        dirtyFiles,
+      const api = exports.getAPI(1);
+      if (!this.isCurrent(generation)) {
+        return;
+      }
+      this.tracker.setMode("available");
+      api.repositories.forEach((repository) => this.bindRepository(repository));
+      this.sourceDisposables.push(
+        api.onDidOpenRepository((repository) => this.bindRepository(repository)),
+        api.onDidCloseRepository((repository) =>
+          this.unbindRepository(repository),
+        ),
       );
+      if (exports.onDidChangeEnablement) {
+        this.sourceDisposables.push(
+          exports.onDidChangeEnablement(() => this.reconfigure()),
+        );
+      }
     } catch {
-      return this.setState("Git unavailable", 0);
+      if (this.isCurrent(generation)) {
+        this.disposeBindings();
+        this.tracker.setMode("unavailable");
+      }
     }
   }
 
-  private setState(branch: string, dirtyFiles: number): GitState {
-    this.currentState = { branch, dirtyFiles };
-    return this.getCurrentState();
+  public getState(resourcePath: string): GitState {
+    return this.tracker.getState(resourcePath);
+  }
+
+  public onDidChange(
+    listener: (change: GitStateChange) => void,
+  ): vscode.Disposable {
+    return this.tracker.onDidChange(listener);
+  }
+
+  public dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.disposed = true;
+    this.configurationGeneration += 1;
+    this.disposeBindings();
+    this.tracker.clear();
+  }
+
+  private bindRepository(repository: GitRepository): void {
+    if (this.disposed || !this.enabled) {
+      return;
+    }
+    const key = repository.rootUri.toString();
+    this.repositoryDisposables.get(key)?.forEach((value) => value.dispose());
+    const refresh = (): void => this.observe(repository, false);
+    const subscriptions = [repository.state.onDidChange(refresh)];
+    if (repository.onDidCommit) {
+      subscriptions.push(
+        repository.onDidCommit(() => this.observe(repository, true)),
+      );
+    }
+    if (repository.onDidCheckout) {
+      subscriptions.push(repository.onDidCheckout(refresh));
+    }
+    this.repositoryDisposables.set(key, subscriptions);
+    this.observe(repository, false);
+  }
+
+  private unbindRepository(repository: GitRepository): void {
+    const key = repository.rootUri.toString();
+    this.repositoryDisposables.get(key)?.forEach((value) => value.dispose());
+    this.repositoryDisposables.delete(key);
+    this.tracker.removeRepository(key);
+  }
+
+  private observe(repository: GitRepository, commitEvent: boolean): void {
+    const changes = [
+      ...repository.state.workingTreeChanges,
+      ...repository.state.indexChanges,
+      ...repository.state.mergeChanges,
+      ...repository.state.untrackedChanges,
+    ];
+    const observation: GitRepositoryObservation = {
+      repositoryUri: repository.rootUri.toString(),
+      rootPath: repository.rootUri.fsPath,
+      branch: repository.state.HEAD?.name ?? null,
+      headCommit: repository.state.HEAD?.commit ?? null,
+      dirtyResourceUris: changes.map((change) => change.uri.toString()),
+      commitEvent,
+    };
+    this.tracker.observeRepository(observation);
+  }
+
+  private reconfigure(): void {
+    void this.configure(this.enabled);
+  }
+
+  private isCurrent(generation: number): boolean {
+    return (
+      !this.disposed &&
+      this.enabled &&
+      generation === this.configurationGeneration
+    );
+  }
+
+  private disposeBindings(): void {
+    this.sourceDisposables.splice(0).forEach((value) => value.dispose());
+    this.repositoryDisposables.forEach((values) =>
+      values.forEach((value) => value.dispose()),
+    );
+    this.repositoryDisposables.clear();
   }
 }

@@ -1,4 +1,5 @@
 import { DiagnosticRollup } from "./schemaV2";
+import { GitTrackingStatus } from "./git";
 
 export type RangePreset =
   | "today"
@@ -46,6 +47,10 @@ export interface RangeAggregateMetrics {
   flowBlockCount: number;
   flowActiveMs: number;
   longestFlowActiveMs: number;
+  gitStatus: GitTrackingStatus;
+  gitDirtyFiles: number;
+  gitBranchChanges: number;
+  gitDetectedCommits: number;
   diagnostics: DiagnosticRollup;
   legacyApproximate: boolean;
 }
@@ -73,6 +78,7 @@ export interface RangeProjectViewModel {
   metrics: RangeAggregateMetrics;
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
+  branches: RangeDimensionValue[];
 }
 
 export interface RangePeriodViewModel {
@@ -82,6 +88,7 @@ export interface RangePeriodViewModel {
   projects: RangeProjectViewModel[];
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
+  branches: RangeDimensionValue[];
   quarterHours: RangeQuarterHourBucket[];
 }
 

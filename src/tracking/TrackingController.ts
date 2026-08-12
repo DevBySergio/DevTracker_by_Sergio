@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import {
   ActivityIntervalSink,
   DailyMetricSink,
@@ -8,7 +9,9 @@ import {
   DebugMetricSink,
   DiagnosticBucketSink,
   GitAdapter,
+  GitMetricSink,
   GitState,
+  GitStateChange,
   TrackingStore,
   TrackingPrivacyPolicy,
 } from "../application/ports";
@@ -51,6 +54,7 @@ export interface TrackingControllerDependencies {
   activityIntervals: ActivityIntervalSink;
   dailyMetrics: DailyMetricSink;
   debugMetrics: DebugMetricSink;
+  gitMetrics: GitMetricSink;
   diagnostics: DiagnosticsTracker;
   diagnosticBuckets: DiagnosticBucketSink;
   privacy: TrackingPrivacyPolicy;
@@ -74,6 +78,7 @@ export class TrackingController implements vscode.Disposable {
   private readonly activityIntervals: ActivityIntervalSink;
   private readonly dailyMetrics: DailyMetricSink;
   private readonly debugMetrics: DebugMetricSink;
+  private readonly gitMetrics: GitMetricSink;
   private readonly debugSessions: DebugSessionTracker;
   private readonly diagnostics: DiagnosticsTracker;
   private readonly diagnosticBuckets: DiagnosticBucketSink;
@@ -88,6 +93,7 @@ export class TrackingController implements vscode.Disposable {
   private currentLanguage = "unknown";
   private currentRelativeFile = "unknown";
   private currentDocumentId: string | null = null;
+  private currentDocumentPath: string | undefined;
   private disposed = false;
 
   constructor(dependencies: TrackingControllerDependencies) {
@@ -101,6 +107,7 @@ export class TrackingController implements vscode.Disposable {
     this.activityIntervals = dependencies.activityIntervals;
     this.dailyMetrics = dependencies.dailyMetrics;
     this.debugMetrics = dependencies.debugMetrics;
+    this.gitMetrics = dependencies.gitMetrics;
     this.diagnostics = dependencies.diagnostics;
     this.diagnosticBuckets = dependencies.diagnosticBuckets;
     this.privacy = dependencies.privacy;
@@ -166,6 +173,8 @@ export class TrackingController implements vscode.Disposable {
       vscode.debug.onDidTerminateDebugSession((session) =>
         this.onDebugSessionTerminated(session),
       ),
+      this.git.onDidChange((change) => this.onGitStateChanged(change)),
+      this.git,
     );
 
     this.trackingInterval = this.scheduler.setInterval(
@@ -173,6 +182,7 @@ export class TrackingController implements vscode.Disposable {
       TRACKING_INTERVAL_MS,
     );
     this.onActiveTextEditorChanged(vscode.window.activeTextEditor);
+    void this.configureGit();
     if (vscode.debug.activeDebugSession) {
       this.onDebugSessionStarted(vscode.debug.activeDebugSession);
     }
@@ -200,6 +210,7 @@ export class TrackingController implements vscode.Disposable {
       this.activityIntervals.flush(),
       this.dailyMetrics.flush(),
       this.debugMetrics.flush(),
+      this.gitMetrics.flush(),
       this.diagnosticBuckets.flush(),
     ]).then(() => undefined);
   }
@@ -233,6 +244,7 @@ export class TrackingController implements vscode.Disposable {
         this.privacy.isDebugTrackingEnabled(),
       ),
     );
+    void this.configureGit();
     this.onActiveTextEditorChanged(vscode.window.activeTextEditor);
   }
 
@@ -327,7 +339,7 @@ export class TrackingController implements vscode.Disposable {
       projectId: attribution.projectId,
     });
     this.updateDiagnosticsForProject(attribution.projectPath);
-    this.refreshGitState(attribution.projectPath);
+    this.recordCurrentGitState();
     this.updateState();
   }
 
@@ -384,7 +396,6 @@ export class TrackingController implements vscode.Disposable {
       localDate: this.localDateKey(),
     });
     this.updateDiagnosticsForProject(attribution.projectPath);
-    this.refreshGitState(attribution.projectPath);
     this.updateState();
   }
 
@@ -420,7 +431,10 @@ export class TrackingController implements vscode.Disposable {
     return transition;
   }
 
-  private applyActivityTransition(transition: ActivityTransition): void {
+  private applyActivityTransition(
+    transition: ActivityTransition,
+    gitStateOverride?: GitState,
+  ): void {
     if (
       transition.slices.length > 0 &&
       this.currentProjectPath &&
@@ -428,10 +442,9 @@ export class TrackingController implements vscode.Disposable {
     ) {
       const projectPath = this.currentProjectPath;
       const projectId = this.currentProjectId;
-      this.refreshGitStateIfStale(projectPath);
-      const gitState = this.privacy.isGitTrackingEnabled()
-        ? this.git.getCurrentState()
-        : { branch: "Git disabled", dirtyFiles: 0 };
+      const gitState =
+        gitStateOverride ??
+        this.git.getState(this.currentDocumentPath ?? projectPath);
       let totalSeconds = 0;
 
       transition.slices.forEach((slice) => {
@@ -443,6 +456,8 @@ export class TrackingController implements vscode.Disposable {
           documentId: this.currentDocumentId ?? null,
           languageId:
             this.currentLanguage === "unknown" ? null : this.currentLanguage,
+          gitBranch:
+            gitState.status === "available" ? gitState.branch : null,
           startedAt: slice.startedAt,
           endedAt: slice.endedAt,
           monotonicStartedAt: slice.monotonicStartedAt,
@@ -454,7 +469,7 @@ export class TrackingController implements vscode.Disposable {
           this.currentLanguage,
           this.currentRelativeFile,
           seconds,
-          gitState.branch,
+          gitState.branch ?? "No branch",
           slice.localDateKey,
           false,
           this.currentDocumentId ?? undefined,
@@ -649,6 +664,7 @@ export class TrackingController implements vscode.Disposable {
     this.currentLanguage = "unknown";
     this.currentRelativeFile = "unknown";
     this.currentDocumentId = null;
+    this.currentDocumentPath = undefined;
   }
 
   private setCurrentAttribution(attribution: EditorAttribution): void {
@@ -657,6 +673,7 @@ export class TrackingController implements vscode.Disposable {
     this.currentLanguage = attribution.language;
     this.currentRelativeFile = attribution.relativeFile;
     this.currentDocumentId = attribution.documentId;
+    this.currentDocumentPath = vscode.Uri.parse(attribution.contextId).fsPath;
     this.lastKnownProject = attribution.projectPath;
   }
 
@@ -686,34 +703,101 @@ export class TrackingController implements vscode.Disposable {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 
-  private refreshGitState(projectPath: string): void {
-    if (!this.privacy.isGitTrackingEnabled()) {
-      this.store.setGitDirtyFiles(projectPath, 0);
+  private async configureGit(): Promise<void> {
+    await this.git.configure(this.privacy.isGitTrackingEnabled());
+    if (!this.disposed) {
+      this.recordCurrentGitState();
+      this.updateState();
+    }
+  }
+
+  private onGitStateChanged(change: GitStateChange): void {
+    if (this.disposed) {
       return;
     }
-    void this.git.refresh(projectPath).then((state) => {
-      if (this.disposed) {
+    if (
+      change.branchChanged &&
+      change.previous?.status === "available" &&
+      this.currentProjectPath
+    ) {
+      const selected = this.git.getState(
+        this.currentDocumentPath ?? this.currentProjectPath,
+      );
+      if (selected.repositoryUri === change.current.repositoryUri) {
+        this.applyActivityTransition(
+          this.activityStateMachine.tick(),
+          change.previous,
+        );
+      }
+    }
+    const rootPath =
+      change.current.repositoryRootPath ?? change.previous?.repositoryRootPath;
+    const folders = (vscode.workspace.workspaceFolders ?? []).filter(
+      (folder) =>
+        typeof rootPath === "string" &&
+        this.pathsOverlap(folder.uri.fsPath, rootPath),
+    );
+    folders.forEach((folder) => {
+      if (this.privacy.isProjectExcluded(folder.uri.fsPath)) {
         return;
       }
-      this.recordGitState(projectPath, state);
-      this.updateState();
+      const state = this.git.getState(rootPath ?? folder.uri.fsPath);
+      this.recordGitMetrics(
+        folder,
+        state.status,
+        state.dirtyFiles,
+        change.branchChanged ? 1 : 0,
+        change.commitDetected ? 1 : 0,
+      );
     });
+    this.recordCurrentGitState();
+    this.updateState();
   }
 
-  private refreshGitStateIfStale(projectPath: string): void {
-    if (!this.privacy.isGitTrackingEnabled()) {
+  private recordCurrentGitState(): void {
+    if (!this.currentProjectPath || !this.currentProjectId) {
       return;
     }
-    void this.git.refreshIfStale(projectPath).then((state) => {
-      if (state && !this.disposed) {
-        this.recordGitState(projectPath, state);
-        this.updateState();
-      }
+    const state = this.git.getState(
+      this.currentDocumentPath ?? this.currentProjectPath,
+    );
+    this.store.setGitDirtyFiles(this.currentProjectPath, state.dirtyFiles);
+    this.gitMetrics.recordGitMetrics({
+      projectId: this.currentProjectId,
+      localDate: this.localDateKey(),
+      status: state.status,
+      dirtyFiles: state.dirtyFiles,
+      branchChanges: 0,
+      detectedCommits: 0,
     });
   }
 
-  private recordGitState(projectPath: string, state: GitState): void {
-    this.store.setGitDirtyFiles(projectPath, state.dirtyFiles);
+  private recordGitMetrics(
+    folder: vscode.WorkspaceFolder,
+    status: ReturnType<GitAdapter["getState"]>["status"],
+    dirtyFiles: number,
+    branchChanges: number,
+    detectedCommits: number,
+  ): void {
+    this.store.setGitDirtyFiles(folder.uri.fsPath, dirtyFiles);
+    this.gitMetrics.recordGitMetrics({
+      projectId: this.projectIdentityId(folder),
+      localDate: this.localDateKey(),
+      status,
+      dirtyFiles,
+      branchChanges,
+      detectedCommits,
+    });
+  }
+
+  private pathsOverlap(left: string, right: string): boolean {
+    const relativeLeft = path.relative(left, right);
+    const relativeRight = path.relative(right, left);
+    return (
+      relativeLeft === "" ||
+      (!relativeLeft.startsWith("..") && !path.isAbsolute(relativeLeft)) ||
+      (!relativeRight.startsWith("..") && !path.isAbsolute(relativeRight))
+    );
   }
 
   private updateDiagnosticsFromUris(uris: readonly vscode.Uri[]): void {

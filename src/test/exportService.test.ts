@@ -242,6 +242,7 @@ function period(
       { id: "src/index.ts", activeTimeMs },
       { id: "README.md", activeTimeMs: activeTimeMs - 1 },
     ],
+    branches: [{ id: "main", activeTimeMs }],
     quarterHours: [
       {
         key: "later",
@@ -277,6 +278,7 @@ function project(
       { id: "src/index.ts", activeTimeMs },
       { id: "README.md", activeTimeMs: activeTimeMs - 1 },
     ],
+    branches: [{ id: "main", activeTimeMs }],
   };
 }
 
@@ -297,6 +299,10 @@ function metrics(activeTimeMs: number): RangeAggregateMetrics {
     flowBlockCount: 13,
     flowActiveMs: 14,
     longestFlowActiveMs: 15,
+    gitStatus: "available",
+    gitDirtyFiles: 2,
+    gitBranchChanges: 1,
+    gitDetectedCommits: 1,
     diagnostics: {
       current: { error: 16, warning: 17, info: 18, hint: 19 },
       introduced: { error: 20, warning: 21, info: 22, hint: 23 },

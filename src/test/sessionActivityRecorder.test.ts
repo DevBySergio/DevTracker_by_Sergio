@@ -53,6 +53,7 @@ suite("SessionActivityRecorder", () => {
       localDate: "2026-08-07",
       documentId: null,
       languageId: "typescript",
+      gitBranch: null,
       startedAt: now,
       endedAt: now + 1_000,
       monotonicStartedAt: 10,
@@ -129,6 +130,7 @@ suite("SessionActivityRecorder", () => {
       localDate: "2026-08-07",
       documentId: "src/index.ts",
       languageId: "typescript",
+      gitBranch: "feature/git-metrics",
       startedAt: now + 0.25,
       endedAt: now + 1_000.75,
       monotonicStartedAt: 10.25,
@@ -161,6 +163,9 @@ suite("SessionActivityRecorder", () => {
     ]);
     assert.deepStrictEqual(view.current.files, [
       { id: "src/index.ts", activeTimeMs: 1_001 },
+    ]);
+    assert.deepStrictEqual(view.current.branches, [
+      { id: "feature/git-metrics", activeTimeMs: 1_001 },
     ]);
   });
 });

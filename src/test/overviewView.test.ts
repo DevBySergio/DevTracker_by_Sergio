@@ -22,12 +22,14 @@ suite("OverviewView", () => {
             metrics: metrics(5_400_000),
             languages: [],
             files: [],
+            branches: [],
           },
           {
             project: { id: "beta", displayName: "Beta" },
             metrics: metrics(1_800_000),
             languages: [],
             files: [],
+            branches: [],
           },
         ],
         languages: [
@@ -141,6 +143,7 @@ function period(options: {
   projects?: RangePeriodViewModel["projects"];
   languages?: RangePeriodViewModel["languages"];
   files?: RangePeriodViewModel["files"];
+  branches?: RangePeriodViewModel["branches"];
   quarterHours?: RangeQuarterHourBucket[];
 } = {}): RangePeriodViewModel {
   const aggregate = metrics(
@@ -159,6 +162,7 @@ function period(options: {
     projects: options.projects ?? [],
     languages: options.languages ?? [],
     files: options.files ?? [],
+    branches: options.branches ?? [],
     quarterHours: options.quarterHours ?? [],
   };
 }
@@ -192,6 +196,10 @@ function metrics(
     flowBlockCount: 0,
     flowActiveMs: 0,
     longestFlowActiveMs: 0,
+    gitStatus: "disabled",
+    gitDirtyFiles: 0,
+    gitBranchChanges: 0,
+    gitDetectedCommits: 0,
     diagnostics: {
       current: { error: 0, warning: 0, info: 0, hint: 0 },
       introduced: { error: 0, warning: 0, info: 0, hint: 0 },

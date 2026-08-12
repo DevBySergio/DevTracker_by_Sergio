@@ -155,10 +155,11 @@ one integration does not imply consent for another.
 | Introduced diagnostics by severity | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only positive deltas are introduced. |
 | Resolved diagnostics by severity | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only negative deltas are resolved. |
 | Peak diagnostics by severity | Diagnostics | Project, range | Maximum snapshot per severity | Derived maximum. Snapshots are never summed. |
+| Git integration status (`gitStatus`) | State | Project snapshot | Opt-in setting, built-in Git availability, and repository containment | Current snapshot: `disabled`, `unavailable`, `no-repository`, or `available`. |
 | Current dirty files | Unique files | Repository snapshot | VS Code Git repository state | Current snapshot. A path present in multiple status groups is counted once. |
-| Branch active time | Milliseconds | Repository branch, range | Intersection of active intervals with repository HEAD state | Monotonic duration. Detached HEAD and unavailable states are explicit values. |
-| Branch changes | Events | Repository, range | Git repository state changes | Exact observed event count. |
-| Detected commits | Events | Repository, range | Local HEAD transitions | Exact observed transition count, not authored-commit productivity. |
+| Branch active time | Milliseconds | Repository branch, range | Intersection of active intervals with the most-specific containing repository HEAD state | Monotonic duration. Detached and unborn HEAD are named explicitly; disabled, unavailable, and no-repository states accumulate no branch time. |
+| Branch changes | Events | Repository, range | Observed repository HEAD branch-name transitions | Exact observed transition count after the initial repository snapshot. |
+| Detected commits | Events | Repository, range | Built-in Git repository commit events | Exact observed event count, deduplicated by the current HEAD identifier. It is not authored-commit productivity. |
 | Task runs | Runs | Configured task, range | VS Code Tasks start/end events | Exact observed runs. Store only configured name, classification, duration, and result. |
 | Task success rate | Percent | Configured task/class/range | Successful runs divided by completed runs | Derived. `null` when no run completed. Cancellation and unknown exit status are separate outcomes. |
 | Median task duration | Milliseconds | Configured task/class/range | Completed run durations | Derived median; `null` when no run completed. |

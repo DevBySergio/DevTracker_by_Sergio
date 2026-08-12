@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 const { runTests } = require("@vscode/test-electron");
 
 async function main() {
@@ -19,6 +20,14 @@ async function main() {
   fs.mkdirSync(workspace, { recursive: true });
   fs.mkdirSync(testHome, { recursive: true });
   fs.writeFileSync(path.join(workspace, "tracked.ts"), "export {};\n");
+  execFileSync("git", ["init", workspace], { stdio: "ignore" });
+  execFileSync("git", ["-C", workspace, "symbolic-ref", "HEAD", "refs/heads/main"]);
+  execFileSync("git", ["-C", workspace, "config", "user.email", "devtracker@example.invalid"]);
+  execFileSync("git", ["-C", workspace, "config", "user.name", "DevTracker Test"]);
+  execFileSync("git", ["-C", workspace, "add", "tracked.ts"]);
+  execFileSync("git", ["-C", workspace, "commit", "-m", "Initial fixture"], {
+    stdio: "ignore",
+  });
   const today = new Date();
   const pad = (value) => String(value).padStart(2, "0");
   const localDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;

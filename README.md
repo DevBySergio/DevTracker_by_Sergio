@@ -29,7 +29,7 @@ DevTracker describes observed editor activity without rating productivity, code 
 - **Git Context:** Displays branch activity and dirty file counts only after the Git integration is enabled.
 - **Languages & Files:** Shows language distribution and most active files with dense, scannable bars and tables.
 
-The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
+The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [Git tracking guide](docs/git-tracking.md) explains the opt-in repository integration and stored fields. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
 
 ### 3. 🎯 Gamification & Goals
 
