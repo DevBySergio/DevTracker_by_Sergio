@@ -1,0 +1,11 @@
+{
+  "id": "activity-mspu6u4g-xnmwe5aq",
+  "type": "checklist_updated",
+  "message": "Completed checklist item \"Select the most specific containing repository\" in \"T12 — Build an opt-in Git integration per repository\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786523877376,
+  "taskId": "task-msj9x37o-k3b7gerj"
+}

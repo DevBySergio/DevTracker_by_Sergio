@@ -1,0 +1,11 @@
+{
+  "id": "activity-mspu6u4i-k6jtuk3t",
+  "type": "checklist_updated",
+  "message": "Completed checklist item \"Subscribe to changes instead of polling continuously\" in \"T12 — Build an opt-in Git integration per repository\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786523877378,
+  "taskId": "task-msj9x37o-k3b7gerj"
+}

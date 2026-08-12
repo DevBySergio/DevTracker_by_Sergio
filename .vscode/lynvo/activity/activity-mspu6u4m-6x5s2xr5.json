@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspu6u4m-6x5s2xr5",
+  "type": "task_moved",
+  "message": "Moved \"T12 — Build an opt-in Git integration per repository\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786523877382,
+  "taskId": "task-msj9x37o-k3b7gerj",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

@@ -2,17 +2,17 @@
   "id": "task-msj9x37o-k3b7gerj",
   "title": "T12 — Build an opt-in Git integration per repository",
   "description": "## Objective\n\nIsolate Git state per repository and collect local signals only after explicit consent.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T12.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
   },
   "lastModifiedBy": {
-    "githubId": "175159121",
-    "username": "DevBySergio"
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033412,
-  "updatedAt": 1786522865631,
+  "updatedAt": 1786523877382,
   "position": 1786127033412,
   "labelIds": [
     "feat",
@@ -28,58 +28,58 @@
     {
       "id": "check-msj9x3d1-0xrngg4i",
       "text": "Remove global Git state",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033413,
-      "updatedAt": 1786522865631
+      "updatedAt": 1786523877374
     },
     {
       "id": "check-msj9x3d2-xrdk38xw",
       "text": "Create independent state for each repository URI",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033414,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877375
     },
     {
       "id": "check-msj9x3d3-fcdlldzq",
       "text": "Select the most specific containing repository",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033415,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877376
     },
     {
       "id": "check-msj9x3d4-6qr587vj",
       "text": "Count unique dirty files",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033416,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877377
     },
     {
       "id": "check-msj9x3d5-1oz5ti92",
       "text": "Subscribe to changes instead of polling continuously",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033417,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877378
     },
     {
       "id": "check-msj9x3d6-1m8z4sv6",
       "text": "Discard stale asynchronous responses",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033418,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877379
     },
     {
       "id": "check-msj9x3d7-oj0o10dz",
       "text": "Record branch changes and detected commits",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033419,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877380
     },
     {
       "id": "check-msj9x3d8-kbhyxh7c",
       "text": "Display disabled, unavailable, and no repository states",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033420,
-      "updatedAt": 1786127326646
+      "updatedAt": 1786523877381
     }
   ],
   "relations": [
