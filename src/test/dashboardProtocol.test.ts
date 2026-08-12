@@ -279,10 +279,16 @@ suite("DashboardProtocol", () => {
     source.current.metrics.activeTimeMs = 1;
     source.current.projects[0].metrics.activeTimeMs = 1;
     source.current.languages[0].activeTimeMs = 1;
-    source.current.files[0].activeTimeMs = 1;
+    source.current.files = [
+      { id: "src/first.ts", activeTimeMs: 4 },
+      { id: "src/second.ts", activeTimeMs: 3 },
+      { id: "src/third.ts", activeTimeMs: 2 },
+      { id: "src/fourth.ts", activeTimeMs: 1 },
+    ];
 
     const quality = projectDashboardViewModel(source, "quality");
     const global = projectDashboardViewModel(source, "global");
+    const project = projectDashboardViewModel(source, "project");
 
     assert.deepStrictEqual(quality.current.days, []);
     assert.deepStrictEqual(quality.current.languages, []);
@@ -294,6 +300,8 @@ suite("DashboardProtocol", () => {
     assert.deepStrictEqual(global.current.languages, [
       { id: "typescript", activeTimeMs: 1 },
     ]);
+    assert.deepStrictEqual(global.current.files, source.current.files.slice(0, 3));
+    assert.deepStrictEqual(project.current.files, source.current.files);
   });
 });
 

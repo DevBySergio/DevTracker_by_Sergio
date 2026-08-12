@@ -546,6 +546,11 @@ function projectPeriod(
   const includeDistributions = view !== "quality";
   const includeProjectDetails = view === "project" || view === "today";
   const includeQuarterHours = view === "today" || view === "global";
+  const files = !includeDistributions
+    ? []
+    : view === "global"
+      ? source.files.slice(0, 3)
+      : source.files;
   return {
     range: cloneJson(source.range),
     metrics: cloneJson(source.metrics),
@@ -563,7 +568,7 @@ function projectPeriod(
           : [],
     })),
     languages: includeDistributions ? source.languages.map(cloneJson) : [],
-    files: includeDistributions ? source.files.map(cloneJson) : [],
+    files: files.map(cloneJson),
     quarterHours: includeQuarterHours
       ? source.quarterHours
           .filter((bucket) => bucket.activeTimeMs > 0)

@@ -15,6 +15,8 @@ The current composition is:
 VS Code activation
   -> TrackingController (extension-host event adapter)
      -> ActivityStateMachine (monotonic activity lifecycle)
+     -> SessionActivityRecorder (validated intervals and active-time rollups)
+     -> SessionDailyMetricsRecorder (edit, save, switch, and flow rollups)
      -> TrackingStore (DataManager persistence boundary)
      -> DashboardQueryService (DevTrackerQueries)
      -> RangeAnalyticsQueryService (RangeQueryService -> RangeQueryEngine)
@@ -55,12 +57,17 @@ added to an application port first and wired in the composition root.
   and local-day splitting. It derives elapsed durations only from the monotonic
   clock.
 - The tracking controller owns event subscriptions, timers, active-editor
-  attribution, debug state, and the last observed workspace context. It feeds
+  attribution, and the last observed workspace context. It feeds
   meaningful interactions and focus/pause lifecycle events to the state
   machine, then attributes emitted slices to the context that was active before
   the transition. A destination editor becomes the confirmed context only after
   it remains active for five seconds; transient candidates never reach the
   store.
+- `DebugSessionTracker` owns the ephemeral set of VS Code debug-session IDs,
+  active-session workspace attribution, monotonic union duration, privacy and
+  pause boundaries, and the intersection with emitted human-active slices. It
+  emits aggregate durations only; launch configuration and arguments never
+  enter persistence.
 - The store owns persisted data, pending mutations, atomic file replacement,
   write-queue health, and legacy compatibility. Mutations update memory first;
   record writes are debounced, serialized, and flushed at lifecycle boundaries.
@@ -68,6 +75,11 @@ added to an application port first and wired in the composition root.
   tracking writes the explicit `fileSwitchEvents`, `projectSwitchEvents`,
   `flowBlockCount`, `flowActiveMs`, `longestFlowActiveMs`, and
   `currentFlowActiveMs` fields.
+- Activity interval boundaries are rounded to integer milliseconds at the
+  schema-v2 adapter boundary. Every accepted interval updates both retained
+  session detail and the active-time language, document, and quarter-hour
+  rollup dimensions; editor, save, switch, and flow events update the same
+  rollup path before dashboard cache invalidation.
 - Query services receive the narrower `TrackingReader` port and cannot call
   persistence mutations.
 - Range queries receive `DailyRollupRangeReader`, load only explicit
@@ -126,7 +138,9 @@ The schema-v2 [storage layout](storage-v2.md) is initialized asynchronously
 from `ExtensionContext.globalStorageUri`. Strict startup migration imports v1
 history into approximate rollups while preserving the original file, and the
 legacy dashboard writes only to a separate global-storage compatibility
-snapshot. Schema v2 remains the target for the full tracking and query path.
+snapshot. A private completion marker makes that import one-time so later
+activations cannot replace newer v2 metrics. Schema v2 is the live tracking and
+query path; the compatibility snapshot does not feed dashboard range queries.
 
 The current Git adapter intentionally preserves 1.x collection behavior. The
 later opt-in Git task may replace it behind `GitAdapter` without leaking Git API

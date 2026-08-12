@@ -257,3 +257,13 @@ measurements.
 10. Git, debug detail, and Tasks data remain disabled until separately enabled,
     and no diagnostic message, source content, terminal content, command, or
     launch configuration is persisted.
+
+## Executable conformance
+
+The numbered examples above are mirrored one-for-one in
+`src/test/metricContractExamples.test.ts`. Migration evidence lives in
+`src/test/migration.test.ts`; range normalization, empty-day filling,
+equivalent comparisons, future-date exclusion, and snapshot aggregation live
+in `src/test/rangeQuery.test.ts`. These suites are part of `npm test`, so a
+contract example or historical behavior cannot drift independently from the
+implementation.

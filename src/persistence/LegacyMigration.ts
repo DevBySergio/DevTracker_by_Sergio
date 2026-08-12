@@ -51,9 +51,14 @@ export interface LegacyMigrationOptions {
   fileSystem: FileSystemAdapter;
   target: LegacyMigrationTarget;
   createProjectIdentity: LegacyProjectIdentityFactory;
+  completionMarkerPath?: string;
 }
 
-export type LegacyMigrationStatus = "not-found" | "migrated" | "recovered";
+export type LegacyMigrationStatus =
+  | "not-found"
+  | "already-migrated"
+  | "migrated"
+  | "recovered";
 export type LegacyMigrationSource = "none" | "original" | "backup";
 
 export interface LegacyMigrationResult {
@@ -122,6 +127,7 @@ export class LegacyMigration {
   private readonly fileSystem: FileSystemAdapter;
   private readonly target: LegacyMigrationTarget;
   private readonly createProjectIdentity: LegacyProjectIdentityFactory;
+  private readonly completionMarkerPath: string | undefined;
 
   constructor(options: LegacyMigrationOptions) {
     this.legacyDataPath = options.legacyDataPath;
@@ -132,9 +138,20 @@ export class LegacyMigration {
     this.fileSystem = options.fileSystem;
     this.target = options.target;
     this.createProjectIdentity = options.createProjectIdentity;
+    this.completionMarkerPath = options.completionMarkerPath;
   }
 
   public async migrate(): Promise<LegacyMigrationResult> {
+    const completed = await this.readCompletionMarker();
+    if (completed) {
+      return {
+        ...this.emptyResult(),
+        status: "already-migrated",
+        source: completed.source,
+        importedFrom: completed.importedFrom,
+      };
+    }
+
     let rawSource: string;
     try {
       rawSource = await this.fileSystem.readFile(this.legacyDataPath, "utf8");
@@ -193,6 +210,7 @@ export class LegacyMigration {
       await this.target.writeDailyRollup(rollup);
     }
     await this.target.flush();
+    await this.writeCompletionMarker(importedFrom, source);
 
     return {
       status,
@@ -224,6 +242,82 @@ export class LegacyMigration {
       rollupsWritten: 0,
       collisionsAggregated: 0,
     };
+  }
+
+  private async readCompletionMarker(): Promise<{
+    importedFrom: string;
+    source: Exclude<LegacyMigrationSource, "none">;
+  } | null> {
+    if (!this.completionMarkerPath) {
+      return null;
+    }
+    let raw: string;
+    try {
+      raw = await this.fileSystem.readFile(this.completionMarkerPath, "utf8");
+    } catch (error) {
+      if (this.errorCode(error) === "ENOENT") {
+        return null;
+      }
+      throw error;
+    }
+
+    let value: unknown;
+    try {
+      value = JSON.parse(raw);
+    } catch {
+      throw new LegacyMigrationValidationError(
+        "completionMarker",
+        "invalid JSON",
+      );
+    }
+    const marker = this.requireRecord(value, "completionMarker");
+    const keys = Object.keys(marker).sort();
+    const expected = ["completedAt", "importedFrom", "source", "version"];
+    if (JSON.stringify(keys) !== JSON.stringify(expected)) {
+      throw new LegacyMigrationValidationError(
+        "completionMarker",
+        "unexpected fields",
+      );
+    }
+    if (
+      marker.version !== 1 ||
+      !Number.isSafeInteger(marker.completedAt) ||
+      (marker.completedAt as number) < 0 ||
+      typeof marker.importedFrom !== "string" ||
+      (marker.source !== "original" && marker.source !== "backup")
+    ) {
+      throw new LegacyMigrationValidationError(
+        "completionMarker",
+        "invalid values",
+      );
+    }
+    return {
+      importedFrom: marker.importedFrom,
+      source: marker.source,
+    };
+  }
+
+  private async writeCompletionMarker(
+    importedFrom: string,
+    source: Exclude<LegacyMigrationSource, "none">,
+  ): Promise<void> {
+    if (!this.completionMarkerPath) {
+      return;
+    }
+    await this.ensureDirectory(path.dirname(this.completionMarkerPath));
+    await this.atomicWriteText(
+      this.completionMarkerPath,
+      `${JSON.stringify(
+        {
+          version: 1,
+          completedAt: this.clock.nowMs(),
+          importedFrom,
+          source,
+        },
+        null,
+        2,
+      )}\n`,
+    );
   }
 
   private async prepare(data: GlobalData): Promise<PreparedMigration> {

@@ -217,11 +217,20 @@ export class RangeQueryEngine {
     projectIds: readonly string[],
   ): RangePeriodViewModel {
     const records = this.recordsFor(range.localDates, projectIds);
+    const recordsByDate = new Map<string, DailyRollup[]>();
+    const recordsByProject = new Map<string, DailyRollup[]>();
+    records.forEach((record) => {
+      const dateRecords = recordsByDate.get(record.localDate) ?? [];
+      dateRecords.push(record);
+      recordsByDate.set(record.localDate, dateRecords);
+
+      const projectRecords = recordsByProject.get(record.projectId) ?? [];
+      projectRecords.push(record);
+      recordsByProject.set(record.projectId, projectRecords);
+    });
     const days: RangeDayViewModel[] = range.localDates.map((localDate) => ({
       localDate,
-      metrics: this.aggregateMetrics(
-        records.filter((record) => record.localDate === localDate),
-      ),
+      metrics: this.aggregateMetrics(recordsByDate.get(localDate) ?? []),
     }));
     const projects: RangeProjectViewModel[] = projectIds
       .map((projectId) => {
@@ -229,9 +238,7 @@ export class RangeQueryEngine {
         if (!identity) {
           return undefined;
         }
-        const projectRecords = records.filter(
-          (record) => record.projectId === projectId,
-        );
+        const projectRecords = recordsByProject.get(projectId) ?? [];
         return {
           project: { id: identity.id, displayName: identity.displayName },
           metrics: this.aggregateMetrics(projectRecords),

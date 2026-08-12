@@ -14,6 +14,8 @@ import {
 } from "./platform/ports";
 import { SessionStoreV2 } from "./persistence/SessionStoreV2";
 import { SessionActivityRecorder } from "./persistence/SessionActivityRecorder";
+import { SessionDailyMetricsRecorder } from "./persistence/SessionDailyMetricsRecorder";
+import { SessionDebugMetricsRecorder } from "./persistence/SessionDebugMetricsRecorder";
 import { SessionDiagnosticsRecorder } from "./persistence/SessionDiagnosticsRecorder";
 import {
   LegacyMigration,
@@ -29,10 +31,18 @@ import { detailedDataCutoffMs } from "./privacy";
 import { ExportService } from "./export/ExportService";
 import { RangeExportDataSource } from "./export/RangeExportDataSource";
 import { VscodeExportCommands } from "./export/VscodeExportCommands";
+import { RangeQueryRequest, RangeQueryViewModel } from "./domain/rangeQuery";
 
 let deactivateExtension: (() => Promise<void>) | undefined;
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export interface DevTrackerDevelopmentApi {
+  flush(): Promise<void>;
+  query(request: RangeQueryRequest): Promise<RangeQueryViewModel>;
+}
+
+export async function activate(
+  context: vscode.ExtensionContext,
+): Promise<DevTrackerDevelopmentApi | undefined> {
   const storagePath = vscode.Uri.joinPath(context.globalStorageUri, "v2").fsPath;
   const sessionStore = new SessionStoreV2({
     storagePath,
@@ -48,6 +58,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const migration = new LegacyMigration({
     legacyDataPath: path.join(os.homedir(), ".devtracker", "data.json"),
     backupDirectory: path.join(storagePath, "backups"),
+    completionMarkerPath: path.join(
+      storagePath,
+      "metadata",
+      "legacy-v1-complete.json",
+    ),
     clock: systemClock,
     fileSystem: nodeFileSystem,
     target: sessionStore,
@@ -136,8 +151,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     store: sessionStore,
     sessionId: activeSession.id,
   });
+  const dailyMetrics = new SessionDailyMetricsRecorder(sessionStore);
   const diagnostics = new DiagnosticsTracker({ clock: systemClock });
   const diagnosticBuckets = new SessionDiagnosticsRecorder(sessionStore);
+  const debugMetrics = new SessionDebugMetricsRecorder(sessionStore);
   const controller = new TrackingController({
     store,
     queries,
@@ -147,6 +164,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     scheduler: systemIntervalScheduler,
     identityService,
     activityIntervals,
+    dailyMetrics,
+    debugMetrics,
     diagnostics,
     diagnosticBuckets,
     privacy,
@@ -237,6 +256,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       },
     },
   );
+
+  if (context.extensionMode !== vscode.ExtensionMode.Production) {
+    return Object.freeze({
+      flush: () => controller.flush(),
+      query: (request: RangeQueryRequest) => rangeQueries.query(request),
+    });
+  }
+  return undefined;
 }
 
 export function deactivate(): Promise<void> | undefined {

@@ -41,6 +41,25 @@ export interface DailyRollupDateBounds {
   endLocalDate: string;
 }
 
+export interface DailyRollupMetricDelta {
+  activeTimeMs?: number;
+  editEvents?: number;
+  insertedCharacters?: number;
+  removedCharacters?: number;
+  largeEditEvents?: number;
+  insertedLineBreaksApprox?: number;
+  removedLineBreaksApprox?: number;
+  saveEvents?: number;
+  fileSwitchEvents?: number;
+  projectSwitchEvents?: number;
+  flowBlockCount?: number;
+  flowActiveMs?: number;
+  longestFlowActiveMs?: number;
+  activeTimeByLanguageMs?: Readonly<Record<string, number>>;
+  activeTimeByDocumentMs?: Readonly<Record<string, number>>;
+  activeTimeByQuarterHourMs?: Readonly<Record<string, number>>;
+}
+
 /**
  * Async schema-v2 persistence with a write-through in-memory view. Mutations
  * are visible immediately while their durable writes are coalesced by record.
@@ -445,6 +464,75 @@ export class SessionStoreV2 {
     );
   }
 
+  public applyDailyMetricDelta(
+    projectId: string,
+    localDate: string,
+    value: DailyRollupMetricDelta,
+  ): Promise<DailyRollup> {
+    this.requireSafeStorageKey(projectId, "project id");
+    this.requireLocalDateKey(localDate);
+    const delta = this.validateDailyMetricDelta(value);
+    return this.runRollupOperation(projectId, localDate, async () => {
+      let rollup: DailyRollup;
+      try {
+        rollup = await this.readDailyRollup(projectId, localDate);
+      } catch (error) {
+        if (!this.hasErrorCode(error, "ENOENT")) {
+          throw error;
+        }
+        rollup = createEmptyDailyRollup(
+          projectId,
+          localDate,
+          this.clock.nowMs(),
+        );
+      }
+
+      const additiveFields = [
+        "activeTimeMs",
+        "editEvents",
+        "insertedCharacters",
+        "removedCharacters",
+        "largeEditEvents",
+        "insertedLineBreaksApprox",
+        "removedLineBreaksApprox",
+        "saveEvents",
+        "fileSwitchEvents",
+        "projectSwitchEvents",
+        "flowBlockCount",
+        "flowActiveMs",
+      ] as const;
+      additiveFields.forEach((field) => {
+        rollup[field] = this.addMetricDuration(
+          rollup[field],
+          delta[field] ?? 0,
+          field,
+          "DailyMetricDelta",
+        );
+      });
+      rollup.longestFlowActiveMs = Math.max(
+        rollup.longestFlowActiveMs,
+        delta.longestFlowActiveMs ?? 0,
+      );
+      this.mergeMetricMap(
+        rollup.activeTimeByLanguageMs,
+        delta.activeTimeByLanguageMs,
+        "activeTimeByLanguageMs",
+      );
+      this.mergeMetricMap(
+        rollup.activeTimeByDocumentMs,
+        delta.activeTimeByDocumentMs,
+        "activeTimeByDocumentMs",
+      );
+      this.mergeMetricMap(
+        rollup.activeTimeByQuarterHourMs,
+        delta.activeTimeByQuarterHourMs,
+        "activeTimeByQuarterHourMs",
+      );
+      rollup.updatedAt = this.clock.nowMs();
+      return this.writeDailyRollupRecord(rollup);
+    });
+  }
+
   public applyDiagnosticBucket(
     projectId: string,
     localDate: string,
@@ -478,6 +566,51 @@ export class SessionStoreV2 {
         });
       rollup.diagnostics = this.aggregateDiagnosticBuckets(
         Object.values(rollup.diagnosticBuckets),
+      );
+      rollup.updatedAt = this.clock.nowMs();
+      return this.writeDailyRollupRecord(rollup);
+    });
+  }
+
+  public addDebugMetrics(
+    projectId: string,
+    localDate: string,
+    debugElapsedMs: number,
+    debugActiveTimeMs: number,
+  ): Promise<DailyRollup> {
+    this.requireSafeStorageKey(projectId, "project id");
+    this.requireLocalDateKey(localDate);
+    this.requireMetricDuration(debugElapsedMs, "debugElapsedMs");
+    this.requireMetricDuration(debugActiveTimeMs, "debugActiveTimeMs");
+    if (debugElapsedMs === 0 && debugActiveTimeMs === 0) {
+      throw new SchemaValidationError(
+        "DebugMetrics",
+        "at least one duration must be positive",
+      );
+    }
+    return this.runRollupOperation(projectId, localDate, async () => {
+      let rollup: DailyRollup;
+      try {
+        rollup = await this.readDailyRollup(projectId, localDate);
+      } catch (error) {
+        if (!this.hasErrorCode(error, "ENOENT")) {
+          throw error;
+        }
+        rollup = createEmptyDailyRollup(
+          projectId,
+          localDate,
+          this.clock.nowMs(),
+        );
+      }
+      rollup.debugElapsedMs = this.addMetricDuration(
+        rollup.debugElapsedMs,
+        debugElapsedMs,
+        "debugElapsedMs",
+      );
+      rollup.debugActiveTimeMs = this.addMetricDuration(
+        rollup.debugActiveTimeMs,
+        debugActiveTimeMs,
+        "debugActiveTimeMs",
       );
       rollup.updatedAt = this.clock.nowMs();
       return this.writeDailyRollupRecord(rollup);
@@ -828,6 +961,117 @@ export class SessionStoreV2 {
       }
     });
     return result;
+  }
+
+  private requireMetricDuration(value: number, name: string): void {
+    if (!Number.isSafeInteger(value) || value < 0) {
+      throw new SchemaValidationError(
+        "DebugMetrics",
+        `${name} must be a non-negative safe integer`,
+      );
+    }
+  }
+
+  private addMetricDuration(
+    left: number,
+    right: number,
+    name: string,
+    recordName = "DebugMetrics",
+  ): number {
+    const value = left + right;
+    if (!Number.isSafeInteger(value) || value < 0) {
+      throw new SchemaValidationError(
+        recordName,
+        `${name} must be a non-negative safe integer`,
+      );
+    }
+    return value;
+  }
+
+  private validateDailyMetricDelta(
+    value: DailyRollupMetricDelta,
+  ): DailyRollupMetricDelta {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new SchemaValidationError(
+        "DailyMetricDelta",
+        "expected an object",
+      );
+    }
+    const allowed = new Set([
+      "activeTimeMs",
+      "editEvents",
+      "insertedCharacters",
+      "removedCharacters",
+      "largeEditEvents",
+      "insertedLineBreaksApprox",
+      "removedLineBreaksApprox",
+      "saveEvents",
+      "fileSwitchEvents",
+      "projectSwitchEvents",
+      "flowBlockCount",
+      "flowActiveMs",
+      "longestFlowActiveMs",
+      "activeTimeByLanguageMs",
+      "activeTimeByDocumentMs",
+      "activeTimeByQuarterHourMs",
+    ]);
+    const extra = Object.keys(value).filter((key) => !allowed.has(key));
+    if (extra.length > 0) {
+      throw new SchemaValidationError(
+        "DailyMetricDelta",
+        `unexpected keys [${extra.join(", ")}]`,
+      );
+    }
+    Object.entries(value).forEach(([key, candidate]) => {
+      if (key.startsWith("activeTimeBy")) {
+        if (
+          !candidate ||
+          typeof candidate !== "object" ||
+          Array.isArray(candidate)
+        ) {
+          throw new SchemaValidationError(
+            "DailyMetricDelta",
+            `${key} must be an object`,
+          );
+        }
+        Object.entries(candidate).forEach(([mapKey, amount]) => {
+          if (mapKey.length === 0) {
+            throw new SchemaValidationError(
+              "DailyMetricDelta",
+              `${key} contains an empty key`,
+            );
+          }
+          this.requireDailyMetricValue(amount, `${key}.${mapKey}`);
+        });
+        return;
+      }
+      this.requireDailyMetricValue(candidate, key);
+    });
+    return this.clone(value);
+  }
+
+  private requireDailyMetricValue(value: unknown, name: string): void {
+    if (!Number.isSafeInteger(value) || (value as number) < 0) {
+      throw new SchemaValidationError(
+        "DailyMetricDelta",
+        `${name} must be a non-negative safe integer`,
+      );
+    }
+  }
+
+  private mergeMetricMap(
+    target: Record<string, number>,
+    delta: Readonly<Record<string, number>> | undefined,
+    name: string,
+  ): void {
+    Object.entries(delta ?? {}).forEach(([key, amount]) => {
+      target[key] = this.addMetricDuration(
+        target[key] ?? 0,
+        amount,
+        `${name}.${key}`,
+        "DailyMetricDelta",
+      );
+    });
   }
 
   private aggregateDiagnosticBuckets(

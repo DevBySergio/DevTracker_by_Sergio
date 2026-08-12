@@ -10,6 +10,7 @@ modifies that file.
 v2/
   metadata/
     schema.json
+    legacy-v1-complete.json
   sessions/
     active/
       session-<uuid>.json
@@ -35,14 +36,23 @@ Daily rollups are separate from session records so range queries do not need to
 rewrite or scan active sessions. Project identity, interval attribution, and
 rollup semantics follow the [metric contract](metric-contract.md).
 
+Accepted activity slices are normalized to integer-millisecond boundaries at
+the persistence adapter. The same serialized observation appends session
+detail and increments active time plus its language, document, and local
+quarter-hour dimensions. Exact edit, save, context-switch, and flow events use
+the same daily-rollup mutation boundary. This keeps live dashboard queries and
+durable session detail on one data path.
+
 ## Legacy migration
 
 Activation detects the v1 file in the user profile and creates a byte-preserving
 private backup before parsing it. Valid days are strictly normalized and mapped
 to deterministic schema-v2 rollup keys with `legacyApproximate: true`; values
 that cannot be reconstructed safely remain zero or empty rather than gaining
-invented precision. Repeating the migration overwrites those keys and never
-adds the same historical totals twice.
+invented precision. After a successful import, a private
+`metadata/legacy-v1-complete.json` marker records its source. Later activations
+skip migration, preventing the immutable legacy snapshot from overwriting live
+schema-v2 metrics.
 
 If the source is corrupt, its bytes are copied to quarantine and the newest
 semantically valid backup is used. The corrupt original remains in place. A

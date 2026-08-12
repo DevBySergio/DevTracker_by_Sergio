@@ -115,7 +115,7 @@
         "devtracker.debugTrackingEnabled": {
           "type": "boolean",
           "default": false,
-          "description": "Collect debug-session active-time aggregates."
+          "description": "Collect local aggregate debug-session elapsed time and active time while debugging. Launch configuration and arguments are never stored."
         },
         "devtracker.taskTrackingEnabled": {
           "type": "boolean",
@@ -132,6 +132,8 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
+    "test:performance": "npm run compile-tests && mocha --ui tdd out/test/performanceBudgets.test.js",
+    "test:integration": "npm run compile-tests && npm run compile && node ./scripts/run-integration-tests.js",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"

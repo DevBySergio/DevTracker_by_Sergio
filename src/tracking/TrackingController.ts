@@ -1,8 +1,11 @@
 import * as vscode from "vscode";
 import {
   ActivityIntervalSink,
+  DailyMetricSink,
   DashboardPresentation,
   DashboardQueryService,
+  DebugMetricObservation,
+  DebugMetricSink,
   DiagnosticBucketSink,
   GitAdapter,
   GitState,
@@ -24,6 +27,7 @@ import {
 } from "./ActivityStateMachine";
 import { summarizeEditorEdit } from "./EditMetrics";
 import { DiagnosticBucketUpdate, DiagnosticsTracker } from "./DiagnosticsTracker";
+import { DebugSessionTracker } from "./DebugSessionTracker";
 
 const TRACKING_INTERVAL_MS = 1000;
 
@@ -45,10 +49,13 @@ export interface TrackingControllerDependencies {
   scheduler: IntervalScheduler;
   identityService: UriIdentityService;
   activityIntervals: ActivityIntervalSink;
+  dailyMetrics: DailyMetricSink;
+  debugMetrics: DebugMetricSink;
   diagnostics: DiagnosticsTracker;
   diagnosticBuckets: DiagnosticBucketSink;
   privacy: TrackingPrivacyPolicy;
   activityStateMachine?: ActivityStateMachine;
+  debugSessions?: DebugSessionTracker;
 }
 
 /**
@@ -65,10 +72,14 @@ export class TrackingController implements vscode.Disposable {
   private readonly activityStateMachine: ActivityStateMachine;
   private readonly identityService: UriIdentityService;
   private readonly activityIntervals: ActivityIntervalSink;
+  private readonly dailyMetrics: DailyMetricSink;
+  private readonly debugMetrics: DebugMetricSink;
+  private readonly debugSessions: DebugSessionTracker;
   private readonly diagnostics: DiagnosticsTracker;
   private readonly diagnosticBuckets: DiagnosticBucketSink;
   private readonly privacy: TrackingPrivacyPolicy;
   private readonly projectIdentityIds = new Map<string, string>();
+  private readonly projectPathsById = new Map<string, string>();
 
   private trackingInterval: NodeJS.Timeout | undefined;
   private lastKnownProject: string | undefined;
@@ -77,7 +88,6 @@ export class TrackingController implements vscode.Disposable {
   private currentLanguage = "unknown";
   private currentRelativeFile = "unknown";
   private currentDocumentId: string | null = null;
-  private isDebugging = false;
   private disposed = false;
 
   constructor(dependencies: TrackingControllerDependencies) {
@@ -89,12 +99,20 @@ export class TrackingController implements vscode.Disposable {
     this.scheduler = dependencies.scheduler;
     this.identityService = dependencies.identityService;
     this.activityIntervals = dependencies.activityIntervals;
+    this.dailyMetrics = dependencies.dailyMetrics;
+    this.debugMetrics = dependencies.debugMetrics;
     this.diagnostics = dependencies.diagnostics;
     this.diagnosticBuckets = dependencies.diagnosticBuckets;
     this.privacy = dependencies.privacy;
     this.activityStateMachine =
       dependencies.activityStateMachine ??
       new ActivityStateMachine({ clock: this.clock });
+    this.debugSessions =
+      dependencies.debugSessions ??
+      new DebugSessionTracker({
+        clock: this.clock,
+        privacyEnabled: this.privacy.isDebugTrackingEnabled(),
+      });
     this.syncTrackingState(this.activityStateMachine.getSnapshot());
   }
 
@@ -139,14 +157,15 @@ export class TrackingController implements vscode.Disposable {
       vscode.languages.onDidChangeDiagnostics((event) => {
         this.updateDiagnosticsFromUris(event.uris);
       }),
-      vscode.debug.onDidStartDebugSession(() => {
-        this.isDebugging = this.privacy.isDebugTrackingEnabled();
-        this.updateState();
-      }),
-      vscode.debug.onDidTerminateDebugSession(() => {
-        this.isDebugging = false;
-        this.updateState();
-      }),
+      vscode.debug.onDidStartDebugSession((session) =>
+        this.onDebugSessionStarted(session),
+      ),
+      vscode.debug.onDidChangeActiveDebugSession((session) =>
+        this.onActiveDebugSessionChanged(session),
+      ),
+      vscode.debug.onDidTerminateDebugSession((session) =>
+        this.onDebugSessionTerminated(session),
+      ),
     );
 
     this.trackingInterval = this.scheduler.setInterval(
@@ -154,6 +173,9 @@ export class TrackingController implements vscode.Disposable {
       TRACKING_INTERVAL_MS,
     );
     this.onActiveTextEditorChanged(vscode.window.activeTextEditor);
+    if (vscode.debug.activeDebugSession) {
+      this.onDebugSessionStarted(vscode.debug.activeDebugSession);
+    }
   }
 
   public dispose(): void {
@@ -161,6 +183,7 @@ export class TrackingController implements vscode.Disposable {
       return;
     }
     this.applyActivityTransition(this.activityStateMachine.pause());
+    this.recordDebugMetricUpdates(this.debugSessions.stopAll());
     this.disposed = true;
 
     if (this.trackingInterval) {
@@ -175,6 +198,8 @@ export class TrackingController implements vscode.Disposable {
     return Promise.all([
       this.store.flush(),
       this.activityIntervals.flush(),
+      this.dailyMetrics.flush(),
+      this.debugMetrics.flush(),
       this.diagnosticBuckets.flush(),
     ]).then(() => undefined);
   }
@@ -184,6 +209,7 @@ export class TrackingController implements vscode.Disposable {
       return;
     }
     this.applyActivityTransition(this.activityStateMachine.pause());
+    this.recordDebugMetricUpdates(this.debugSessions.setPaused(true));
     this.updateState();
     await this.flush();
   }
@@ -192,6 +218,7 @@ export class TrackingController implements vscode.Disposable {
     if (this.disposed) {
       return;
     }
+    this.recordDebugMetricUpdates(this.debugSessions.setPaused(false));
     this.applyActivityTransition(this.activityStateMachine.resume());
     this.updateState();
   }
@@ -200,9 +227,12 @@ export class TrackingController implements vscode.Disposable {
     if (this.disposed) {
       return;
     }
-    if (!this.privacy.isDebugTrackingEnabled()) {
-      this.isDebugging = false;
-    }
+    this.applyActivityTransition(this.activityStateMachine.tick());
+    this.recordDebugMetricUpdates(
+      this.debugSessions.setPrivacyEnabled(
+        this.privacy.isDebugTrackingEnabled(),
+      ),
+    );
     this.onActiveTextEditorChanged(vscode.window.activeTextEditor);
   }
 
@@ -316,16 +346,19 @@ export class TrackingController implements vscode.Disposable {
         this.updateState();
         return;
       }
-      this.store.addEditActivity(
-        attribution.projectPath,
-        summarizeEditorEdit(
-          event.contentChanges.map((change) => ({
-            text: change.text,
-            rangeLength: change.rangeLength,
-            removedLineSpan: change.range.end.line - change.range.start.line,
-          })),
-        ),
+      const activity = summarizeEditorEdit(
+        event.contentChanges.map((change) => ({
+          text: change.text,
+          rangeLength: change.rangeLength,
+          removedLineSpan: change.range.end.line - change.range.start.line,
+        })),
       );
+      this.store.addEditActivity(attribution.projectPath, activity);
+      this.dailyMetrics.recordEditActivity({
+        projectId: attribution.projectId,
+        localDate: this.localDateKey(),
+        ...activity,
+      });
     }
 
     this.updateState();
@@ -346,6 +379,10 @@ export class TrackingController implements vscode.Disposable {
       return;
     }
     this.store.addSave(attribution.projectPath);
+    this.dailyMetrics.recordSave({
+      projectId: attribution.projectId,
+      localDate: this.localDateKey(),
+    });
     this.updateDiagnosticsForProject(attribution.projectPath);
     this.refreshGitState(attribution.projectPath);
     this.updateState();
@@ -353,6 +390,7 @@ export class TrackingController implements vscode.Disposable {
 
   private trackOneSecond(): void {
     this.applyActivityTransition(this.activityStateMachine.tick());
+    this.recordDebugMetricUpdates(this.debugSessions.tick());
     this.updateState();
   }
 
@@ -373,6 +411,10 @@ export class TrackingController implements vscode.Disposable {
           attribution.projectPath,
           transition.flowBlockStartedAtLocalDateKey,
         );
+        this.dailyMetrics.recordFlowBlock({
+          projectId: attribution.projectId,
+          localDate: transition.flowBlockStartedAtLocalDateKey,
+        });
       }
     }
     return transition;
@@ -397,6 +439,7 @@ export class TrackingController implements vscode.Disposable {
         totalSeconds += seconds;
         this.activityIntervals.recordActivityInterval({
           projectId,
+          localDate: slice.localDateKey,
           documentId: this.currentDocumentId ?? null,
           languageId:
             this.currentLanguage === "unknown" ? null : this.currentLanguage,
@@ -418,7 +461,10 @@ export class TrackingController implements vscode.Disposable {
         );
       });
       this.store.setGitDirtyFiles(projectPath, gitState.dirtyFiles);
-      if (this.isDebugging && totalSeconds > 0) {
+      this.recordDebugMetricUpdates(
+        this.debugSessions.recordActiveTime(projectId, transition.slices),
+      );
+      if (this.debugSessions.isCollecting() && totalSeconds > 0) {
         this.store.addDebugSeconds(projectPath, totalSeconds);
       }
     }
@@ -437,6 +483,13 @@ export class TrackingController implements vscode.Disposable {
           slice.durationMs,
           slice.localDateKey,
         );
+        if (this.currentProjectId) {
+          this.dailyMetrics.recordFlowActiveTime({
+            projectId: this.currentProjectId,
+            localDate: slice.localDateKey,
+            durationMs: Math.round(slice.durationMs),
+          });
+        }
       });
       if (transition.flowClosedAtLocalDateKey) {
         flowDates.add(transition.flowClosedAtLocalDateKey);
@@ -451,15 +504,34 @@ export class TrackingController implements vscode.Disposable {
             : 0,
           localDateKey,
         );
+        if (
+          this.currentProjectId &&
+          (transition.flowClosedAtLocalDateKey || !isLatestDate)
+        ) {
+          this.dailyMetrics.closeFlow({
+            projectId: this.currentProjectId,
+            localDate: localDateKey,
+          });
+        }
       });
     }
 
     transition.confirmedContextSwitches.forEach((contextSwitch) => {
-      this.store.addConfirmedContextSwitch(
+      const destinationPath = this.projectPathsById.get(
         contextSwitch.destinationProjectId,
-        contextSwitch.projectSwitch,
-        contextSwitch.localDateKey,
       );
+      if (destinationPath) {
+        this.store.addConfirmedContextSwitch(
+          destinationPath,
+          contextSwitch.projectSwitch,
+          contextSwitch.localDateKey,
+        );
+      }
+      this.dailyMetrics.recordContextSwitch({
+        projectId: contextSwitch.destinationProjectId,
+        localDate: contextSwitch.localDateKey,
+        projectSwitch: contextSwitch.projectSwitch,
+      });
     });
 
     this.syncTrackingState(transition);
@@ -468,6 +540,66 @@ export class TrackingController implements vscode.Disposable {
 
   private syncTrackingState(snapshot: ActivityStateSnapshot): void {
     this.store.setTrackingStatus(snapshot.status, snapshot.lastUpdatedAt);
+  }
+
+  private onDebugSessionStarted(session: vscode.DebugSession): void {
+    if (this.disposed) {
+      return;
+    }
+    this.applyActivityTransition(this.activityStateMachine.tick());
+    this.recordDebugMetricUpdates(
+      this.debugSessions.startSession({
+        id: session.id,
+        projectId: this.debugProjectId(session),
+      }),
+    );
+    this.updateState();
+  }
+
+  private onActiveDebugSessionChanged(
+    session: vscode.DebugSession | undefined,
+  ): void {
+    if (this.disposed) {
+      return;
+    }
+    this.applyActivityTransition(this.activityStateMachine.tick());
+    this.recordDebugMetricUpdates(
+      this.debugSessions.setActiveSession(session?.id),
+    );
+    this.updateState();
+  }
+
+  private onDebugSessionTerminated(session: vscode.DebugSession): void {
+    if (this.disposed) {
+      return;
+    }
+    this.applyActivityTransition(this.activityStateMachine.tick());
+    this.recordDebugMetricUpdates(
+      this.debugSessions.terminateSession(session.id),
+    );
+    this.updateState();
+  }
+
+  private debugProjectId(session: vscode.DebugSession): string | null {
+    const folder = session.workspaceFolder;
+    if (!folder) {
+      return this.currentProjectId ?? null;
+    }
+    if (
+      folder.uri.scheme === "file" &&
+      this.privacy.isProjectExcluded(folder.uri.fsPath)
+    ) {
+      return null;
+    }
+    return this.projectIdentityId(folder);
+  }
+
+  private recordDebugMetricUpdates(
+    updates: readonly DebugMetricObservation[],
+  ): void {
+    updates.forEach((update) => {
+      this.debugMetrics.recordDebugMetrics(update);
+    });
   }
 
   private editorAttribution(
@@ -544,7 +676,14 @@ export class TrackingController implements vscode.Disposable {
       folder.name,
     ).id;
     this.projectIdentityIds.set(key, projectId);
+    this.projectPathsById.set(projectId, folder.uri.fsPath);
     return projectId;
+  }
+
+  private localDateKey(): string {
+    const date = this.clock.now();
+    const pad = (value: number): string => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 
   private refreshGitState(projectPath: string): void {

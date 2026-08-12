@@ -358,6 +358,44 @@ suite("LegacyMigration", () => {
     assert.strictEqual(target.flushCount, 2);
   });
 
+  test("uses a durable completion marker instead of overwriting newer v2 metrics", async () => {
+    const target = new RecordingTarget();
+    writeLegacy(JSON.stringify(completeData()));
+    const completionMarkerPath = path.join(
+      tempDirectory,
+      "global-storage",
+      "v2",
+      "metadata",
+      "legacy-v1-complete.json",
+    );
+    const options = {
+      legacyDataPath,
+      backupDirectory,
+      completionMarkerPath,
+      clock,
+      fileSystem: nodeFileSystem,
+      target,
+      createProjectIdentity: createIdentity,
+    };
+
+    const first = await new LegacyMigration(options).migrate();
+    onlyRollup(target).activeTimeMs += 5_000;
+    const second = await new LegacyMigration(options).migrate();
+
+    assert.strictEqual(first.status, "migrated");
+    assert.strictEqual(second.status, "already-migrated");
+    assert.strictEqual(second.source, "original");
+    assert.strictEqual(second.importedFrom, legacyDataPath);
+    assert.strictEqual(onlyRollup(target).activeTimeMs, 95_500);
+    assert.strictEqual(target.flushCount, 1);
+    assert.ok(fs.existsSync(completionMarkerPath));
+    assert.strictEqual(
+      fs.readdirSync(backupDirectory).filter((name) => name.startsWith("legacy-data-"))
+        .length,
+      1,
+    );
+  });
+
   function createMigration(
     target: LegacyMigrationTarget,
     identityFactory: (

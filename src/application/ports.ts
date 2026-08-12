@@ -80,6 +80,7 @@ export interface TrackingStore extends TrackingReader, TrackingWriter {}
 
 export interface ActivityIntervalObservation {
   projectId: string;
+  localDate: string;
   documentId: string | null;
   languageId: string | null;
   startedAt: number;
@@ -94,6 +95,36 @@ export interface ActivityIntervalSink {
   flush(): Promise<void>;
 }
 
+export interface DailyEditMetricObservation extends EditorEditActivity {
+  projectId: string;
+  localDate: string;
+}
+
+export interface DailyEventMetricObservation {
+  projectId: string;
+  localDate: string;
+}
+
+export interface DailyContextSwitchObservation
+  extends DailyEventMetricObservation {
+  projectSwitch: boolean;
+}
+
+export interface DailyFlowMetricObservation
+  extends DailyEventMetricObservation {
+  durationMs: number;
+}
+
+export interface DailyMetricSink {
+  recordEditActivity(value: DailyEditMetricObservation): void;
+  recordSave(value: DailyEventMetricObservation): void;
+  recordContextSwitch(value: DailyContextSwitchObservation): void;
+  recordFlowBlock(value: DailyEventMetricObservation): void;
+  recordFlowActiveTime(value: DailyFlowMetricObservation): void;
+  closeFlow(value: DailyEventMetricObservation): void;
+  flush(): Promise<void>;
+}
+
 export interface DiagnosticBucketObservation {
   projectId: string;
   bucketStartedAt: number;
@@ -104,6 +135,18 @@ export interface DiagnosticBucketObservation {
 
 export interface DiagnosticBucketSink {
   recordDiagnosticBucket(value: DiagnosticBucketObservation): void;
+  flush(): Promise<void>;
+}
+
+export interface DebugMetricObservation {
+  projectId: string;
+  localDate: string;
+  debugElapsedMs: number;
+  debugActiveTimeMs: number;
+}
+
+export interface DebugMetricSink {
+  recordDebugMetrics(value: DebugMetricObservation): void;
   flush(): Promise<void>;
 }
 

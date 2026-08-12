@@ -159,6 +159,63 @@ suite("RangeQueryEngine", () => {
     assert.strictEqual(incomplete.comparison, null);
   });
 
+  test("keeps the latest diagnostic snapshot instead of summing history", () => {
+    const engine = new RangeQueryEngine(clock);
+    const alpha = project("project-alpha", "Alpha");
+    engine.setProjectIdentities([alpha]);
+    const earlier = rollup(alpha.id, "2026-08-05", 100);
+    earlier.diagnostics.current = {
+      error: 3,
+      warning: 2,
+      info: 0,
+      hint: 0,
+    };
+    earlier.diagnostics.peak = { ...earlier.diagnostics.current };
+    const later = rollup(alpha.id, "2026-08-07", 100);
+    later.diagnostics.current = {
+      error: 1,
+      warning: 4,
+      info: 0,
+      hint: 0,
+    };
+    later.diagnostics.introduced.warning = 2;
+    later.diagnostics.resolved.error = 2;
+    later.diagnostics.peak = {
+      error: 3,
+      warning: 4,
+      info: 0,
+      hint: 0,
+    };
+    engine.applyDelta({ upsert: [earlier, later] });
+
+    const diagnostics = engine.query({ preset: "7-days" }).current.metrics
+      .diagnostics;
+    assert.deepStrictEqual(diagnostics.current, {
+      error: 1,
+      warning: 4,
+      info: 0,
+      hint: 0,
+    });
+    assert.deepStrictEqual(diagnostics.introduced, {
+      error: 0,
+      warning: 2,
+      info: 0,
+      hint: 0,
+    });
+    assert.deepStrictEqual(diagnostics.resolved, {
+      error: 2,
+      warning: 0,
+      info: 0,
+      hint: 0,
+    });
+    assert.deepStrictEqual(diagnostics.peak, {
+      error: 3,
+      warning: 4,
+      info: 0,
+      hint: 0,
+    });
+  });
+
   test("serves cached ranges and invalidates them from rollup deltas", () => {
     const engine = new RangeQueryEngine(clock);
     const alpha = project("project-alpha", "Alpha");

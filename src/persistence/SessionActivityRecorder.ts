@@ -32,16 +32,46 @@ export class SessionActivityRecorder implements ActivityIntervalSink {
   }
 
   public recordActivityInterval(value: ActivityIntervalObservation): void {
-    const snapshot = { ...value };
+    const snapshot = this.normalize(value);
+    if (snapshot.endedAt === snapshot.startedAt) {
+      return;
+    }
     this.tail = this.tail
-      .then(() =>
-        this.store.appendInterval(this.sessionId, {
+      .then(async () => {
+        await this.store.appendInterval(this.sessionId, {
           schemaVersion: SCHEMA_VERSION,
           id: this.createIntervalId(),
           sessionId: this.sessionId,
-          ...snapshot,
-        }),
-      )
+          projectId: snapshot.projectId,
+          documentId: snapshot.documentId,
+          languageId: snapshot.languageId,
+          startedAt: snapshot.startedAt,
+          endedAt: snapshot.endedAt,
+          monotonicStartedAt: snapshot.monotonicStartedAt,
+          monotonicEndedAt: snapshot.monotonicEndedAt,
+          lastInteractionAt: snapshot.lastInteractionAt,
+        });
+        const durationMs = snapshot.endedAt - snapshot.startedAt;
+        await this.store.applyDailyMetricDelta(
+          snapshot.projectId,
+          snapshot.localDate,
+          {
+            activeTimeMs: durationMs,
+            activeTimeByLanguageMs:
+              snapshot.languageId === null
+                ? {}
+                : { [snapshot.languageId]: durationMs },
+            activeTimeByDocumentMs:
+              snapshot.documentId === null
+                ? {}
+                : { [snapshot.documentId]: durationMs },
+            activeTimeByQuarterHourMs: this.quarterHourDurations(
+              snapshot.startedAt,
+              snapshot.endedAt,
+            ),
+          },
+        );
+      })
       .then(
         () => undefined,
         (error) => {
@@ -67,5 +97,63 @@ export class SessionActivityRecorder implements ActivityIntervalSink {
     if (storeFailure !== undefined) {
       throw storeFailure;
     }
+  }
+
+  private normalize(
+    value: ActivityIntervalObservation,
+  ): ActivityIntervalObservation {
+    return {
+      ...value,
+      startedAt: this.integerBoundary(value.startedAt, "startedAt"),
+      endedAt: this.integerBoundary(value.endedAt, "endedAt"),
+      monotonicStartedAt: this.integerBoundary(
+        value.monotonicStartedAt,
+        "monotonicStartedAt",
+      ),
+      monotonicEndedAt: this.integerBoundary(
+        value.monotonicEndedAt,
+        "monotonicEndedAt",
+      ),
+      lastInteractionAt: this.integerBoundary(
+        value.lastInteractionAt,
+        "lastInteractionAt",
+      ),
+    };
+  }
+
+  private integerBoundary(value: number, name: string): number {
+    if (!Number.isFinite(value) || value < 0) {
+      throw new Error(`${name} must be a non-negative finite number`);
+    }
+    const rounded = Math.round(value);
+    if (!Number.isSafeInteger(rounded)) {
+      throw new Error(`${name} exceeds the safe integer range`);
+    }
+    return rounded;
+  }
+
+  private quarterHourDurations(
+    startedAt: number,
+    endedAt: number,
+  ): Record<string, number> {
+    const durations: Record<string, number> = {};
+    let cursor = startedAt;
+    while (cursor < endedAt) {
+      const date = new Date(cursor);
+      const bucketStart = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        Math.floor(date.getMinutes() / 15) * 15,
+      ).getTime();
+      const bucketEnd = new Date(bucketStart);
+      bucketEnd.setMinutes(bucketEnd.getMinutes() + 15);
+      const sliceEnd = Math.min(endedAt, bucketEnd.getTime());
+      durations[String(bucketStart)] =
+        (durations[String(bucketStart)] ?? 0) + sliceEnd - cursor;
+      cursor = sliceEnd;
+    }
+    return durations;
   }
 }
