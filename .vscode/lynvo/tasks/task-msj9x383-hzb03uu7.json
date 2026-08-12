@@ -2,7 +2,7 @@
   "id": "task-msj9x383-hzb03uu7",
   "title": "T27 — Add unit tests for storage and activity tracking",
   "description": "## Objective\n\nCover states, concurrency, and persistence with fake clocks and filesystems beyond the current suite.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T27.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033672,
-  "updatedAt": 1786520988551,
+  "updatedAt": 1786521150467,
   "position": 1786127033672,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
@@ -28,58 +28,58 @@
     {
       "id": "check-msj9x3k9-l799fnf5",
       "text": "Test active, inactive, and paused with a fake clock",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033673,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150459
     },
     {
       "id": "check-msj9x3ka-hgbyqjtj",
       "text": "Test the flow gap and context-switch debounce",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033674,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150460
     },
     {
       "id": "check-msj9x3kb-2b5j068d",
       "text": "Test midnight and daylight-saving changes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033675,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150461
     },
     {
       "id": "check-msj9x3kc-0pcogrfm",
       "text": "Test flush, write failure, and retry",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033676,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150462
     },
     {
       "id": "check-msj9x3kd-m6gd5uwq",
       "text": "Test two windows with overlapping activity",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033677,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150463
     },
     {
       "id": "check-msj9x3ke-jj6yf4vs",
       "text": "Test retention and compaction",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033678,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150464
     },
     {
       "id": "check-msj9x3kf-4d7cegbl",
       "text": "Test path identity by platform",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033679,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150465
     },
     {
       "id": "check-msj9x3kg-3voo2zki",
       "text": "Test concurrent debug sessions",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033680,
-      "updatedAt": 1786127326676
+      "updatedAt": 1786521150466
     }
   ],
   "relations": [

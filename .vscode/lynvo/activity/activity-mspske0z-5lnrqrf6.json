@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspske0z-5lnrqrf6",
+  "type": "task_moved",
+  "message": "Moved \"T27 — Add unit tests for storage and activity tracking\" from In Progress to Done",
+  "createdAt": 1786521150467,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x383-hzb03uu7",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

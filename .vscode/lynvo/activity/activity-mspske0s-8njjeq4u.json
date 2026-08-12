@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspske0s-8njjeq4u",
+  "type": "checklist_updated",
+  "message": "Completed \"Test the flow gap and context-switch debounce\" in \"T27 — Add unit tests for storage and activity tracking\"",
+  "createdAt": 1786521150460,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x383-hzb03uu7",
+  "metadata": {
+    "checklistItemId": "check-msj9x3ka-hgbyqjtj",
+    "done": true
+  }
+}

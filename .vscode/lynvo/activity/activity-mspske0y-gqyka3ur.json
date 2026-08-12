@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspske0y-gqyka3ur",
+  "type": "checklist_updated",
+  "message": "Completed \"Test concurrent debug sessions\" in \"T27 — Add unit tests for storage and activity tracking\"",
+  "createdAt": 1786521150466,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x383-hzb03uu7",
+  "metadata": {
+    "checklistItemId": "check-msj9x3kg-3voo2zki",
+    "done": true
+  }
+}
