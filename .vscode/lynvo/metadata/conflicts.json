@@ -597,6 +597,6 @@
     "localValue": "in-progress",
     "remoteValue": "backlog",
     "createdAt": 1786522330011,
-    "resolved": false
+    "resolved": true
   }
 }
