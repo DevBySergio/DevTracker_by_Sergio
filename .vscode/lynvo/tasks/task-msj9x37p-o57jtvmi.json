@@ -2,7 +2,7 @@
   "id": "task-msj9x37p-o57jtvmi",
   "title": "T13 — Track concurrent debug sessions",
   "description": "## Objective\n\nMeasure debugging correctly with concurrent sessions without persisting sensitive launch configuration.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T13.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033428,
-  "updatedAt": 1786127326648,
+  "updatedAt": 1786517176550,
   "position": 1786127033428,
   "labelIds": [
     "feat",

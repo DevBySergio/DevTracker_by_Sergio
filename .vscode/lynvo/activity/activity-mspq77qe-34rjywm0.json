@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspq77qe-34rjywm0",
+  "type": "task_moved",
+  "message": "Moved \"T13 — Track concurrent debug sessions\" from Backlog to In Progress",
+  "createdAt": 1786517176550,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37p-o57jtvmi",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
