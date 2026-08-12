@@ -2,7 +2,7 @@
   "id": "task-msj9x37q-7v1kkm1j",
   "title": "T14 — Add opt-in VS Code Tasks tracking",
   "description": "## Objective\n\nAdd build and test signals through public APIs without inspecting terminals or commands.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T14.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033442,
-  "updatedAt": 1786524352170,
+  "updatedAt": 1786525642817,
   "position": 1786127033442,
   "labelIds": [
     "feat",
@@ -23,44 +23,44 @@
     {
       "id": "check-msj9x3dv-lzc8cwtb",
       "text": "Listen for start, completion, and exit code through public APIs",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033443,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     },
     {
       "id": "check-msj9x3dw-90wbi69x",
       "text": "Store only the configured name, duration, and result",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033444,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     },
     {
       "id": "check-msj9x3dx-yyyveiyo",
       "text": "Allow specific tasks to be classified as build or test",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033445,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     },
     {
       "id": "check-msj9x3dy-nbxfd24n",
       "text": "Do not read terminals, stdout, commands, or variables",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033446,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     },
     {
       "id": "check-msj9x3dz-c6bbi3a5",
       "text": "Display success rate and median duration",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033447,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     },
     {
       "id": "check-msj9x3e0-rm1l1bjo",
       "text": "Document limitations and privacy behavior",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033448,
-      "updatedAt": 1786127326650
+      "updatedAt": 1786525642817
     }
   ],
   "relations": [
