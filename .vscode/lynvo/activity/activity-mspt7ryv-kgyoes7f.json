@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspt7ryv-kgyoes7f",
+  "type": "task_moved",
+  "message": "Moved \"T12 — Build an opt-in Git integration per repository\" from Backlog to In Progress",
+  "createdAt": 1786522241623,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37o-k3b7gerj",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

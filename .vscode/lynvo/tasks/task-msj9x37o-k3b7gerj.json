@@ -2,7 +2,7 @@
   "id": "task-msj9x37o-k3b7gerj",
   "title": "T12 — Build an opt-in Git integration per repository",
   "description": "## Objective\n\nIsolate Git state per repository and collect local signals only after explicit consent.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T12.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033412,
-  "updatedAt": 1786127326646,
+  "updatedAt": 1786522241623,
   "position": 1786127033412,
   "labelIds": [
     "feat",
