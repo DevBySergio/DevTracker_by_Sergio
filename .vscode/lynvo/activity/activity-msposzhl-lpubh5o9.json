@@ -1,0 +1,15 @@
+{
+  "id": "activity-msposzhl-lpubh5o9",
+  "type": "task_moved",
+  "message": "Moved \"T28 — Add migration, query and metric-contract tests\" from Backlog to In Progress",
+  "createdAt": 1786514833065,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}
