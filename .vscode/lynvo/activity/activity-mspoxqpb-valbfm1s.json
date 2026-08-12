@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspoxqpb-valbfm1s",
+  "type": "checklist_updated",
+  "message": "Completed \"Repeat migration without duplicates\" in \"T28 — Add migration, query and metric-contract tests\"",
+  "createdAt": 1786515054959,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "checklistItemId": "check-msj9x3kw-2i1z6izy",
+    "done": true
+  }
+}

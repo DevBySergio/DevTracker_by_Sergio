@@ -2,7 +2,7 @@
   "id": "task-msj9x384-t5cnmngh",
   "title": "T28 — Add migration, query and metric-contract tests",
   "description": "## Objective\n\nDemonstrate that migrations, aggregations, and formulas comply with the v2 metric contract and historical cases.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T28.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033694,
-  "updatedAt": 1786514833065,
+  "updatedAt": 1786515054966,
   "position": 1786127033694,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
@@ -23,58 +23,58 @@
     {
       "id": "check-msj9x3kv-1kekdsyr",
       "text": "Migrate complete and partial v1 histories",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033695,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054958
     },
     {
       "id": "check-msj9x3kw-2i1z6izy",
       "text": "Repeat migration without duplicates",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033696,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054959
     },
     {
       "id": "check-msj9x3kx-giskpap5",
       "text": "Recover corrupt JSON",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033697,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054960
     },
     {
       "id": "check-msj9x3ky-mpixudeo",
       "text": "Verify periods and comparisons",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033698,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054961
     },
     {
       "id": "check-msj9x3kz-jtswbyfw",
       "text": "Fill empty days",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033699,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054962
     },
     {
       "id": "check-msj9x3l0-4d3my44x",
       "text": "Exclude future dates",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033700,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054963
     },
     {
       "id": "check-msj9x3l1-36til2xh",
       "text": "Do not sum diagnostic snapshots",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033701,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054964
     },
     {
       "id": "check-msj9x3l2-hij4j69v",
       "text": "Validate every example in the metric contract",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033702,
-      "updatedAt": 1786127326678
+      "updatedAt": 1786515054965
     }
   ],
   "relations": [

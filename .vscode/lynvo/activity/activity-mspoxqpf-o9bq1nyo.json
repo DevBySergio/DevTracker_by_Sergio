@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspoxqpf-o9bq1nyo",
+  "type": "checklist_updated",
+  "message": "Completed \"Exclude future dates\" in \"T28 — Add migration, query and metric-contract tests\"",
+  "createdAt": 1786515054963,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "checklistItemId": "check-msj9x3l0-4d3my44x",
+    "done": true
+  }
+}

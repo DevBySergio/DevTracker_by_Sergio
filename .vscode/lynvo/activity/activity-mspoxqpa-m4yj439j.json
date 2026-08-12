@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspoxqpa-m4yj439j",
+  "type": "checklist_updated",
+  "message": "Completed \"Migrate complete and partial v1 histories\" in \"T28 — Add migration, query and metric-contract tests\"",
+  "createdAt": 1786515054958,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "checklistItemId": "check-msj9x3kv-1kekdsyr",
+    "done": true
+  }
+}

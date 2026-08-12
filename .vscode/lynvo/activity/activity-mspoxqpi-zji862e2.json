@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspoxqpi-zji862e2",
+  "type": "task_moved",
+  "message": "Moved \"T28 — Add migration, query and metric-contract tests\" from In Progress to Done",
+  "createdAt": 1786515054966,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

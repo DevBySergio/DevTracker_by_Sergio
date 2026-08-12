@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspoxqph-q6n1q2q0",
+  "type": "checklist_updated",
+  "message": "Completed \"Validate every example in the metric contract\" in \"T28 — Add migration, query and metric-contract tests\"",
+  "createdAt": 1786515054965,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x384-t5cnmngh",
+  "metadata": {
+    "checklistItemId": "check-msj9x3l2-hij4j69v",
+    "done": true
+  }
+}
