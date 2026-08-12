@@ -2,7 +2,7 @@
   "id": "task-msj9x37q-7v1kkm1j",
   "title": "T14 — Add opt-in VS Code Tasks tracking",
   "description": "## Objective\n\nAdd build and test signals through public APIs without inspecting terminals or commands.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T14.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033442,
-  "updatedAt": 1786127326650,
+  "updatedAt": 1786524352170,
   "position": 1786127033442,
   "labelIds": [
     "feat",
