@@ -1,0 +1,15 @@
+{
+  "id": "activity-msppkyy3-perf7",
+  "type": "checklist_updated",
+  "message": "Completed \"Add budgets as repeatable tests\" in \"T31 — Add large-history performance fixtures and budgets\"",
+  "createdAt": 1786516138731,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "checklistItemId": "check-msj9x3n0-6uux7w9n",
+    "done": true
+  }
+}

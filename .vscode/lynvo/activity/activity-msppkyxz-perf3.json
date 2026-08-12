@@ -1,0 +1,15 @@
+{
+  "id": "activity-msppkyxz-perf3",
+  "type": "checklist_updated",
+  "message": "Completed \"Measure 7-day, 30-day, 90-day, and all-time queries\" in \"T31 — Add large-history performance fixtures and budgets\"",
+  "createdAt": 1786516138727,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "checklistItemId": "check-msj9x3mw-0qsnwnx1",
+    "done": true
+  }
+}

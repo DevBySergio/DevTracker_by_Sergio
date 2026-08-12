@@ -1,0 +1,15 @@
+{
+  "id": "activity-msppkyxy-perf2",
+  "type": "checklist_updated",
+  "message": "Completed \"Measure activation\" in \"T31 — Add large-history performance fixtures and budgets\"",
+  "createdAt": 1786516138726,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "checklistItemId": "check-msj9x3mv-18ltpf9q",
+    "done": true
+  }
+}

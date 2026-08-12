@@ -1,0 +1,15 @@
+{
+  "id": "activity-msppkyy0-perf4",
+  "type": "checklist_updated",
+  "message": "Completed \"Measure the initial payload and deltas\" in \"T31 — Add large-history performance fixtures and budgets\"",
+  "createdAt": 1786516138728,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "checklistItemId": "check-msj9x3mx-i6r6f1ai",
+    "done": true
+  }
+}

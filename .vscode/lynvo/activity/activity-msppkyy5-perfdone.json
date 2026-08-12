@@ -1,0 +1,15 @@
+{
+  "id": "activity-msppkyy5-perfdone",
+  "type": "task_moved",
+  "message": "Moved \"T31 — Add large-history performance fixtures and budgets\" from In Progress to Done",
+  "createdAt": 1786516138733,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x387-2qtjcubx",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

@@ -2,7 +2,7 @@
   "id": "task-msj9x387-2qtjcubx",
   "title": "T31 — Add large-history performance fixtures and budgets",
   "description": "## Objective\n\nTurn scalability requirements into reproducible automated performance budgets.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T31.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033765,
-  "updatedAt": 1786515457176,
+  "updatedAt": 1786516138733,
   "position": 1786127033765,
   "labelIds": [
     "label-msj9x376-atwveebr",
@@ -23,58 +23,58 @@
     {
       "id": "check-msj9x3mu-npj0wu7c",
       "text": "Generate a three-year, 50-project fixture",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033766,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138725
     },
     {
       "id": "check-msj9x3mv-18ltpf9q",
       "text": "Measure activation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033767,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138726
     },
     {
       "id": "check-msj9x3mw-0qsnwnx1",
       "text": "Measure 7-day, 30-day, 90-day, and all-time queries",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033768,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138727
     },
     {
       "id": "check-msj9x3mx-i6r6f1ai",
       "text": "Measure the initial payload and deltas",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033769,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138728
     },
     {
       "id": "check-msj9x3my-sycr8sl8",
       "text": "Verify the absence of full-history updates",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033770,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138729
     },
     {
       "id": "check-msj9x3mz-0na2blh6",
       "text": "Verify the absence of synchronous I/O in handlers",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033771,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138730
     },
     {
       "id": "check-msj9x3n0-6uux7w9n",
       "text": "Add budgets as repeatable tests",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033772,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138731
     },
     {
       "id": "check-msj9x3n1-kufky9vt",
       "text": "Document the baseline and tolerances",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033773,
-      "updatedAt": 1786127326684
+      "updatedAt": 1786516138732
     }
   ],
   "relations": [
