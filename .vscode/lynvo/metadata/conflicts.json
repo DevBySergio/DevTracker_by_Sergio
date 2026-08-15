@@ -607,6 +607,26 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786525690662,
+    "resolved": true
+  },
+  "task-task-msj9x37z-2ign9osb-status": {
+    "id": "task-task-msj9x37z-2ign9osb-status",
+    "entityType": "task",
+    "entityId": "task-msj9x37z-2ign9osb",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786827537097,
+    "resolved": false
+  },
+  "task-task-msj9x385-7c8657ra-status": {
+    "id": "task-task-msj9x385-7c8657ra-status",
+    "entityType": "task",
+    "entityId": "task-msj9x385-7c8657ra",
+    "field": "status",
+    "localValue": "done",
+    "remoteValue": "backlog",
+    "createdAt": 1786827537097,
     "resolved": false
   }
 }

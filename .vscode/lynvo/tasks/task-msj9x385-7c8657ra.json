@@ -2,7 +2,7 @@
   "id": "task-msj9x385-7c8657ra",
   "title": "T29 — Add VS Code Extension Host integration tests",
   "description": "## Objective\n\nValidate real VS Code commands and events beyond DataManager unit tests.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T29.",
-  "status": "backlog",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033716,
-  "updatedAt": 1786127326680,
+  "updatedAt": 1786826586162,
   "position": 1786127033716,
   "labelIds": [
     "label-msj9x379-b0gg52nk"
@@ -22,65 +22,65 @@
     {
       "id": "check-msj9x3lh-3cx5153i",
       "text": "Test activation without an editor",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033717,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586153
     },
     {
       "id": "check-msj9x3li-m3oq68vx",
       "text": "Test opening the dashboard without recent activity",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033718,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586154
     },
     {
       "id": "check-msj9x3lj-3svnyslr",
       "text": "Test edits, saves, selections, and editor changes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033719,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586155
     },
     {
       "id": "check-msj9x3lk-14pqp7jk",
       "text": "Test pause and resume",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033720,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586156
     },
     {
       "id": "check-msj9x3ll-fpk7effs",
       "text": "Test multi-root workspaces",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033721,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586157
     },
     {
       "id": "check-msj9x3lm-lm245i51",
       "text": "Test configuration changes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033722,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586158
     },
     {
       "id": "check-msj9x3ln-obgqcjhy",
       "text": "Test diagnostics",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033723,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586159
     },
     {
       "id": "check-msj9x3lo-835zzfn1",
       "text": "Test Git available and unavailable states",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033724,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586160
     },
     {
       "id": "check-msj9x3lp-pgmecd9z",
       "text": "Test deactivation with a pending flush",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033725,
-      "updatedAt": 1786127326680
+      "updatedAt": 1786826586161
     }
   ],
   "relations": [

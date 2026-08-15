@@ -2,7 +2,7 @@
   "id": "task-msj9x37z-2ign9osb",
   "title": "T23 — Implement the Trends view",
   "description": "## Objective\n\nAllow users to explore temporal patterns and fair comparisons through accessible visualizations.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T23.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033587,
-  "updatedAt": 1786127326668,
+  "updatedAt": 1786826914811,
   "position": 1786127033587,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",

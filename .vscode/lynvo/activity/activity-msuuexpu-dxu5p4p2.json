@@ -1,0 +1,15 @@
+{
+  "id": "activity-msuuexpu-dxu5p4p2",
+  "type": "task_moved",
+  "message": "Moved \"T29 — Add VS Code Extension Host integration tests\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786826586162,
+  "taskId": "task-msj9x385-7c8657ra",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

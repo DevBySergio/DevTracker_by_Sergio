@@ -1,0 +1,11 @@
+{
+  "id": "activity-msuuexpt-1xppzj14",
+  "type": "checklist_updated",
+  "message": "Completed \"Test deactivation with a pending flush\" in \"T29 — Add VS Code Extension Host integration tests\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786826586161,
+  "taskId": "task-msj9x385-7c8657ra"
+}

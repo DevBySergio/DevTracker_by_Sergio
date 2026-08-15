@@ -1,0 +1,15 @@
+{
+  "id": "activity-msuulzaz-si8dn9tf",
+  "type": "task_moved",
+  "message": "Moved \"T23 — Implement the Trends view\" from Backlog to In Progress",
+  "createdAt": 1786826914811,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37z-2ign9osb",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

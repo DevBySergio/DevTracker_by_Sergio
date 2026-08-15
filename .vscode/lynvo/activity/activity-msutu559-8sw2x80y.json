@@ -1,0 +1,15 @@
+{
+  "id": "activity-msutu559-8sw2x80y",
+  "type": "task_moved",
+  "message": "Moved \"T29 — Add VS Code Extension Host integration tests\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786825616013,
+  "taskId": "task-msj9x385-7c8657ra",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

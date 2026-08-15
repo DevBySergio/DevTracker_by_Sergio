@@ -1,0 +1,11 @@
+{
+  "id": "activity-msuuexpp-2z4fzaom",
+  "type": "checklist_updated",
+  "message": "Completed \"Test multi-root workspaces\" in \"T29 — Add VS Code Extension Host integration tests\"",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786826586157,
+  "taskId": "task-msj9x385-7c8657ra"
+}

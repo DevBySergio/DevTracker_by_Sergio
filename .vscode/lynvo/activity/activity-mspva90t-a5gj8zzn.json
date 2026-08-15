@@ -1,0 +1,15 @@
+{
+  "id": "activity-mspva90t-a5gj8zzn",
+  "type": "task_moved",
+  "message": "Moved \"T14 — Add opt-in VS Code Tasks tracking\" from In Progress to Done",
+  "createdAt": 1786525716269,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37q-7v1kkm1j",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
