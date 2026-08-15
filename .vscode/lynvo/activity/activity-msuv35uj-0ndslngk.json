@@ -1,0 +1,15 @@
+{
+  "id": "activity-msuv35uj-0ndslngk",
+  "type": "task_moved",
+  "message": "Moved \"T23 — Implement the Trends view\" from In Progress to Done",
+  "createdAt": 1786827716442,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x37z-2ign9osb",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}
