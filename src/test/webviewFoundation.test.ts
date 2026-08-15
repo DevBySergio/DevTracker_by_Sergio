@@ -94,6 +94,19 @@ suite("WebviewFoundation", () => {
     assert.match(html, /id="overview-empty"[^>]+hidden/);
     assert.match(html, /id="task-runs"/);
     assert.match(html, /Task Outcomes/);
+    ["7-days", "30-days", "90-days", "year", "custom"].forEach((range) =>
+      assert.match(html, new RegExp(`data-range="${range}"`)),
+    );
+    assert.match(html, /id="custom-range-controls"[^>]+hidden/);
+    assert.match(html, /id="trendsActivityChart"/);
+    assert.match(html, /id="trendsFlowChart"/);
+    assert.match(html, /id="trendsLanguageChart"/);
+    assert.match(html, /id="trends-heatmap-table"/);
+    [
+      "trends-activity-table",
+      "trends-flow-table",
+      "trends-language-table",
+    ].forEach((id) => assert.match(html, new RegExp(`id="${id}"`)));
     ["export", "settings", "open-data", "reset"].forEach((action) =>
       assert.match(html, new RegExp(`data-action="${action}"`)),
     );
@@ -157,7 +170,13 @@ suite("WebviewFoundation", () => {
         "project-alpha",
         ["project-alpha", "project-beta"],
       ),
-      { view: "quality", range: "month", projectId: "project-beta" },
+      {
+        view: "quality",
+        range: "30-days",
+        projectId: "project-beta",
+        customStartLocalDate: null,
+        customEndLocalDate: null,
+      },
     );
     assert.deepStrictEqual(
       restoreDashboardState(
@@ -165,7 +184,33 @@ suite("WebviewFoundation", () => {
         "project-alpha",
         ["project-alpha"],
       ),
-      { view: "today", range: "week", projectId: "project-alpha" },
+      {
+        view: "today",
+        range: "7-days",
+        projectId: "project-alpha",
+        customStartLocalDate: null,
+        customEndLocalDate: null,
+      },
+    );
+    assert.deepStrictEqual(
+      restoreDashboardState(
+        {
+          view: "project",
+          range: "custom",
+          projectId: "project-alpha",
+          customStartLocalDate: "2026-07-01",
+          customEndLocalDate: "2026-07-31",
+        },
+        null,
+        ["project-alpha"],
+      ),
+      {
+        view: "project",
+        range: "custom",
+        projectId: "project-alpha",
+        customStartLocalDate: "2026-07-01",
+        customEndLocalDate: "2026-07-31",
+      },
     );
   });
 
@@ -208,7 +253,7 @@ suite("WebviewFoundation", () => {
 
   test("centralizes English UI copy and uses VS Code color variables", () => {
     assert.strictEqual(ENGLISH_STRINGS.views.quality, "Workflow");
-    assert.strictEqual(ENGLISH_STRINGS.ranges.all, "Last 90 Days");
+    assert.strictEqual(ENGLISH_STRINGS.ranges.quarter, "90 Days");
 
     const stylesheet = fs.readFileSync(
       path.resolve(__dirname, "..", "..", "webview", "styles.css"),

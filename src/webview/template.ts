@@ -69,12 +69,21 @@ export function renderDashboardHtml(
     role: "group",
     dataAttribute: "range",
     items: [
-      { id: "btn-today", label: EN.ranges.today, value: "today" },
-      { id: "btn-week", label: EN.ranges.week, value: "week", active: true },
-      { id: "btn-month", label: EN.ranges.month, value: "month" },
-      { id: "btn-all", label: EN.ranges.all, value: "all" },
+      { id: "btn-week", label: EN.ranges.week, value: "7-days", active: true },
+      { id: "btn-month", label: EN.ranges.month, value: "30-days" },
+      { id: "btn-quarter", label: EN.ranges.quarter, value: "90-days" },
+      { id: "btn-year", label: EN.ranges.year, value: "year" },
+      { id: "btn-custom", label: EN.ranges.custom, value: "custom" },
     ],
   });
+  const customRangeControls = `<form id="custom-range-controls" class="custom-range-controls" hidden>
+    <label for="custom-range-start">${EN.customRange.start}</label>
+    <input id="custom-range-start" type="date" required>
+    <label for="custom-range-end">${EN.customRange.end}</label>
+    <input id="custom-range-end" type="date" required>
+    <button type="submit">${EN.customRange.apply}</button>
+    <span id="custom-range-error" class="custom-range-error" role="alert"></span>
+  </form>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -126,7 +135,7 @@ export function renderDashboardHtml(
         <h1 id="page-title" class="page-title">${EN.views.today}</h1>
         <div id="page-subtitle" class="view-subtitle">${EN.subtitles.today}</div>
       </div>
-      ${filters}
+      <div class="view-controls">${filters}${customRangeControls}</div>
     </div>
 
     <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-overview">
@@ -180,16 +189,19 @@ export function renderDashboardHtml(
 
     <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-trends" hidden>
       <div class="grid-4">
-        ${Card(`<div class="card-title">${EN.metrics.projectTime}</div><div class="metric-row"><div class="metric-big" id="p-time">0m</div><span class="delta" id="p-time-delta">0%</span></div><div class="metric-sub" id="p-time-sub">${EN.status.selectedRange}</div>`, "metric-card")}
-        ${Metric({ id: "p-focus", title: EN.metrics.topThreeFileShare, value: "0%", subtitle: EN.initial.zeroObservedEditorTransitions })}
-        ${Metric({ id: "p-intensity", title: EN.metrics.characterEditsPerHour, value: "0", subtitle: EN.initial.legacyApproximation })}
-        ${Metric({ id: "p-churn", title: EN.metrics.removalShare, value: "0%", subtitle: EN.initial.zeroApproximateLineBreakChanges })}
+        ${Card(`<div class="card-title">${EN.metrics.activeTime}</div><div class="metric-row"><div class="metric-big" id="trend-active-time">0m</div><span class="delta" id="trend-active-time-delta">—</span></div><div class="metric-sub" id="trend-comparison-status">${EN.status.comparisonUnavailable}</div>`, "metric-card")}
+        ${Metric({ id: "trend-active-days", title: EN.metrics.activeDays, value: "0", subtitle: EN.status.consistencyZero })}
+        ${Metric({ id: "trend-goal-days", title: EN.metrics.goalDays, value: "—", subtitle: EN.status.goalNotConfigured })}
+        ${Metric({ id: "trend-streak", title: EN.metrics.currentStreak, value: "0 days", subtitle: EN.status.longestZeroDays })}
       </div>
       <div class="grid-2">
-        ${ChartPanel({ title: EN.panels.activityTrend, canvasId: "projectTrendChart", ariaLabel: EN.aria.projectHoursChart })}
-        ${Card(`<div class="card-title">${EN.panels.languages}</div><div class="list" id="project-language-list">${EmptyState(EN.empty.noLanguagesInRange)}</div>`)}
+        ${Card(`<div class="card-title">${EN.panels.dailyActivity}</div><div class="chart-container"><canvas id="trendsActivityChart" role="img" aria-label="${EN.aria.dailyActivityChart}"></canvas></div>${dataTable("trends-activity-table", EN.tables.dailyActivity)}`)}
+        ${Card(`<div class="card-title">${EN.panels.flowAndSwitches}</div><div class="chart-container"><canvas id="trendsFlowChart" role="img" aria-label="${EN.aria.flowAndSwitchesChart}"></canvas></div>${dataTable("trends-flow-table", EN.tables.flowAndSwitches)}`)}
       </div>
-      ${Card(`<div class="card-title">${EN.panels.mostActiveFiles}</div><div class="table-wrapper"><table id="project-files-table"></table></div>`)}
+      <div class="grid-2">
+        ${Card(`<div class="card-title">${EN.panels.activityHeatmap}</div><div class="table-wrapper heatmap-wrapper"><table id="trends-heatmap-table" class="trend-heatmap"></table></div>`)}
+        ${Card(`<div class="card-title">${EN.panels.languageEvolution}</div><div class="chart-container"><canvas id="trendsLanguageChart" role="img" aria-label="${EN.aria.languageEvolutionChart}"></canvas></div>${dataTable("trends-language-table", EN.tables.languageEvolution)}`)}
+      </div>
     </section>
 
     <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-workflow" hidden>
@@ -225,4 +237,8 @@ export function renderDashboardHtml(
   </main>
 </body>
 </html>`;
+}
+
+function dataTable(id: string, summary: string): string {
+  return `<details class="chart-data"><summary>${escapeHtml(summary)}</summary><div class="table-wrapper"><table id="${escapeAttribute(id)}"></table></div></details>`;
 }

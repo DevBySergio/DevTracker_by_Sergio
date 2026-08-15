@@ -20,10 +20,17 @@ export const ENGLISH_STRINGS = {
     global: "Projects",
   },
   ranges: {
-    today: "Today",
-    week: "Last Week",
-    month: "Last Month",
-    all: "Last 90 Days",
+    week: "7 Days",
+    month: "30 Days",
+    quarter: "90 Days",
+    year: "Year to Date",
+    custom: "Custom",
+  },
+  customRange: {
+    start: "From",
+    end: "To",
+    apply: "Apply",
+    invalid: "Choose a valid range whose start is not after its end.",
   },
   subtitles: {
     today: "Live view of today’s coding activity across tracked projects.",
@@ -54,6 +61,10 @@ export const ENGLISH_STRINGS = {
     mostActiveHour: "Most Active Hour",
     uniqueActiveFiles: "Unique Active Files",
     flowBlocks: "Flow Blocks",
+    activeTime: "Active Time",
+    activeDays: "Active Days",
+    goalDays: "Goal Days",
+    currentStreak: "Current Streak",
   },
   panels: {
     todayTimeline: "Today · 15-Minute Activity",
@@ -72,6 +83,10 @@ export const ENGLISH_STRINGS = {
     weeklyHeatmap: "Weekly Heatmap",
     topProjects: "Top Projects",
     globalLanguages: "Global Languages",
+    dailyActivity: "Daily Active Time",
+    flowAndSwitches: "Flow Blocks and File Switches",
+    activityHeatmap: "Daily Activity Heatmap",
+    languageEvolution: "Language Evolution",
   },
   empty: {
     noActivity: "No activity yet",
@@ -92,6 +107,7 @@ export const ENGLISH_STRINGS = {
     noProjectDistribution: "No project activity yet",
     noLanguageDistribution: "No language activity yet",
     noTrackedTaskRuns: "No configured task runs in this range",
+    noLanguageEvolution: "No language activity in this range",
   },
   dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   chartLabels: {
@@ -104,6 +120,14 @@ export const ENGLISH_STRINGS = {
   tableHeaders: {
     file: ["File", "Time", "Activity samples"],
     project: ["Project", "Time", "Top-3 share"],
+    dailyActivity: ["Date", "Active time", "Goal progress"],
+    flow: ["Date", "Flow blocks", "File switches / active hour"],
+    language: ["Date", "Language", "Active time"],
+  },
+  tables: {
+    dailyActivity: "View daily activity data",
+    flowAndSwitches: "View flow and switch data",
+    languageEvolution: "View language evolution data",
   },
   signals: {
     errors: "Errors",
@@ -157,6 +181,10 @@ export const ENGLISH_STRINGS = {
       "Bar chart of active time in 15-minute buckets across today",
     projectHoursChart: "Bar chart of project active hours",
     diagnosticsChart: "Stacked chart of diagnostics by severity",
+    dailyActivityChart: "Line chart of daily active time",
+    flowAndSwitchesChart:
+      "Line chart of daily flow blocks and file switches per active hour",
+    languageEvolutionChart: "Line chart of active time by language and day",
   },
   status: {
     dataUnavailable: "Dashboard data is temporarily unavailable",
@@ -176,6 +204,10 @@ export const ENGLISH_STRINGS = {
     exactRetainedFileCount: "Distinct retained file identities with activity",
     observedFlowBlocks: "Observed interaction-based flow blocks today",
     updatedJustNow: "Updated just now",
+    comparisonUnavailable: "Comparison unavailable for an in-progress period",
+    comparisonAvailable: "Compared with the equivalent previous period",
+    consistencyZero: "0% of days in the selected range",
+    longestZeroDays: "Longest streak: 0 days",
     tracking: {
       active: "Tracking",
       inactive: "Inactive",

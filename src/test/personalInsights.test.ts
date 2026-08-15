@@ -385,6 +385,7 @@ suite("Personal insights", () => {
       days: localDates.map((localDate, index) => ({
         localDate,
         metrics: metrics(dailyActiveTimeMs[index]),
+        languages: [],
       })),
       projects: options.projects ?? [],
       languages: options.languages ?? [],

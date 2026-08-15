@@ -231,10 +231,17 @@ export class RangeQueryEngine {
       projectRecords.push(record);
       recordsByProject.set(record.projectId, projectRecords);
     });
-    const days: RangeDayViewModel[] = range.localDates.map((localDate) => ({
-      localDate,
-      metrics: this.aggregateMetrics(recordsByDate.get(localDate) ?? []),
-    }));
+    const days: RangeDayViewModel[] = range.localDates.map((localDate) => {
+      const dayRecords = recordsByDate.get(localDate) ?? [];
+      return {
+        localDate,
+        metrics: this.aggregateMetrics(dayRecords),
+        languages: this.aggregateDimension(
+          dayRecords,
+          "activeTimeByLanguageMs",
+        ),
+      };
+    });
     const projects: RangeProjectViewModel[] = projectIds
       .map((projectId) => {
         const identity = this.projects.get(projectId);

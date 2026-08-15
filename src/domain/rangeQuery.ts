@@ -85,6 +85,7 @@ export interface RangeTaskSummary {
 export interface RangeDayViewModel {
   localDate: string;
   metrics: RangeAggregateMetrics;
+  languages: RangeDimensionValue[];
 }
 
 export interface RangeProjectViewModel {

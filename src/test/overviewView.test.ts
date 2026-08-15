@@ -161,7 +161,11 @@ function period(options: {
       complete: false,
     },
     metrics: aggregate,
-    days: options.days ?? [{ localDate: "2026-08-11", metrics: aggregate }],
+    days: options.days ?? [{
+      localDate: "2026-08-11",
+      metrics: aggregate,
+      languages: [],
+    }],
     projects: options.projects ?? [],
     languages: options.languages ?? [],
     files: options.files ?? [],

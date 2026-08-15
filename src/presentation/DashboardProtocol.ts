@@ -563,10 +563,21 @@ function projectPeriod(
     : view === "global"
       ? source.files.slice(0, 3)
       : source.files;
+  const trendLanguageIds = new Set(
+    source.languages.slice(0, 5).map((language) => language.id),
+  );
   return {
     range: cloneJson(source.range),
     metrics: cloneJson(source.metrics),
-    days: source.days.filter(hasObservedDay).map(cloneJson),
+    days: source.days.filter(hasObservedDay).map((day) => ({
+      localDate: day.localDate,
+      metrics: compactDashboardDayMetrics(day.metrics, view),
+      languages: view === "project"
+        ? day.languages
+          .filter((language) => trendLanguageIds.has(language.id))
+          .map(cloneJson)
+        : [],
+    })),
     projects: source.projects.map((project) => ({
       project: cloneJson(project.project),
       metrics: cloneJson(project.metrics),
@@ -592,6 +603,31 @@ function projectPeriod(
           .map(cloneJson)
       : [],
   };
+}
+
+function compactDashboardDayMetrics(
+  source: RangeAggregateMetrics,
+  view: DashboardViewName,
+): RangeAggregateMetrics {
+  if (view === "today") {
+    return cloneJson(source);
+  }
+  if (view === "quality") {
+    return {
+      activeTimeMs: source.activeTimeMs,
+      debugElapsedMs: source.debugElapsedMs,
+      saveEvents: source.saveEvents,
+      diagnostics: cloneJson(source.diagnostics),
+    } as RangeAggregateMetrics;
+  }
+  if (view === "project") {
+    return {
+      activeTimeMs: source.activeTimeMs,
+      fileSwitchEvents: source.fileSwitchEvents,
+      flowBlockCount: source.flowBlockCount,
+    } as RangeAggregateMetrics;
+  }
+  return { activeTimeMs: source.activeTimeMs } as RangeAggregateMetrics;
 }
 
 function hasObservedDay(day: RangeDayViewModel): boolean {
@@ -649,8 +685,8 @@ export function createRangeViewModelDelta(
   previous: RangeQueryViewModel,
   next: RangeQueryViewModel,
 ): RangeViewModelDelta | null {
-  assertRangeQueryViewModel(previous, "previous view model");
-  assertRangeQueryViewModel(next, "next view model");
+  assertRangeQueryViewModel(previous, "previous view model", true);
+  assertRangeQueryViewModel(next, "next view model", true);
   const current = diffPeriod(previous.current, next.current);
   const comparison = diffComparison(previous.comparison, next.comparison);
   const comparisonStatus = previous.comparisonStatus === next.comparisonStatus
@@ -724,7 +760,7 @@ function assertSnapshotMessage(value: unknown): void {
   );
   boundedSafeId(message.requestId, "snapshot.requestId", 64);
   enumValue(message.view, VIEW_NAMES, "snapshot.view");
-  assertRangeQueryViewModel(message.data, "snapshot.data");
+  assertRangeQueryViewModel(message.data, "snapshot.data", true);
 }
 
 function assertLiveDeltaMessage(value: unknown): void {
@@ -792,16 +828,20 @@ function assertErrorMessage(value: unknown): void {
   }
 }
 
-function assertRangeQueryViewModel(value: unknown, location: string): void {
+function assertRangeQueryViewModel(
+  value: unknown,
+  location: string,
+  compactDays = false,
+): void {
   const model = exactRecord(value, location, [
     "current",
     "comparison",
     "comparisonStatus",
     "revision",
   ]);
-  assertPeriod(model.current, `${location}.current`);
+  assertPeriod(model.current, `${location}.current`, compactDays);
   if (model.comparison !== null) {
-    assertPeriod(model.comparison, `${location}.comparison`);
+    assertPeriod(model.comparison, `${location}.comparison`, compactDays);
   }
   enumValue(
     model.comparisonStatus,
@@ -811,7 +851,11 @@ function assertRangeQueryViewModel(value: unknown, location: string): void {
   nonNegativeInteger(model.revision, `${location}.revision`);
 }
 
-function assertPeriod(value: unknown, location: string): void {
+function assertPeriod(
+  value: unknown,
+  location: string,
+  compactDays = false,
+): void {
   const period = exactRecord(value, location, [
     "range",
     "metrics",
@@ -826,7 +870,7 @@ function assertPeriod(value: unknown, location: string): void {
   assertNormalizedRange(period.range, `${location}.range`);
   assertMetrics(period.metrics, `${location}.metrics`);
   arrayValue(period.days, `${location}.days`).forEach((entry, index) =>
-    assertDay(entry, `${location}.days[${index}]`),
+    assertDay(entry, `${location}.days[${index}]`, compactDays),
   );
   arrayValue(period.projects, `${location}.projects`).forEach((entry, index) =>
     assertProject(entry, `${location}.projects[${index}]`),
@@ -900,10 +944,46 @@ function assertDiagnostics(value: unknown, location: string): void {
   );
 }
 
-function assertDay(value: unknown, location: string): void {
-  const day = exactRecord(value, location, ["localDate", "metrics"]);
+function assertDay(
+  value: unknown,
+  location: string,
+  compactMetrics = false,
+): void {
+  const day = exactRecord(value, location, ["localDate", "metrics", "languages"]);
   localDateValue(day.localDate, `${location}.localDate`);
-  assertMetrics(day.metrics, `${location}.metrics`);
+  if (compactMetrics) {
+    const metrics = recordValue(day.metrics, `${location}.metrics`);
+    if (metrics.gitStatus === undefined) {
+      assertCompactDayMetrics(metrics, `${location}.metrics`);
+    } else {
+      assertMetrics(metrics, `${location}.metrics`);
+    }
+  } else {
+    assertMetrics(day.metrics, `${location}.metrics`);
+  }
+  arrayValue(day.languages, `${location}.languages`).forEach((entry, index) =>
+    assertDimension(entry, `${location}.languages[${index}]`),
+  );
+}
+
+function assertCompactDayMetrics(value: unknown, location: string): void {
+  const required = ["activeTimeMs"];
+  const optional = [
+    "debugElapsedMs",
+    "saveEvents",
+    "fileSwitchEvents",
+    "flowBlockCount",
+    "diagnostics",
+  ];
+  const metrics = exactRecord(value, location, required, optional);
+  [...required, ...optional]
+    .filter((field) => field !== "diagnostics" && metrics[field] !== undefined)
+    .forEach((field) =>
+      nonNegativeNumber(metrics[field], `${location}.${field}`),
+    );
+  if (metrics.diagnostics !== undefined) {
+    assertDiagnostics(metrics.diagnostics, `${location}.diagnostics`);
+  }
 }
 
 function assertProject(value: unknown, location: string): void {
@@ -1073,7 +1153,11 @@ function assertPeriodDelta(value: unknown, location: string): void {
   if (delta.metrics !== null) {
     assertMetrics(delta.metrics, `${location}.metrics`);
   }
-  assertOptionalCollectionDelta(delta.days, `${location}.days`, assertDay);
+  assertOptionalCollectionDelta(
+    delta.days,
+    `${location}.days`,
+    (entry, entryLocation) => assertDay(entry, entryLocation, true),
+  );
   assertOptionalCollectionDelta(
     delta.projects,
     `${location}.projects`,
@@ -1111,7 +1195,7 @@ function assertComparisonDelta(value: unknown, location: string): void {
   if (comparison.kind === "replace") {
     exactKeys(comparison, location, ["kind", "value"]);
     if (comparison.value !== null) {
-      assertPeriod(comparison.value, `${location}.value`);
+      assertPeriod(comparison.value, `${location}.value`, true);
     }
     return;
   }

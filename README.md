@@ -31,7 +31,7 @@ DevTracker describes observed editor activity without rating productivity, code 
 
 The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [Git tracking guide](docs/git-tracking.md) explains the opt-in repository integration and stored fields. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
 
-The [Extension Host integration testing guide](docs/integration-testing.md) documents the isolated real-VS Code lifecycle and event suite used to validate activation, tracking, optional integrations, and shutdown persistence.
+The [Extension Host integration testing guide](docs/integration-testing.md) documents the isolated real-VS Code lifecycle and event suite used to validate activation, tracking, optional integrations, and shutdown persistence. The [Trends dashboard guide](docs/dashboard-trends.md) explains ranges, fair comparisons, streaks, language evolution, accessible tables, and the view's privacy boundary.
 
 ### 3. 🎯 Gamification & Goals
 

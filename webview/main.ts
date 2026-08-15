@@ -16,6 +16,10 @@ import {
   OverviewViewModel,
   buildOverviewViewModel,
 } from "../src/webview/overviewModel";
+import {
+  TrendsViewModel,
+  buildTrendsViewModel,
+} from "../src/webview/trendsModel";
 
 declare const Chart: any;
 interface VsCodeApi {
@@ -44,6 +48,15 @@ const restoredState = restoreDashboardState(
 let currentTab: DashboardViewName = restoredState.view;
 let currentRange: DashboardRangeName = restoredState.range;
 let selectedProjectId: string | null = restoredState.projectId;
+const initialCustomEnd = localDateKey(new Date());
+let customEndLocalDate = restoredState.customEndLocalDate &&
+    restoredState.customEndLocalDate <= initialCustomEnd
+  ? restoredState.customEndLocalDate
+  : initialCustomEnd;
+let customStartLocalDate = restoredState.customStartLocalDate &&
+    restoredState.customStartLocalDate <= customEndLocalDate
+  ? restoredState.customStartLocalDate
+  : addLocalDays(customEndLocalDate, -6);
 const knownProjects = new Map(
   initialData.projects.map(project => [project.id, project.displayName]),
 );
@@ -59,7 +72,9 @@ let dailyGoal = initialData.dailyGoalSeconds;
 let runtimeLastUpdatedAt = initialData.lastUpdatedAt;
 let runtimeFileDetailAvailable = initialData.fileDetailAvailable;
 let todayTrendChart = null;
-let projectTrendChart = null;
+let trendsActivityChart = null;
+let trendsFlowChart = null;
+let trendsLanguageChart = null;
 let qualityTrendChart = null;
 
 const dayNames = EN.dayNames;
@@ -73,6 +88,23 @@ document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach(button => {
 });
 document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
   button.addEventListener('click', () => setRange(button.dataset.range as DashboardRangeName));
+});
+document.getElementById('custom-range-controls')?.addEventListener('submit', event => {
+  event.preventDefault();
+  const start = (document.getElementById('custom-range-start') as HTMLInputElement).value;
+  const end = (document.getElementById('custom-range-end') as HTMLInputElement).value;
+  const today = localDateKey(new Date());
+  const error = document.getElementById('custom-range-error')!;
+  if (!isLocalDate(start) || !isLocalDate(end) || start > end || start > today) {
+    error.textContent = EN.customRange.invalid;
+    return;
+  }
+  customStartLocalDate = start;
+  customEndLocalDate = end > today ? today : end;
+  error.textContent = '';
+  persistDashboardState();
+  applyShellState();
+  requestView();
 });
 document.getElementById('project-selector')?.addEventListener('change', event => {
   const value = (event.currentTarget as HTMLSelectElement).value;
@@ -147,6 +179,15 @@ function applyShellState() {
     section.hidden = !active;
   });
   document.getElementById('filter-bar')!.hidden = currentTab === 'today';
+  const customControls = document.getElementById('custom-range-controls')!;
+  customControls.hidden = currentTab === 'today' || currentRange !== 'custom';
+  const customStart = document.getElementById('custom-range-start') as HTMLInputElement;
+  const customEnd = document.getElementById('custom-range-end') as HTMLInputElement;
+  const today = localDateKey(new Date());
+  customStart.value = customStartLocalDate;
+  customEnd.value = customEndLocalDate;
+  customStart.max = today;
+  customEnd.max = today;
   document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
     button.classList.toggle('active', button.dataset.range === currentRange);
   });
@@ -175,15 +216,25 @@ function requestView() {
   const projectId = needsProject ? selectedProjectId : null;
   setBusy(true);
   document.getElementById('page-subtitle')!.textContent = EN.status.loading;
+  const range = currentTab === 'today'
+    ? { preset: 'today', includeComparison: false }
+    : currentRange === 'custom'
+      ? {
+        preset: 'custom',
+        startLocalDate: customStartLocalDate,
+        endLocalDate: customEndLocalDate,
+        includeComparison: currentTab === 'project'
+      }
+      : {
+        preset: currentRange,
+        includeComparison: currentTab === 'project'
+      };
   vscodeApi.postMessage({
     type: 'dashboard/request-view',
     protocolVersion: initialData.protocolVersion,
     requestId: activeRequestId,
     view: currentTab,
-    range: {
-      preset: currentTab === 'today' ? 'today' : rangePreset(currentRange),
-      includeComparison: currentTab === 'project'
-    },
+    range,
     projectId
   });
 }
@@ -193,6 +244,8 @@ function persistDashboardState() {
     view: currentTab,
     range: currentRange,
     projectId: selectedProjectId,
+    customStartLocalDate,
+    customEndLocalDate,
   });
 }
 
@@ -258,13 +311,6 @@ function renderFreshness() {
 
 function setBusy(busy: boolean) {
   document.getElementById('dashboard-content')!.setAttribute('aria-busy', String(busy));
-}
-
-function rangePreset(range: DashboardRangeName) {
-  if (range === 'today') { return 'today'; }
-  if (range === 'month') { return '30-days'; }
-  if (range === 'all') { return '90-days'; }
-  return '7-days';
 }
 
 function render() {
@@ -524,8 +570,7 @@ function normalizeFlow(value: Record<string, number> = {}) {
 }
 
 function getLocalDateKey() {
-  const date = new Date();
-  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+  return localDateKey(new Date());
 }
 
 function daysForProject(project) {
@@ -540,34 +585,7 @@ function allDays() {
 }
 
 function getFilteredDays(days) {
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const cutoff = new Date(now);
-  if (currentRange === 'week') { cutoff.setDate(now.getDate() - 6); }
-  if (currentRange === 'month') { cutoff.setDate(now.getDate() - 29); }
-  if (currentRange === 'all') { cutoff.setFullYear(2000); }
-
-  return days.filter(day => {
-    const date = dateFromKey(day.date);
-    if (currentRange === 'today') { return date.getTime() === now.getTime(); }
-    return date >= cutoff;
-  });
-}
-
-function getPreviousRangeDays(days) {
-  if (currentRange === 'all') { return []; }
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const length = currentRange === 'month' ? 30 : currentRange === 'week' ? 7 : 1;
-  const end = new Date(now);
-  end.setDate(now.getDate() - length);
-  const start = new Date(end);
-  start.setDate(end.getDate() - length + 1);
-
-  return days.filter(day => {
-    const date = dateFromKey(day.date);
-    return date >= start && date <= end;
-  });
+  return [...days].sort((left, right) => left.date.localeCompare(right.date));
 }
 
 function dateFromKey(key) {
@@ -712,26 +730,293 @@ function renderToday() {
 }
 
 function renderProject() {
-  const projectDays = daysForProject(rawProject);
-  const days = getFilteredDays(projectDays);
-  const previous = rawComparisonProject
-    ? daysForProject(rawComparisonProject)
-    : [];
-  const agg = aggregateDays(days);
-  const prevAgg = aggregateDays(previous);
+  if (!dashboardData) { return; }
+  const trends = buildTrendsViewModel(
+    dashboardData.current,
+    dashboardData.comparison,
+    dashboardData.comparisonStatus,
+    dailyGoal,
+  );
 
-  setText('p-time', fmt(agg.seconds));
-  setText('p-time-sub', `${days.length} ${EN.phrases.trackedDays}`);
-  setDelta('p-time-delta', deltaPct(agg.seconds, prevAgg.seconds));
-  setText('p-focus', topThreeFileShare(agg) + '%');
-  setText('p-focus-sub', `${EN.phrases.observedEditorTransitions} ${agg.contextSwitches}`);
-  setText('p-intensity', compact(editIntensity(agg)));
-  setText('p-churn', churnRatio(agg) + '%');
-  setText('p-churn-sub', `${compact(agg.insertedLineBreaksApprox + agg.removedLineBreaksApprox)} ${EN.phrases.approximateLineBreakChanges}`);
+  setText('trend-active-time', fmt(trends.activeTimeMs / 1000));
+  const deltaTarget = document.getElementById('trend-active-time-delta')!;
+  if (trends.comparisonDeltaPercent === null) {
+    deltaTarget.textContent = '—';
+    deltaTarget.classList.remove('good', 'bad');
+    setText('trend-comparison-status', EN.status.comparisonUnavailable);
+  } else {
+    setDelta('trend-active-time-delta', {
+      label: signedPercent(trends.comparisonDeltaPercent),
+      value: trends.comparisonDeltaPercent,
+    });
+    setText('trend-comparison-status', EN.status.comparisonAvailable);
+  }
+  setText('trend-active-days', `${trends.activeDays} / ${trends.days.length}`);
+  setText('trend-active-days-sub', `${formatDecimal(trends.consistencyPercent)}% of days in ${trends.rangeLabel}`);
+  if (trends.goalCompletionRatePercent === null) {
+    setText('trend-goal-days', '—');
+    setText('trend-goal-days-sub', EN.status.goalNotConfigured);
+  } else {
+    setText('trend-goal-days', `${trends.goalDays} / ${trends.goalEligibleDays}`);
+    setText('trend-goal-days-sub', `${formatDecimal(trends.goalCompletionRatePercent)}% of selected days reached the goal`);
+  }
+  setText('trend-streak', `${trends.currentStreakDays} ${dayWord(trends.currentStreakDays)}`);
+  setText('trend-streak-sub', `Longest streak: ${trends.longestStreakDays} ${dayWord(trends.longestStreakDays)}`);
 
-  renderTimeline(projectTrendChart, 'projectTrendChart', days, chart => projectTrendChart = chart);
-  renderBarList('project-language-list', agg.languages, fmt, EN.empty.noLanguagesInRange);
-  renderFileTable('project-files-table', mapToRows(agg.files).slice(0, 15), agg.activeFileCounts, EN.empty.noActivityInRange);
+  renderTrendsActivity(trends);
+  renderTrendsFlow(trends);
+  renderTrendsHeatmap(trends);
+  renderTrendsLanguages(trends);
+}
+
+function renderTrendsActivity(trends: TrendsViewModel) {
+  const labels = trends.days.map(day => day.localDate.slice(5));
+  trendsActivityChart = renderLineChart(
+    trendsActivityChart,
+    'trendsActivityChart',
+    labels,
+    [{
+      label: 'Active hours',
+      data: trends.days.map(day => day.activeTimeMs / 3_600_000),
+      borderColor: colors[0],
+      backgroundColor: colors[0],
+      fill: false,
+      tension: 0.2,
+    }],
+  );
+  renderDataTable(
+    'trends-activity-table',
+    'Daily active time',
+    EN.tableHeaders.dailyActivity,
+    trends.days.map(day => [
+      day.localDate,
+      fmt(day.activeTimeMs / 1000),
+      day.goalCompletionPercent === null
+        ? EN.tasks.unavailable
+        : `${formatDecimal(day.goalCompletionPercent)}%`,
+    ]),
+  );
+}
+
+function renderTrendsFlow(trends: TrendsViewModel) {
+  const labels = trends.days.map(day => day.localDate.slice(5));
+  trendsFlowChart = renderLineChart(
+    trendsFlowChart,
+    'trendsFlowChart',
+    labels,
+    [
+      {
+        label: 'Flow blocks',
+        data: trends.days.map(day => day.flowBlockCount),
+        borderColor: colors[1],
+        backgroundColor: colors[1],
+        tension: 0.2,
+        yAxisID: 'y',
+      },
+      {
+        label: 'File switches / active hour',
+        data: trends.days.map(day => day.fileSwitchesPerActiveHour),
+        borderColor: colors[4],
+        backgroundColor: colors[4],
+        tension: 0.2,
+        yAxisID: 'ySwitches',
+      },
+    ],
+    {
+      ySwitches: {
+        beginAtZero: true,
+        grid: { drawOnChartArea: false },
+        position: 'right',
+      },
+    },
+  );
+  renderDataTable(
+    'trends-flow-table',
+    'Daily flow blocks and file switches',
+    EN.tableHeaders.flow,
+    trends.days.map(day => [
+      day.localDate,
+      String(day.flowBlockCount),
+      day.fileSwitchesPerActiveHour === null
+        ? EN.tasks.unavailable
+        : formatDecimal(day.fileSwitchesPerActiveHour),
+    ]),
+  );
+}
+
+function renderTrendsLanguages(trends: TrendsViewModel) {
+  const labels = trends.days.map(day => day.localDate.slice(5));
+  trendsLanguageChart = renderLineChart(
+    trendsLanguageChart,
+    'trendsLanguageChart',
+    labels,
+    trends.languages.map((language, index) => ({
+      label: language.id,
+      data: language.dailyActiveTimeMs.map(value => value / 3_600_000),
+      borderColor: colors[index % colors.length],
+      backgroundColor: colors[index % colors.length],
+      tension: 0.2,
+    })),
+  );
+  const rows = [];
+  trends.days.forEach((day, dayIndex) => {
+    trends.languages.forEach(language => {
+      rows.push([
+        day.localDate,
+        language.id,
+        fmt(language.dailyActiveTimeMs[dayIndex] / 1000),
+      ]);
+    });
+  });
+  renderDataTable(
+    'trends-language-table',
+    'Daily active time by language',
+    EN.tableHeaders.language,
+    rows,
+    EN.empty.noLanguageEvolution,
+  );
+}
+
+function renderTrendsHeatmap(trends: TrendsViewModel) {
+  const table = document.getElementById('trends-heatmap-table') as HTMLTableElement;
+  table.replaceChildren();
+  const caption = document.createElement('caption');
+  caption.textContent = `Daily activity heatmap for ${trends.rangeLabel}`;
+  table.append(caption);
+  const head = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  const weekHeader = document.createElement('th');
+  weekHeader.scope = 'col';
+  weekHeader.textContent = 'Week';
+  headerRow.append(weekHeader);
+  EN.dayNames.forEach(name => {
+    const header = document.createElement('th');
+    header.scope = 'col';
+    header.textContent = name;
+    headerRow.append(header);
+  });
+  head.append(headerRow);
+  table.append(head);
+  const body = document.createElement('tbody');
+  let row = document.createElement('tr');
+  let week = 1;
+  row.append(weekCell(week));
+  const firstDay = trends.days.length
+    ? dateFromKey(trends.days[0].localDate).getDay()
+    : 0;
+  for (let index = 0; index < firstDay; index += 1) {
+    row.append(emptyHeatCell());
+  }
+  trends.days.forEach((day, index) => {
+    const weekday = dateFromKey(day.localDate).getDay();
+    if (weekday === 0 && (index > 0 || firstDay > 0)) {
+      while (row.children.length < 8) { row.append(emptyHeatCell()); }
+      body.append(row);
+      row = document.createElement('tr');
+      week += 1;
+      row.append(weekCell(week));
+    }
+    const cell = document.createElement('td');
+    cell.className = `trend-heat-cell heat-${day.heatLevel}`;
+    cell.textContent = day.localDate.slice(5);
+    cell.title = `${day.localDate}: ${fmt(day.activeTimeMs / 1000)}`;
+    cell.setAttribute('aria-label', cell.title);
+    row.append(cell);
+  });
+  while (row.children.length < 8) { row.append(emptyHeatCell()); }
+  body.append(row);
+  table.append(body);
+}
+
+function weekCell(week: number) {
+  const cell = document.createElement('th');
+  cell.scope = 'row';
+  cell.textContent = String(week);
+  return cell;
+}
+
+function emptyHeatCell() {
+  const cell = document.createElement('td');
+  cell.className = 'trend-heat-cell empty-heat-cell';
+  cell.setAttribute('aria-hidden', 'true');
+  return cell;
+}
+
+function renderLineChart(chart, canvasId, labels, datasets, extraScales = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (chart) {
+    chart.data.labels = labels;
+    chart.data.datasets = datasets;
+    chart.options.scales = {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true },
+      ...extraScales,
+    };
+    chart.update('none');
+    return chart;
+  }
+  return new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true },
+        ...extraScales,
+      },
+      plugins: { legend: { position: 'bottom' } },
+    },
+  });
+}
+
+function renderDataTable(
+  id,
+  captionText,
+  headers,
+  rows,
+  emptyText: string = EN.empty.noActivityInRange,
+) {
+  const table = document.getElementById(id) as HTMLTableElement;
+  table.replaceChildren();
+  const caption = document.createElement('caption');
+  caption.textContent = captionText;
+  table.append(caption);
+  if (!rows.length) {
+    const body = document.createElement('tbody');
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = headers.length;
+    cell.className = 'empty';
+    cell.textContent = emptyText;
+    row.append(cell);
+    body.append(row);
+    table.append(body);
+    return;
+  }
+  const head = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  headers.forEach(text => {
+    const header = document.createElement('th');
+    header.scope = 'col';
+    header.textContent = text;
+    headerRow.append(header);
+  });
+  head.append(headerRow);
+  table.append(head);
+  const body = document.createElement('tbody');
+  rows.forEach(values => {
+    const row = document.createElement('tr');
+    values.forEach(value => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    });
+    body.append(row);
+  });
+  table.append(body);
 }
 
 function renderQuality() {
@@ -1261,4 +1546,30 @@ function fmt(seconds) {
   const m = Math.floor((safeSeconds % 3600) / 60);
   if (h === 0 && m === 0 && safeSeconds > 0) { return '< 1m'; }
   return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+}
+
+function localDateKey(date) {
+  return date.getFullYear() + '-' +
+    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0');
+}
+
+function addLocalDays(localDate, offset) {
+  const date = dateFromKey(localDate);
+  date.setDate(date.getDate() + offset);
+  return localDateKey(date);
+}
+
+function isLocalDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) { return false; }
+  return localDateKey(dateFromKey(value)) === value;
+}
+
+function signedPercent(value) {
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded > 0 ? '+' : ''}${formatDecimal(rounded)}%`;
+}
+
+function dayWord(value) {
+  return value === 1 ? 'day' : 'days';
 }

@@ -1,6 +1,17 @@
 export type DashboardViewName = "today" | "project" | "quality" | "global";
-export type DashboardRangeName = "today" | "week" | "month" | "all";
-export type RangePreset = "today" | "7-days" | "30-days" | "90-days";
+export type DashboardRangeName =
+  | "7-days"
+  | "30-days"
+  | "90-days"
+  | "year"
+  | "custom";
+export type RangePreset =
+  | "today"
+  | "7-days"
+  | "30-days"
+  | "90-days"
+  | "year"
+  | "custom";
 
 export interface DashboardInitialData {
   protocolVersion: number;
@@ -78,6 +89,7 @@ export interface RangeTaskSummary {
 export interface RangeDayViewModel {
   localDate: string;
   metrics: RangeMetrics;
+  languages: RangeDimensionValue[];
 }
 
 export interface RangeProjectViewModel {

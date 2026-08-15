@@ -58,6 +58,11 @@ suite("RangeQueryEngine", () => {
     ]);
     assert.strictEqual(result.current.days.length, 7);
     assert.strictEqual(result.current.days[0].metrics.activeTimeMs, 0);
+    assert.deepStrictEqual(result.current.days[0].languages, []);
+    assert.deepStrictEqual(result.current.days[4].languages, [
+      { id: "typescript", activeTimeMs: 1500 },
+      { id: "json", activeTimeMs: 200 },
+    ]);
     assert.strictEqual(result.current.metrics.activeTimeMs, 2000);
     assert.strictEqual(result.current.metrics.editEvents, 2);
     assert.strictEqual(result.current.metrics.diagnostics.current.error, 1);

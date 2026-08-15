@@ -290,6 +290,7 @@ function normalizePeriod(source: RangePeriodViewModel): RangePeriodViewModel {
       .map((day) => ({
         localDate: day.localDate,
         metrics: cloneMetrics(day.metrics),
+        languages: cloneDimensions(day.languages),
       }))
       .sort((left, right) => compareText(left.localDate, right.localDate)),
     projects: source.projects

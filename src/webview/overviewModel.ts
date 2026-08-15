@@ -94,6 +94,7 @@ function ensureSelectedDay(
     days: [{
       localDate: period.range.endLocalDate,
       metrics: period.metrics,
+      languages: period.languages,
     }],
   };
 }

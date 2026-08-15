@@ -195,7 +195,7 @@ function rangePeriod(
       complete: true,
     },
     metrics: aggregate,
-    days: [{ localDate: "2026-08-07", metrics: aggregate }],
+    days: [{ localDate: "2026-08-07", metrics: aggregate, languages: [] }],
     projects: [],
     languages: [],
     files,

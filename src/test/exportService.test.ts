@@ -227,8 +227,8 @@ function period(
     },
     metrics: metrics(activeTimeMs),
     days: [
-      { localDate: localDates[0], metrics: metrics(activeTimeMs) },
-      { localDate: localDates[1], metrics: metrics(activeTimeMs - 1) },
+      { localDate: localDates[0], metrics: metrics(activeTimeMs), languages: [] },
+      { localDate: localDates[1], metrics: metrics(activeTimeMs - 1), languages: [] },
     ],
     projects: [
       project("project-zeta", "Zeta", activeTimeMs),

@@ -133,6 +133,34 @@ suite("large-history performance budgets", function () {
       `initial payload was ${snapshotBytes} bytes; budget ${MAX_INITIAL_MESSAGE_BYTES}`,
     );
 
+    const yearlyTrends = projectDashboardViewModel(
+      engine.query({
+        preset: "year",
+        projectIds: [fixture.projects[0].id],
+        includeComparison: true,
+      }),
+      "project",
+    );
+    const yearlyTrendsBytes = measureDashboardMessageBytes({
+      type: "dashboard/snapshot",
+      protocolVersion: DASHBOARD_PROTOCOL_VERSION,
+      requestId: "performance-yearly-trends",
+      view: "project",
+      data: yearlyTrends,
+    });
+    assert.ok(
+      yearlyTrendsBytes <= MAX_INITIAL_MESSAGE_BYTES,
+      `yearly Trends payload was ${yearlyTrendsBytes} bytes; budget ${MAX_INITIAL_MESSAGE_BYTES}`,
+    );
+    assert.ok(
+      yearlyTrends.current.days.every((day) =>
+        Object.keys(day.metrics).every((field) =>
+          ["activeTimeMs", "fileSwitchEvents", "flowBlockCount"].includes(field)
+        )
+      ),
+      "yearly Trends days must use the compact view-specific metric shape",
+    );
+
     const changed = structuredClone(
       fixture.rollups[fixture.rollups.length - LARGE_HISTORY_PROJECT_COUNT],
     );

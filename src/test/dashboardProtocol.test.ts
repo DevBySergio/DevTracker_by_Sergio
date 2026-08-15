@@ -464,6 +464,7 @@ function period(value: RangeAggregateMetrics): RangePeriodViewModel {
       {
         localDate: "2026-08-07",
         metrics: JSON.parse(JSON.stringify(value)) as RangeAggregateMetrics,
+        languages: [{ id: "typescript", activeTimeMs: 0 }],
       },
     ],
     projects: [
