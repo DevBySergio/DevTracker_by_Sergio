@@ -24,22 +24,29 @@ import {
   LegacyMigrationResult,
 } from "./persistence/LegacyMigration";
 import { DashboardPresenter } from "./presentation/DashboardPresenter";
+import { ReportPanel } from "./ReportPanel";
 import { DevTrackerQueries } from "./queries/DevTrackerQueries";
 import { RangeQueryEngine } from "./queries/RangeQueryEngine";
 import { RangeQueryService } from "./queries/RangeQueryService";
 import { TrackingController } from "./tracking/TrackingController";
 import { DiagnosticsTracker } from "./tracking/DiagnosticsTracker";
 import { detailedDataCutoffMs } from "./privacy";
+import { TrackingStatus } from "./domain/types";
 import { ExportService } from "./export/ExportService";
 import { RangeExportDataSource } from "./export/RangeExportDataSource";
 import { VscodeExportCommands } from "./export/VscodeExportCommands";
 import { RangeQueryRequest, RangeQueryViewModel } from "./domain/rangeQuery";
+import { GitTrackingStatus } from "./domain/git";
 
 let deactivateExtension: (() => Promise<void>) | undefined;
 
 export interface DevTrackerDevelopmentApi {
   flush(): Promise<void>;
   query(request: RangeQueryRequest): Promise<RangeQueryViewModel>;
+  isDashboardOpen(): boolean;
+  gitStatus(resourcePath: string): GitTrackingStatus;
+  workspaceProjectId(displayName: string): string | undefined;
+  trackingStatus(): TrackingStatus;
 }
 
 export async function activate(
@@ -267,6 +274,26 @@ export async function activate(
     return Object.freeze({
       flush: () => controller.flush(),
       query: (request: RangeQueryRequest) => rangeQueries.query(request),
+      isDashboardOpen: () => ReportPanel.currentPanel !== undefined,
+      gitStatus: (resourcePath: string) => git.getState(resourcePath).status,
+      workspaceProjectId: (displayName: string) => {
+        const folder = vscode.workspace.workspaceFolders?.find(
+          (candidate) => candidate.name === displayName,
+        );
+        if (!folder) {
+          return undefined;
+        }
+        return identityService.createProjectIdentity(
+          {
+            scheme: folder.uri.scheme,
+            authority: folder.uri.authority,
+            path: folder.uri.path,
+            fsPath: folder.uri.fsPath,
+          },
+          folder.name,
+        ).id;
+      },
+      trackingStatus: () => queries.getSnapshot().trackingStatus,
     });
   }
   return undefined;

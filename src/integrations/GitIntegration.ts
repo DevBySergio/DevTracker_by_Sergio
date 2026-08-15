@@ -64,6 +64,19 @@ export class VscodeGitIntegration implements GitAdapter {
     }
 
     this.tracker.setMode("unavailable");
+    this.sourceDisposables.push(
+      vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration("git.enabled")) {
+          this.reconfigure();
+        }
+      }),
+    );
+    if (
+      vscode.workspace.getConfiguration("git").get<boolean>("enabled", true) ===
+      false
+    ) {
+      return;
+    }
     try {
       const extension = vscode.extensions.getExtension<GitExtensionExports>(
         "vscode.git",
