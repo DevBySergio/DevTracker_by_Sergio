@@ -617,7 +617,7 @@
     "localValue": "done",
     "remoteValue": "in-progress",
     "createdAt": 1786827775866,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x385-7c8657ra-status": {
     "id": "task-task-msj9x385-7c8657ra-status",
