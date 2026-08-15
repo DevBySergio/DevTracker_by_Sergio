@@ -2,7 +2,7 @@
   "id": "task-msj9x37z-2ign9osb",
   "title": "T23 — Implement the Trends view",
   "description": "## Objective\n\nAllow users to explore temporal patterns and fair comparisons through accessible visualizations.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T23.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033587,
-  "updatedAt": 1786826914811,
+  "updatedAt": 1786827716442,
   "position": 1786127033587,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
@@ -23,58 +23,58 @@
     {
       "id": "check-msj9x3hw-68ihjdap",
       "text": "Add 7-day, 30-day, 90-day, yearly, and custom ranges",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033588,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716434
     },
     {
       "id": "check-msj9x3hx-hluc8dl4",
       "text": "Create a daily series that includes empty days",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033589,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716435
     },
     {
       "id": "check-msj9x3hy-hpr6bvog",
       "text": "Compare against an equivalent period",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033590,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716436
     },
     {
       "id": "check-msj9x3hz-dx3svr4j",
       "text": "Create an accessible heatmap",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033591,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716437
     },
     {
       "id": "check-msj9x3i0-cx998z90",
       "text": "Display flow block and context-switch-per-hour trends",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033592,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716438
     },
     {
       "id": "check-msj9x3i1-zufeb586",
       "text": "Display consistency, goals, and streaks",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033593,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716439
     },
     {
       "id": "check-msj9x3i2-sb0ivft6",
       "text": "Display language evolution",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033594,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716440
     },
     {
       "id": "check-msj9x3i3-fuz8wxbr",
       "text": "Add a table alternative for every chart",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033595,
-      "updatedAt": 1786127326668
+      "updatedAt": 1786827716441
     }
   ],
   "relations": [
