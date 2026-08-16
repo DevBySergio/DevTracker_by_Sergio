@@ -681,6 +681,130 @@ tr:last-child td { border-bottom: 0; }
   color: var(--text-secondary);
   padding: var(--space-3) 0;
 }
+.projects-layout {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.8fr);
+}
+.projects-heading,
+.project-detail-heading,
+.project-preference-actions,
+.project-detail-metrics {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+.projects-toolbar {
+  align-items: end;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, auto) auto;
+  margin: var(--space-3) 0;
+}
+.projects-toolbar label,
+.project-preferences label {
+  color: var(--text-secondary);
+  display: grid;
+  font-size: var(--font-size-caption);
+  gap: var(--space-1);
+}
+.projects-toolbar input[type="search"],
+.projects-toolbar select,
+.project-preferences input[type="text"],
+.project-preferences input:not([type]) {
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  color: var(--vscode-input-foreground);
+  font: inherit;
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+}
+.projects-managed-toggle {
+  align-items: center;
+  display: flex !important;
+  min-height: 32px;
+  white-space: nowrap;
+}
+.projects-table-wrapper { max-height: 520px; }
+.project-row { cursor: pointer; }
+.project-row[aria-selected="true"] td {
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+.project-name-cell strong,
+.project-name-cell small {
+  display: block;
+}
+.project-name-cell small {
+  color: var(--text-secondary);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  margin-top: 2px;
+}
+.project-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.project-detail-card h2 {
+  font-size: 1.15rem;
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+.primary-button {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  min-height: 32px;
+  padding: var(--space-1) var(--space-3);
+}
+.primary-button:hover { background: var(--vscode-button-hoverBackground); }
+.project-identity {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+}
+.project-identity div {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 90px minmax(0, 1fr);
+}
+.project-identity dt { color: var(--text-secondary); }
+.project-identity dd {
+  font-family: var(--font-family-mono);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.project-preferences {
+  border-top: 1px solid var(--card-border);
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+.project-preference-actions { justify-content: flex-start; }
+.project-preference-actions label {
+  align-items: center;
+  display: flex;
+}
+.project-preference-note {
+  color: var(--text-secondary);
+  font-size: var(--font-size-caption);
+  line-height: 1.4;
+}
+.project-detail-metrics {
+  border-bottom: 1px solid var(--card-border);
+  border-top: 1px solid var(--card-border);
+  margin: var(--space-4) 0;
+  padding: var(--space-3) 0;
+}
+.project-detail-metrics div { display: grid; gap: var(--space-1); }
+.project-detail-metrics span { color: var(--text-secondary); font-size: var(--font-size-caption); }
+.project-detail-metrics strong { font-variant-numeric: tabular-nums; }
+.project-detail-distributions { display: grid; gap: var(--space-4); }
+@media (max-width: 980px) {
+  .projects-layout { grid-template-columns: 1fr; }
+  .projects-toolbar { grid-template-columns: 1fr; }
+}
 @media (prefers-reduced-motion: reduce) {
   .container { scroll-behavior: auto; }
   *, *::before, *::after {

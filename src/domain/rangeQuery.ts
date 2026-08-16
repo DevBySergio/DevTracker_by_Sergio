@@ -91,6 +91,10 @@ export interface RangeDayViewModel {
 export interface RangeProjectViewModel {
   project: { id: string; displayName: string };
   metrics: RangeAggregateMetrics;
+  /** Latest day with positive active time inside the selected range. */
+  lastActiveLocalDate?: string | null;
+  /** Change between equal older and newer halves of the selected range. */
+  activityTrendPercent?: number | null;
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];

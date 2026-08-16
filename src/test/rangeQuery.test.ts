@@ -94,6 +94,25 @@ suite("RangeQueryEngine", () => {
         { id: beta.id, activeTimeMs: 500 },
       ],
     );
+    assert.deepStrictEqual(
+      result.current.projects.map((entry) => ({
+        id: entry.project.id,
+        lastActiveLocalDate: entry.lastActiveLocalDate,
+        activityTrendPercent: entry.activityTrendPercent,
+      })),
+      [
+        {
+          id: alpha.id,
+          lastActiveLocalDate: "2026-08-07",
+          activityTrendPercent: 100,
+        },
+        {
+          id: beta.id,
+          lastActiveLocalDate: "2026-08-05",
+          activityTrendPercent: 100,
+        },
+      ],
+    );
     assert.strictEqual(result.current.quarterHours.length, 7 * 96);
     assert.strictEqual(
       result.current.quarterHours.find(({ key }) => key === bucketKey)

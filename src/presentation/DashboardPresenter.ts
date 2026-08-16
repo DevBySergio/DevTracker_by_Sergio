@@ -7,6 +7,7 @@ import {
 import { Clock } from "../platform/ports";
 import { ReportPanel } from "../ReportPanel";
 import { buildDashboardShellModel } from "./DashboardShellModel";
+import { ProjectPreferencesStore } from "./ProjectPreferences";
 
 const DEFAULT_DAILY_GOAL_SECONDS = 14400;
 
@@ -14,6 +15,7 @@ export interface DashboardPresenterOptions {
   extensionUri: vscode.Uri;
   rangeQueries: RangeAnalyticsQueryService;
   clock: Clock;
+  projectPreferences: ProjectPreferencesStore;
   resolveProjectId(projectPath: string): string | undefined;
   fileDetailAvailable(): boolean;
 }
@@ -86,6 +88,7 @@ export class DashboardPresenter implements DashboardPresentation {
       trackingStatus: snapshot.trackingStatus,
       lastUpdatedAt: snapshot.lastUpdatedAt,
       fileDetailAvailable: this.options.fileDetailAvailable(),
+      projectPreferences: this.options.projectPreferences,
     });
   }
 

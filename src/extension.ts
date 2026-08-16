@@ -24,6 +24,7 @@ import {
   LegacyMigrationResult,
 } from "./persistence/LegacyMigration";
 import { DashboardPresenter } from "./presentation/DashboardPresenter";
+import { ProjectPreferencesStore } from "./presentation/ProjectPreferences";
 import { ReportPanel } from "./ReportPanel";
 import { DevTrackerQueries } from "./queries/DevTrackerQueries";
 import { RangeQueryEngine } from "./queries/RangeQueryEngine";
@@ -138,6 +139,7 @@ export async function activate(
     extensionUri: context.extensionUri,
     rangeQueries,
     clock: systemClock,
+    projectPreferences: new ProjectPreferencesStore(context.globalState),
     resolveProjectId: (projectPath) => {
       const folder = vscode.workspace.workspaceFolders?.find(
         (candidate) => candidate.uri.fsPath === projectPath,

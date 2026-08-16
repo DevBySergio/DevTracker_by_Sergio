@@ -28,6 +28,7 @@ suite("WebviewFoundation", () => {
         trackingStatus: "active",
         lastUpdatedAt: Date.UTC(2026, 7, 11),
         fileDetailAvailable: true,
+        projectPreferences: {},
       },
       {
         nonce: "test-nonce",
@@ -62,6 +63,7 @@ suite("WebviewFoundation", () => {
         trackingStatus: "paused",
         lastUpdatedAt: Date.UTC(2026, 7, 11),
         fileDetailAvailable: true,
+        projectPreferences: {},
       },
       {
         nonce: "test-nonce",
@@ -102,6 +104,11 @@ suite("WebviewFoundation", () => {
     assert.match(html, /id="trendsFlowChart"/);
     assert.match(html, /id="trendsLanguageChart"/);
     assert.match(html, /id="trends-heatmap-table"/);
+    assert.match(html, /id="projects-search"/);
+    assert.match(html, /id="projects-sort"/);
+    assert.match(html, /id="projects-show-managed"/);
+    assert.match(html, /id="project-detail"/);
+    assert.match(html, /id="project-alias"/);
     [
       "trends-activity-table",
       "trends-flow-table",

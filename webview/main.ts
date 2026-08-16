@@ -5,6 +5,7 @@ import type {
   DashboardViewName,
   RangeQueryViewModel,
   RangeViewModelDelta,
+  ProjectPreference,
 } from "./types";
 import { ENGLISH_STRINGS as EN } from "../src/webview/strings";
 import {
@@ -20,6 +21,13 @@ import {
   TrendsViewModel,
   buildTrendsViewModel,
 } from "../src/webview/trendsModel";
+import {
+  ProjectListItem,
+  ProjectSort,
+  ProjectsViewModel,
+  buildProjectsViewModel,
+  normalizeProjectPreference,
+} from "../src/webview/projectsModel";
 
 declare const Chart: any;
 interface VsCodeApi {
@@ -60,6 +68,12 @@ let customStartLocalDate = restoredState.customStartLocalDate &&
 const knownProjects = new Map(
   initialData.projects.map(project => [project.id, project.displayName]),
 );
+let projectPreferences: Record<string, ProjectPreference> = {
+  ...initialData.projectPreferences,
+};
+let projectSearch = '';
+let projectSort: ProjectSort = 'activity';
+let showManagedProjects = false;
 let requestSequence = 0;
 let activeRequestId = '';
 let dashboardData: RangeQueryViewModel | null = null;
@@ -118,6 +132,26 @@ document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => 
     (document.getElementById('actions-menu') as HTMLDetailsElement).open = false;
   });
 });
+document.getElementById('projects-search')?.addEventListener('input', event => {
+  projectSearch = (event.currentTarget as HTMLInputElement).value;
+  if (currentTab === 'global' && dashboardData) { renderGlobal(); }
+});
+document.getElementById('projects-sort')?.addEventListener('change', event => {
+  projectSort = (event.currentTarget as HTMLSelectElement).value as ProjectSort;
+  if (currentTab === 'global' && dashboardData) { renderGlobal(); }
+});
+document.getElementById('projects-show-managed')?.addEventListener('change', event => {
+  showManagedProjects = (event.currentTarget as HTMLInputElement).checked;
+  if (currentTab === 'global' && dashboardData) { renderGlobal(); }
+});
+document.getElementById('project-preferences-form')?.addEventListener('submit', event => {
+  event.preventDefault();
+  saveSelectedProjectPreference();
+});
+document.getElementById('project-open-trends')?.addEventListener('click', () => {
+  if (!selectedProjectId) { return; }
+  switchTab('project');
+});
 
 window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage>) => {
   const msg = event.data;
@@ -131,6 +165,12 @@ window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage
     if (currentTab === 'today' && dashboardData) {
       renderToday();
     }
+    return;
+  }
+  if (msg.type === 'dashboard/project-preferences') {
+    projectPreferences = { ...msg.preferences };
+    renderProjectOptions();
+    if (currentTab === 'global' && dashboardData) { renderGlobal(); }
     return;
   }
   if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
@@ -270,15 +310,26 @@ function renderProjectOptions() {
   placeholder.value = '';
   placeholder.textContent = EN.selectProject;
   selector.append(placeholder);
+  const counts = new Map<string, number>();
+  knownProjects.forEach(displayName => {
+    const key = displayName.toLocaleLowerCase();
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  });
   [...knownProjects.entries()]
-    .sort((left, right) => left[1].localeCompare(right[1]) || left[0].localeCompare(right[0]))
+    .sort((left, right) => projectOptionName(left).localeCompare(projectOptionName(right)) || left[0].localeCompare(right[0]))
     .forEach(([id, displayName]) => {
       const option = document.createElement('option');
       option.value = id;
-      option.textContent = displayName;
+      const alias = projectPreferences[id]?.alias;
+      const distinguish = Boolean(alias) || (counts.get(displayName.toLocaleLowerCase()) ?? 0) > 1;
+      option.textContent = `${alias || displayName}${distinguish ? ` · ${shortProjectId(id)}` : ''}`;
       selector.append(option);
     });
   selector.value = selectedProjectId ?? '';
+}
+
+function projectOptionName([id, displayName]: [string, string]): string {
+  return projectPreferences[id]?.alias || displayName;
 }
 
 function renderTrackingStatus(
@@ -1086,19 +1137,25 @@ function renderTaskSummaries(tasks) {
 }
 
 function renderGlobal() {
-  const days = rangeDays;
-  const agg = aggregateDays(days);
-  const bestHour = bestHourFromDays(days);
+  if (!dashboardData) { return; }
+  const projects = buildProjectsViewModel(
+    dashboardData.current,
+    projectPreferences,
+    {
+      search: projectSearch,
+      sort: projectSort,
+      showManaged: showManagedProjects,
+    },
+  );
 
-  setText('g-time', fmt(agg.seconds));
-  setText('g-projects', dashboardData ? dashboardData.current.projects.length : 0);
-  setText('g-best-hour', bestHour.label);
-  setText('g-best-hour-sub', bestHour.value > 0 ? `${fmt(bestHour.value)} ${EN.phrases.tracked}` : EN.empty.noActivity);
-  setText('g-focus', topThreeFileShare(agg) + '%');
+  setText('g-time', fmt(dashboardData.current.metrics.activeTimeMs / 1000));
+  setText('g-projects', projects.activeProjectCount);
+  setText('g-managed', projects.managedProjectCount);
+  setText('g-visible', projects.visibleProjects.length);
+  setText('projects-result-count', `${projects.visibleProjects.length} / ${projects.projects.length}`);
 
-  renderHeatmap(days);
-  renderProjectTable();
-  renderBarList('global-language-list', agg.languages, fmt, EN.empty.noGlobalLanguageActivity);
+  renderProjectTable(projects);
+  renderProjectDetails(projects);
 }
 
 function sessionAsAgg() {
@@ -1418,19 +1475,16 @@ function renderFileTable(id, rows, touches, emptyText) {
   });
 }
 
-function renderProjectTable() {
-  const table = document.getElementById('global-projects-table');
-  const rows = rawAll.map(project => {
-    const agg = aggregateDays(getFilteredDays(daysForProject(project)));
-    return { name: project.name, value: agg.seconds, concentration: topThreeFileShare(agg) };
-  }).filter(row => row.value > 0).sort((a,b) => b.value - a.value).slice(0, 12);
+function renderProjectTable(projects: ProjectsViewModel) {
+  const table = document.getElementById('global-projects-table')!;
+  const rows = projects.visibleProjects;
   table.replaceChildren();
   if (!rows.length) {
     const row = document.createElement('tr');
     const cell = document.createElement('td');
-    cell.colSpan = 3;
+    cell.colSpan = EN.tableHeaders.project.length;
     cell.className = 'empty';
-    cell.textContent = EN.empty.noActivityInRange;
+    cell.textContent = EN.empty.noProjectsMatch;
     row.append(cell);
     table.append(row);
     return;
@@ -1446,17 +1500,144 @@ function renderProjectTable() {
   table.append(header);
   rows.forEach(item => {
     const row = document.createElement('tr');
+    row.className = 'project-row';
+    row.tabIndex = 0;
+    row.setAttribute('aria-selected', String(item.id === selectedProjectId));
+    row.addEventListener('click', () => selectProjectDetails(item.id));
+    row.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectProjectDetails(item.id);
+      }
+    });
     const name = document.createElement('td');
-    name.textContent = item.name;
+    name.className = 'project-name-cell';
+    const nameValue = document.createElement('strong');
+    nameValue.textContent = item.displayName;
+    name.append(nameValue);
+    if (item.discriminator) {
+      const discriminator = document.createElement('small');
+      discriminator.textContent = `${item.canonicalName} · ${item.discriminator}`;
+      name.append(discriminator);
+    }
     const time = document.createElement('td');
     time.className = 'text-right';
-    time.textContent = fmt(item.value);
-    const concentration = document.createElement('td');
-    concentration.className = 'text-right';
-    concentration.textContent = item.concentration + '%';
-    row.append(name, time, concentration);
+    time.textContent = fmt(item.activeTimeMs / 1000);
+    const trend = document.createElement('td');
+    trend.className = 'text-right';
+    trend.textContent = item.activityTrendPercent === null
+      ? '—'
+      : signedPercent(item.activityTrendPercent);
+    trend.title = item.activityTrendPercent === null
+      ? EN.projects.noTrend
+      : 'Change between equal older and newer halves of this range';
+    const lastActivity = document.createElement('td');
+    lastActivity.textContent = item.lastActiveLocalDate ?? EN.projects.noLastActivity;
+    const status = document.createElement('td');
+    const statuses = document.createElement('div');
+    statuses.className = 'project-statuses';
+    projectStatusLabels(item).forEach(label => {
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = label;
+      statuses.append(badge);
+    });
+    status.append(statuses);
+    row.append(name, time, trend, lastActivity, status);
     table.append(row);
   });
+}
+
+function renderProjectDetails(projects: ProjectsViewModel) {
+  let project = projects.projects.find(item => item.id === selectedProjectId);
+  if (!project && projects.visibleProjects.length > 0) {
+    project = projects.visibleProjects[0];
+    selectedProjectId = project.id;
+    persistDashboardState();
+    renderProjectOptions();
+  }
+  const empty = document.getElementById('project-detail-empty')!;
+  const detail = document.getElementById('project-detail')!;
+  empty.hidden = Boolean(project);
+  detail.hidden = !project;
+  if (!project) { return; }
+  setText('project-detail-name', project.displayName);
+  setText('project-detail-canonical', project.canonicalName);
+  setText('project-detail-id', project.id);
+  setText('project-detail-time', fmt(project.activeTimeMs / 1000));
+  setText('project-detail-edits', compact(project.editVolume));
+  (document.getElementById('project-alias') as HTMLInputElement).value =
+    project.preference.alias ?? '';
+  (document.getElementById('project-archived') as HTMLInputElement).checked =
+    project.preference.archived;
+  (document.getElementById('project-excluded') as HTMLInputElement).checked =
+    project.preference.excluded;
+  renderDimensionList(
+    'project-detail-languages',
+    project.languages,
+    EN.empty.noLanguagesInRange,
+  );
+  renderDimensionList(
+    'project-detail-files',
+    project.files,
+    runtimeFileDetailAvailable
+      ? EN.empty.noActiveFilesToday
+      : EN.status.fileDetailUnavailable,
+  );
+}
+
+function renderDimensionList(
+  id: string,
+  values: readonly { id: string; activeTimeMs: number }[],
+  emptyText: string,
+) {
+  renderBarList(
+    id,
+    Object.fromEntries(values.map(value => [value.id, value.activeTimeMs / 1000])),
+    fmt,
+    emptyText,
+  );
+}
+
+function selectProjectDetails(projectId: string) {
+  selectedProjectId = projectId;
+  persistDashboardState();
+  renderProjectOptions();
+  if (dashboardData) { renderGlobal(); }
+}
+
+function saveSelectedProjectPreference() {
+  if (!selectedProjectId) { return; }
+  const preference = normalizeProjectPreference({
+    alias: (document.getElementById('project-alias') as HTMLInputElement).value,
+    archived: (document.getElementById('project-archived') as HTMLInputElement).checked,
+    excluded: (document.getElementById('project-excluded') as HTMLInputElement).checked,
+  });
+  projectPreferences = {
+    ...projectPreferences,
+    [selectedProjectId]: preference,
+  };
+  vscodeApi.postMessage({
+    type: 'dashboard/set-project-preference',
+    protocolVersion: initialData.protocolVersion,
+    projectId: selectedProjectId,
+    preference,
+  });
+  renderProjectOptions();
+  if (dashboardData) { renderGlobal(); }
+}
+
+function projectStatusLabels(project: ProjectListItem): string[] {
+  const labels: string[] = [];
+  if (project.preference.archived) { labels.push(EN.projects.archived); }
+  if (project.preference.excluded) { labels.push(EN.projects.excluded); }
+  return labels.length ? labels : [EN.projects.active];
+}
+
+function shortProjectId(projectId: string): string {
+  return projectId.length <= 8
+    ? projectId
+    : `${projectId.slice(0, 4)}…${projectId.slice(-4)}`;
 }
 
 function renderHeatmap(days) {

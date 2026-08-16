@@ -8,6 +8,7 @@ import {
   escapeHtml,
 } from "./components";
 import { ENGLISH_STRINGS as EN } from "./strings";
+import { ProjectPreferences } from "./projectsModel";
 
 export type DashboardTrackingStatus =
   | "active"
@@ -28,6 +29,7 @@ export interface DashboardInitialData {
   trackingStatus: DashboardTrackingStatus;
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
+  projectPreferences: ProjectPreferences;
 }
 
 export interface DashboardResources {
@@ -225,14 +227,31 @@ export function renderDashboardHtml(
       <div class="grid-4">
         ${Metric({ id: "g-time", title: EN.metrics.trackedTime, value: "0m", subtitle: EN.status.allTrackedActivity })}
         ${Metric({ id: "g-projects", title: EN.metrics.projects, value: "0", subtitle: EN.status.withActivity })}
-        ${Metric({ id: "g-best-hour", title: EN.metrics.mostActiveHour, value: "--", subtitle: EN.empty.noActivity })}
-        ${Metric({ id: "g-focus", title: EN.metrics.topThreeFileShare, value: "0%", subtitle: EN.status.selectedRange })}
+        ${Metric({ id: "g-managed", title: EN.projects.archived, value: "0", subtitle: EN.status.managedLocally })}
+        ${Metric({ id: "g-visible", title: EN.status.visibleProjects, value: "0", subtitle: EN.status.selectedRange })}
       </div>
-      <div class="grid-2">
-        ${Card(`<div class="card-title">${EN.panels.weeklyHeatmap}</div><div id="heatmap" class="heatmap"></div>`)}
-        ${Card(`<div class="card-title">${EN.panels.topProjects}</div><div class="table-wrapper"><table id="global-projects-table"></table></div>`)}
+      <div class="projects-layout">
+        ${Card(`<div class="projects-heading"><div class="card-title">${EN.panels.projectDirectory}</div><span id="projects-result-count" class="badge">0</span></div>
+          <div class="projects-toolbar">
+            <label><span>${EN.projects.searchLabel}</span><input id="projects-search" type="search" placeholder="${escapeAttribute(EN.projects.searchPlaceholder)}"></label>
+            <label><span>${EN.projects.sortLabel}</span><select id="projects-sort"><option value="activity">${EN.projects.sortActivity}</option><option value="name">${EN.projects.sortName}</option><option value="recent">${EN.projects.sortRecent}</option><option value="trend">${EN.projects.sortTrend}</option></select></label>
+            <label class="projects-managed-toggle"><input id="projects-show-managed" type="checkbox"><span>${EN.projects.showManaged}</span></label>
+          </div>
+          <div class="table-wrapper projects-table-wrapper"><table id="global-projects-table"></table></div>`, "projects-directory")}
+        ${Card(`<div id="project-detail-empty" class="empty">${EN.empty.selectProjectDetails}</div>
+          <div id="project-detail" hidden>
+            <div class="project-detail-heading"><div><div class="card-title">${EN.panels.projectDetails}</div><h2 id="project-detail-name"></h2></div><button id="project-open-trends" type="button" class="primary-button">${EN.projects.openTrends}</button></div>
+            <dl class="project-identity"><div><dt>${EN.projects.canonicalName}</dt><dd id="project-detail-canonical"></dd></div><div><dt>${EN.projects.projectId}</dt><dd id="project-detail-id"></dd></div></dl>
+            <form id="project-preferences-form" class="project-preferences">
+              <label for="project-alias"><span>${EN.projects.aliasLabel}</span><input id="project-alias" maxlength="80" placeholder="${escapeAttribute(EN.projects.aliasPlaceholder)}"></label>
+              <div class="project-preference-actions"><label><input id="project-archived" type="checkbox"> ${EN.projects.archive}</label><label><input id="project-excluded" type="checkbox"> ${EN.projects.exclude}</label></div>
+              <button type="submit" class="primary-button">${EN.projects.saveAlias}</button>
+            </form>
+            <p class="project-preference-note">${EN.projects.retainedHistory}</p>
+            <div class="project-detail-metrics"><div><span>${EN.metrics.activeTime}</span><strong id="project-detail-time">0m</strong></div><div><span>${EN.projects.editVolume}</span><strong id="project-detail-edits">0</strong></div></div>
+            <div class="project-detail-distributions"><div><div class="card-title">${EN.panels.projectLanguages}</div><div id="project-detail-languages" class="list"></div></div><div><div class="card-title">${EN.panels.projectFiles}</div><div id="project-detail-files" class="list"></div></div></div>
+          </div>`, "project-detail-card")}
       </div>
-      ${Card(`<div class="card-title">${EN.panels.globalLanguages}</div><div class="list" id="global-language-list">${EmptyState(EN.empty.noActivityInRange)}</div>`)}
     </section>
   </main>
 </body>

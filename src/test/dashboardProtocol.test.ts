@@ -320,8 +320,14 @@ suite("DashboardProtocol", () => {
     );
     assert.deepStrictEqual(quality.current.quarterHours, []);
     assert.deepStrictEqual(global.current.quarterHours, []);
-    assert.deepStrictEqual(global.current.projects[0].languages, []);
-    assert.deepStrictEqual(global.current.projects[0].files, []);
+    assert.deepStrictEqual(
+      global.current.projects[0].languages,
+      source.current.projects[0].languages.slice(0, 5),
+    );
+    assert.deepStrictEqual(
+      global.current.projects[0].files,
+      source.current.projects[0].files.slice(0, 8),
+    );
     assert.deepStrictEqual(global.current.branches, []);
     assert.deepStrictEqual(global.current.tasks, []);
     assert.deepStrictEqual(global.current.languages, [

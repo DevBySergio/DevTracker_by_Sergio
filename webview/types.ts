@@ -21,6 +21,13 @@ export interface DashboardInitialData {
   trackingStatus: "active" | "inactive" | "paused" | "unfocused";
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
+  projectPreferences: Record<string, ProjectPreference>;
+}
+
+export interface ProjectPreference {
+  alias: string | null;
+  archived: boolean;
+  excluded: boolean;
 }
 
 export interface DashboardTrackingStatusMessage {
@@ -30,6 +37,12 @@ export interface DashboardTrackingStatusMessage {
   lastUpdatedAt: number;
   dailyGoalSeconds: number;
   fileDetailAvailable: boolean;
+}
+
+export interface DashboardProjectPreferencesMessage {
+  type: "dashboard/project-preferences";
+  protocolVersion: number;
+  preferences: Record<string, ProjectPreference>;
 }
 
 export interface SeverityCounts {
@@ -95,6 +108,8 @@ export interface RangeDayViewModel {
 export interface RangeProjectViewModel {
   project: { id: string; displayName: string };
   metrics: RangeMetrics;
+  lastActiveLocalDate?: string | null;
+  activityTrendPercent?: number | null;
   languages: RangeDimensionValue[];
   files: RangeDimensionValue[];
   branches: RangeDimensionValue[];
@@ -195,4 +210,5 @@ export type DashboardResponseMessage =
   | DashboardSnapshotMessage
   | DashboardLiveDeltaMessage
   | DashboardErrorMessage
-  | DashboardTrackingStatusMessage;
+  | DashboardTrackingStatusMessage
+  | DashboardProjectPreferencesMessage;

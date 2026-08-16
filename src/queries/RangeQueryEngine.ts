@@ -243,7 +243,7 @@ export class RangeQueryEngine {
       };
     });
     const projects: RangeProjectViewModel[] = projectIds
-      .map((projectId) => {
+      .map((projectId): RangeProjectViewModel | undefined => {
         const identity = this.projects.get(projectId);
         if (!identity) {
           return undefined;
@@ -252,6 +252,11 @@ export class RangeQueryEngine {
         return {
           project: { id: identity.id, displayName: identity.displayName },
           metrics: this.aggregateMetrics(projectRecords),
+          lastActiveLocalDate: this.lastActiveLocalDate(projectRecords),
+          activityTrendPercent: this.activityTrendPercent(
+            range,
+            projectRecords,
+          ),
           languages: this.aggregateDimension(
             projectRecords,
             "activeTimeByLanguageMs",
@@ -284,6 +289,57 @@ export class RangeQueryEngine {
       tasks: this.aggregateTasks(records),
       quarterHours: this.aggregateQuarterHours(range, records),
     };
+  }
+
+  private lastActiveLocalDate(records: readonly DailyRollup[]): string | null {
+    return records
+      .filter((record) => record.activeTimeMs > 0)
+      .reduce<string | null>(
+        (latest, record) =>
+          latest === null || record.localDate > latest
+            ? record.localDate
+            : latest,
+        null,
+      );
+  }
+
+  private activityTrendPercent(
+    range: NormalizedDateRange,
+    records: readonly DailyRollup[],
+  ): number | null {
+    const halfLength = Math.floor(range.localDates.length / 2);
+    if (halfLength === 0) {
+      return null;
+    }
+    const olderDates = new Set(range.localDates.slice(0, halfLength));
+    const newerDates = new Set(range.localDates.slice(-halfLength));
+    let olderActiveTimeMs = 0;
+    let newerActiveTimeMs = 0;
+    records.forEach((record) => {
+      if (olderDates.has(record.localDate)) {
+        olderActiveTimeMs = this.safeAdd(
+          olderActiveTimeMs,
+          record.activeTimeMs,
+          "projectTrend.olderActiveTimeMs",
+        );
+      }
+      if (newerDates.has(record.localDate)) {
+        newerActiveTimeMs = this.safeAdd(
+          newerActiveTimeMs,
+          record.activeTimeMs,
+          "projectTrend.newerActiveTimeMs",
+        );
+      }
+    });
+    if (olderActiveTimeMs === 0 && newerActiveTimeMs === 0) {
+      return null;
+    }
+    if (olderActiveTimeMs === 0) {
+      return 100;
+    }
+    return Math.round(
+      ((newerActiveTimeMs - olderActiveTimeMs) / olderActiveTimeMs) * 1_000,
+    ) / 10;
   }
 
   private recordsFor(

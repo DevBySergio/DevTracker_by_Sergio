@@ -38,7 +38,7 @@ export const ENGLISH_STRINGS = {
       "Range-based activity time and patterns for the selected project.",
     quality:
       "Descriptive diagnostics, saves, debug time, and Git branch context.",
-    global: "Activity across every tracked project in the selected range.",
+    global: "Search, compare, and manage every tracked project without changing the active editor.",
   },
   metrics: {
     activeToday: "Active Today",
@@ -83,6 +83,10 @@ export const ENGLISH_STRINGS = {
     weeklyHeatmap: "Weekly Heatmap",
     topProjects: "Top Projects",
     globalLanguages: "Global Languages",
+    projectDirectory: "Project Directory",
+    projectDetails: "Project Details",
+    projectLanguages: "Languages",
+    projectFiles: "Most Active Files",
     dailyActivity: "Daily Active Time",
     flowAndSwitches: "Flow Blocks and File Switches",
     activityHeatmap: "Daily Activity Heatmap",
@@ -108,6 +112,8 @@ export const ENGLISH_STRINGS = {
     noLanguageDistribution: "No language activity yet",
     noTrackedTaskRuns: "No configured task runs in this range",
     noLanguageEvolution: "No language activity in this range",
+    noProjectsMatch: "No projects match the current filters.",
+    selectProjectDetails: "Select a project to inspect its retained analytics.",
   },
   dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   chartLabels: {
@@ -119,7 +125,7 @@ export const ENGLISH_STRINGS = {
   },
   tableHeaders: {
     file: ["File", "Time", "Activity samples"],
-    project: ["Project", "Time", "Top-3 share"],
+    project: ["Project", "Active time", "Trend", "Last activity", "Status"],
     dailyActivity: ["Date", "Active time", "Goal progress"],
     flow: ["Date", "Flow blocks", "File switches / active hour"],
     language: ["Date", "Language", "Active time"],
@@ -208,6 +214,8 @@ export const ENGLISH_STRINGS = {
     comparisonAvailable: "Compared with the equivalent previous period",
     consistencyZero: "0% of days in the selected range",
     longestZeroDays: "Longest streak: 0 days",
+    managedLocally: "Archived or excluded locally",
+    visibleProjects: "Shown in directory",
     tracking: {
       active: "Tracking",
       inactive: "Inactive",
@@ -226,6 +234,31 @@ export const ENGLISH_STRINGS = {
     typicalFlowDescription:
       "Average active time inside an observed interaction-based flow block.",
     unavailable: "Unavailable",
+  },
+  projects: {
+    searchLabel: "Search projects",
+    searchPlaceholder: "Name, alias, or project ID",
+    sortLabel: "Sort by",
+    sortActivity: "Active time",
+    sortName: "Name",
+    sortRecent: "Last activity",
+    sortTrend: "Trend",
+    showManaged: "Show archived and excluded",
+    aliasLabel: "Local alias",
+    aliasPlaceholder: "Optional local display name",
+    saveAlias: "Save alias",
+    archive: "Archive",
+    exclude: "Exclude from directory",
+    openTrends: "Open project trends",
+    canonicalName: "Original name",
+    projectId: "Project ID",
+    editVolume: "Character edit volume",
+    retainedHistory: "These local preferences never delete analytics history or change tracking.",
+    active: "Active",
+    archived: "Archived",
+    excluded: "Excluded",
+    noTrend: "Not enough activity",
+    noLastActivity: "No activity in range",
   },
 } as const;
 

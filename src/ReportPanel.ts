@@ -10,6 +10,10 @@ import {
 } from "./presentation/DashboardProtocol";
 import { renderDashboardHtml } from "./webview/template";
 import { ENGLISH_STRINGS as EN } from "./webview/strings";
+import {
+  ProjectPreferencesStore,
+  parseSetProjectPreferenceMessage,
+} from "./presentation/ProjectPreferences";
 
 export interface ReportPanelOptions {
   extensionUri: vscode.Uri;
@@ -21,6 +25,7 @@ export interface ReportPanelOptions {
   trackingStatus: TrackingStatus;
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
+  projectPreferences: ProjectPreferencesStore;
 }
 
 export class ReportPanel {
@@ -90,6 +95,23 @@ export class ReportPanel {
           void vscode.commands.executeCommand(action.command, ...action.args);
           return;
         }
+        const preference = parseSetProjectPreferenceMessage(
+          message,
+          DASHBOARD_PROTOCOL_VERSION,
+        );
+        if (preference) {
+          void options.projectPreferences
+            .set(preference.projectId, preference.preference)
+            .then((preferences) => this._panel.webview.postMessage({
+              type: "dashboard/project-preferences",
+              protocolVersion: DASHBOARD_PROTOCOL_VERSION,
+              preferences,
+            }))
+            .catch(() => vscode.window.showErrorMessage(
+              "DevTracker could not save the local project preference.",
+            ));
+          return;
+        }
         void this.protocol.handleMessage(message);
       },
       null,
@@ -102,6 +124,7 @@ export class ReportPanel {
       options.trackingStatus,
       options.lastUpdatedAt,
       options.fileDetailAvailable,
+      options.projectPreferences.getAll(),
     );
   }
 
@@ -143,6 +166,7 @@ export class ReportPanel {
     trackingStatus: TrackingStatus,
     lastUpdatedAt: number,
     fileDetailAvailable: boolean,
+    projectPreferences: ReturnType<ProjectPreferencesStore["getAll"]>,
   ): string {
     const webview = this._panel.webview;
     const nonce = getNonce();
@@ -157,6 +181,7 @@ export class ReportPanel {
         trackingStatus,
         lastUpdatedAt,
         fileDetailAvailable,
+        projectPreferences,
       },
       {
         nonce,

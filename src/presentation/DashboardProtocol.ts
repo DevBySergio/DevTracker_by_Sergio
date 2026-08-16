@@ -581,13 +581,19 @@ function projectPeriod(
     projects: source.projects.map((project) => ({
       project: cloneJson(project.project),
       metrics: cloneJson(project.metrics),
+      lastActiveLocalDate: project.lastActiveLocalDate ?? null,
+      activityTrendPercent: project.activityTrendPercent ?? null,
       languages:
         includeProjectDetails && includeDistributions
           ? project.languages.map(cloneJson)
+          : view === "global"
+            ? project.languages.slice(0, 5).map(cloneJson)
           : [],
       files:
         includeProjectDetails && includeDistributions
           ? project.files.map(cloneJson)
+          : view === "global"
+            ? project.files.slice(0, 8).map(cloneJson)
           : [],
       branches:
         view === "quality" ? project.branches.map(cloneJson) : [],
@@ -994,7 +1000,7 @@ function assertProject(value: unknown, location: string): void {
     "files",
     "branches",
     "tasks",
-  ]);
+  ], ["lastActiveLocalDate", "activityTrendPercent"]);
   const identity = exactRecord(project.project, `${location}.project`, [
     "id",
     "displayName",
@@ -1002,6 +1008,12 @@ function assertProject(value: unknown, location: string): void {
   boundedSafeId(identity.id, `${location}.project.id`, 128);
   stringValue(identity.displayName, `${location}.project.displayName`);
   assertMetrics(project.metrics, `${location}.metrics`);
+  if (project.lastActiveLocalDate !== undefined && project.lastActiveLocalDate !== null) {
+    localDateValue(project.lastActiveLocalDate, `${location}.lastActiveLocalDate`);
+  }
+  if (project.activityTrendPercent !== undefined && project.activityTrendPercent !== null) {
+    finiteNumber(project.activityTrendPercent, `${location}.activityTrendPercent`);
+  }
   arrayValue(project.languages, `${location}.languages`).forEach(
     (entry, index) => assertDimension(entry, `${location}.languages[${index}]`),
   );
