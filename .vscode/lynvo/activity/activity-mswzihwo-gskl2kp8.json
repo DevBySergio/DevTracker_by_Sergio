@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswzihwo-gskl2kp8",
+  "type": "task_moved",
+  "message": "Moved \"T26 — Complete accessibility, responsiveness and theme support\" from In Progress to Done",
+  "createdAt": 1786956082728,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x382-110rg3j5",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

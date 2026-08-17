@@ -637,7 +637,7 @@
     "localValue": "done",
     "remoteValue": "backlog",
     "createdAt": 1786955345383,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x381-6pxtwmej-status": {
     "id": "task-task-msj9x381-6pxtwmej-status",
@@ -647,16 +647,16 @@
     "localValue": "done",
     "remoteValue": "backlog",
     "createdAt": 1786955345383,
-    "resolved": false
+    "resolved": true
   },
   "task-task-msj9x382-110rg3j5-status": {
     "id": "task-task-msj9x382-110rg3j5-status",
     "entityType": "task",
     "entityId": "task-msj9x382-110rg3j5",
     "field": "status",
-    "localValue": "in-progress",
-    "remoteValue": "backlog",
-    "createdAt": 1786955345383,
+    "localValue": "done",
+    "remoteValue": "in-progress",
+    "createdAt": 1786956185200,
     "resolved": false
   }
 }

@@ -2,7 +2,7 @@
   "id": "task-msj9x382-110rg3j5",
   "title": "T26 — Complete accessibility, responsiveness and theme support",
   "description": "## Objective\n\nEnsure complete navigation, readability, and consistency across supported VS Code themes and sizes.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T26.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033649,
-  "updatedAt": 1786955102952,
+  "updatedAt": 1786956082728,
   "position": 1786127033649,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",
@@ -23,65 +23,65 @@
     {
       "id": "check-msj9x3jm-nrhngn4d",
       "text": "Implement ARIA tabs with arrow keys and roving tabindex",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033650,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082719
     },
     {
       "id": "check-msj9x3jn-mrv8vilz",
       "text": "Add aria-pressed to filters",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033651,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082720
     },
     {
       "id": "check-msj9x3jo-dt6e1wpn",
       "text": "Avoid live announcements every second",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033652,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082721
     },
     {
       "id": "check-msj9x3jp-0dwjxrk7",
       "text": "Add captions and table alternatives",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033653,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082722
     },
     {
       "id": "check-msj9x3jq-2dphf01x",
       "text": "Verify complete keyboard navigation and visible focus",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033654,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082723
     },
     {
       "id": "check-msj9x3jr-4lk2wbnd",
       "text": "Support dark, light, and high-contrast themes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033655,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082724
     },
     {
       "id": "check-msj9x3js-n6rl1v0m",
       "text": "Support 200 percent zoom and narrow panels",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033656,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082725
     },
     {
       "id": "check-msj9x3jt-zxzs6hyx",
       "text": "Respect reduced motion and forced colors",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033657,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082726
     },
     {
       "id": "check-msj9x3ju-3q02y5vc",
       "text": "Verify contrast for every state",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033658,
-      "updatedAt": 1786127326674
+      "updatedAt": 1786956082727
     }
   ],
   "relations": [

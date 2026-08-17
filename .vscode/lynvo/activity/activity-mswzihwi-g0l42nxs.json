@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswzihwi-g0l42nxs",
+  "type": "checklist_updated",
+  "message": "Completed \"Add captions and table alternatives\" in \"T26 — Complete accessibility, responsiveness and theme support\"",
+  "createdAt": 1786956082722,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x382-110rg3j5",
+  "metadata": {
+    "checklistItemId": "check-msj9x3jp-0dwjxrk7",
+    "done": true
+  }
+}
