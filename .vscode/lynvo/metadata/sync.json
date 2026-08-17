@@ -1,9 +1,9 @@
 {
   "branch": "lynvo-sync",
-  "status": "syncing",
+  "status": "conflict",
   "pendingChanges": true,
-  "lastSyncAt": 1786959310584,
-  "lastRemoteCommit": "0978819bf3dd6bcfe91bd4f11ede91224186d5cc",
+  "lastSyncAt": 1786959430962,
+  "lastRemoteCommit": "419ca34a584cf344cde216ba221967300f9485aa",
   "message": "Sync merge completed",
-  "updatedAt": 1786959429228
+  "updatedAt": 1786959548143
 }
