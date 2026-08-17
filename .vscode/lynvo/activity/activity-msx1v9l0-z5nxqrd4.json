@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx1v9l0-z5nxqrd4",
+  "type": "task_moved",
+  "message": "Moved \"T33 — Rewrite documentation, privacy text and release artifacts\" from In Progress to Done",
+  "createdAt": 1786960037700,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x389-ckif110z",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

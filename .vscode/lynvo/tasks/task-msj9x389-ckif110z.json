@@ -2,7 +2,7 @@
   "id": "task-msj9x389-ckif110z",
   "title": "T33 — Rewrite documentation, privacy text and release artifacts",
   "description": "## Objective\n\nAlign public communication with real capabilities, local privacy, and the redesigned interface.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T33.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033805,
-  "updatedAt": 1786959882089,
+  "updatedAt": 1786960037700,
   "position": 1786127033805,
   "labelIds": [
     "label-msj9x37a-nsh60545",
