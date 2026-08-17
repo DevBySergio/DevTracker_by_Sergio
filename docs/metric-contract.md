@@ -149,20 +149,31 @@ must not be interpreted as the precise v2 counter.
 Git, debug detail, and VS Code Tasks tracking are disabled by default. Enabling
 one integration does not imply consent for another.
 
+The diagnostic rollup (`diagnostics`) contains the four severity maps named
+below. Each map has `error`, `warning`, `info`, and `hint` counters.
+
 | Name | Unit | Scope | Source | Precision and rules |
 | --- | --- | --- | --- | --- |
-| Current diagnostics by severity | Diagnostics | Project snapshot | `languages.getDiagnostics()` | Current snapshot. Counts errors, warnings, information, and hints; messages and source text are never stored. |
-| Introduced diagnostics by severity | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only positive deltas are introduced. |
-| Resolved diagnostics by severity | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only negative deltas are resolved. |
-| Peak diagnostics by severity | Diagnostics | Project, range | Maximum snapshot per severity | Derived maximum. Snapshots are never summed. |
+| Current diagnostics by severity (`diagnostics.current`) | Diagnostics | Project snapshot | `languages.getDiagnostics()` | Current snapshot. Counts `error`, `warning`, `info`, and `hint`; messages and source text are never stored. |
+| Introduced diagnostics by severity (`diagnostics.introduced`) | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only positive deltas are introduced. |
+| Resolved diagnostics by severity (`diagnostics.resolved`) | Diagnostics | Project, bucket, range | Difference between consecutive normalized snapshots | Derived event count. Only negative deltas are resolved. |
+| Peak diagnostics by severity (`diagnostics.peak`) | Diagnostics | Project, range | Maximum snapshot per severity | Derived maximum. Snapshots are never summed. |
 | Git integration status (`gitStatus`) | State | Project snapshot | Opt-in setting, built-in Git availability, and repository containment | Current snapshot: `disabled`, `unavailable`, `no-repository`, or `available`. |
 | Current dirty files | Unique files | Repository snapshot | VS Code Git repository state | Current snapshot. A path present in multiple status groups is counted once. |
 | Branch active time | Milliseconds | Repository branch, range | Intersection of active intervals with the most-specific containing repository HEAD state | Monotonic duration. Detached and unborn HEAD are named explicitly; disabled, unavailable, and no-repository states accumulate no branch time. |
-| Branch changes | Events | Repository, range | Observed repository HEAD branch-name transitions | Exact observed transition count after the initial repository snapshot. |
-| Detected commits | Events | Repository, range | Built-in Git repository commit events | Exact observed event count, deduplicated by the current HEAD identifier. It is not authored-commit productivity. |
-| Task runs | Runs | Configured task, range | VS Code Tasks start/end events | Exact observed runs. Store only configured name, classification, duration, and result. |
-| Task success rate | Percent | Configured task/class/range | Successful runs divided by completed runs | Derived. `null` when no run completed. Cancellation and unknown exit status are separate outcomes. |
-| Median task duration | Milliseconds | Configured task/class/range | Completed run durations | Derived median; `null` when no run completed. |
+| Branch changes (`gitBranchChanges`) | Events | Repository, range | Observed repository HEAD branch-name transitions | Exact observed transition count after the initial repository snapshot. |
+| Detected commits (`gitDetectedCommits`) | Events | Repository, range | Built-in Git repository commit events | Exact observed event count, deduplicated by the current HEAD identifier. It is not authored-commit productivity. |
+| Configured task name (`configuredName`) | Text dimension | Configured task, range | Exact-name allowlist | Stored only for an explicitly configured task. Names are case-sensitive and are never inferred from commands. |
+| Task classification (`classification`) | `build` or `test` | Configured task, range | User configuration | Descriptive grouping supplied in the allowlist; it is not inferred from the task definition. |
+| Task runs (`runCount`) | Runs | Configured task, range | VS Code Tasks start events | Exact observed run count, including runs that never produce a completed outcome while DevTracker is active. |
+| Completed task runs (`completedRunCount`) | Runs | Configured task, range | VS Code Tasks end events | Exact observed count with a terminal success, failure, cancelled, or unknown outcome. |
+| Successful task runs (`succeededRunCount`) | Runs | Configured task, range | Completed configured-task outcomes | Exact observed count whose process exit code is zero. |
+| Failed task runs (`failedRunCount`) | Runs | Configured task, range | Completed configured-task outcomes | Exact observed count whose process exit code is non-zero. |
+| Cancelled task runs (`cancelledRunCount`) | Runs | Configured task, range | Completed configured-task outcomes | Exact observed count identified as cancelled by the public task lifecycle. |
+| Unknown task outcomes (`unknownRunCount`) | Runs | Configured task, range | Completed configured-task outcomes | Exact observed count for which no success, failure, or cancellation result is available. It is not treated as failure. |
+| Task success rate (`successRatePercent`) | Percent | Configured task/class/range | `succeededRunCount / completedRunCount * 100` | Derived. `null` when no run completed. Cancellation and unknown exit status remain separate outcomes. |
+| Median task duration (`medianDurationMs`) | Milliseconds | Configured task/class/range | Completed run durations | Derived median; `null` when no run completed. |
+| Legacy approximation marker (`legacyApproximate`) | Boolean | Day, project, range | Migrated-record provenance | `true` when at least one contributing value comes from v1 behavior that cannot meet the v2 precision contract. It is metadata, not a numeric metric. |
 
 Diagnostics are editor signals, not code-quality measurements. Dirty files,
 branch activity, debug time, saves, and task outcomes are context, not ratings.

@@ -30,6 +30,7 @@ const REQUIRED_FILES = new Set([
   "extension/docs/integration-testing.md",
   "extension/docs/metric-contract.md",
   "extension/docs/performance-budgets.md",
+  "extension/docs/privacy-and-data.md",
   "extension/docs/storage-v2.md",
   "extension/docs/task-tracking.md",
   "extension/docs/validation.md",
@@ -38,6 +39,8 @@ const REQUIRED_FILES = new Set([
   "extension/media/icon.png",
   "extension/media/screenshot-project.png",
   "extension/media/screenshot-session.png",
+  "extension/media/screenshot-trends.png",
+  "extension/media/screenshot-workflow.png",
   "extension/media/webview.css",
   "extension/media/webview.js",
 ]);

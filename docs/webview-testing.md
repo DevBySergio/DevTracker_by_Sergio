@@ -48,3 +48,16 @@ npm run test:webview:update
 Run `npm run test:webview` again without the update flag before accepting the
 change. The regular command fails when more than 0.5 percent of pixels differ,
 so significant layout, theme, and visibility changes cannot pass silently.
+
+## Product screenshots
+
+Generate the four dark-theme, 1400-pixel release screenshots from the same
+deterministic harness with:
+
+```sh
+npm run screenshots:product
+```
+
+The command overwrites the Overview, Trends, Projects, and Workflow images in
+`media/`. Review all four images before accepting them. Unlike regression
+baselines, these files are packaged and displayed in the README.

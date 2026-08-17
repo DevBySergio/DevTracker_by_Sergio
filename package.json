@@ -1,7 +1,7 @@
 {
   "name": "DevTrackerBySergio",
   "displayName": "DevTracker by Sergio",
-  "description": "Professional analytics dashboard for developers.",
+  "description": "Local-first editor activity analytics for Visual Studio Code.",
   "version": "1.4.1",
   "publisher": "DevBySergio",
   "icon": "media/icon.png",
@@ -171,6 +171,7 @@
     "test:webview": "npm run compile-tests && npm run compile && playwright test",
     "test:webview:update": "npm run compile-tests && npm run compile && playwright test --update-snapshots",
     "test:webview:install": "playwright install chromium",
+    "screenshots:product": "npm run compile-tests && npm run compile && node ./scripts/capture-product-screenshots.js",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src webview --ext ts --max-warnings=0",
     "test": "node ./out/test/runTest.js",
