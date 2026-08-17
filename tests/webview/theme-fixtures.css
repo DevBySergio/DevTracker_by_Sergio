@@ -1,0 +1,90 @@
+:root[data-theme="light"] {
+  --vscode-font-family: Arial, sans-serif;
+  --vscode-editor-font-family: monospace;
+  --vscode-editor-background: #ffffff;
+  --vscode-editor-foreground: #1f2328;
+  --vscode-sideBar-background: #f6f8fa;
+  --vscode-editorWidget-background: #ffffff;
+  --vscode-widget-border: #8c959f;
+  --vscode-textLink-foreground: #0969da;
+  --vscode-descriptionForeground: #57606a;
+  --vscode-disabledForeground: #6e7781;
+  --vscode-focusBorder: #0969da;
+  --vscode-button-background: #0969da;
+  --vscode-button-foreground: #ffffff;
+  --vscode-toolbar-hoverBackground: #d0d7de;
+  --vscode-list-activeSelectionBackground: #0969da;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-input-background: #ffffff;
+  --vscode-input-foreground: #1f2328;
+  --vscode-input-border: #8c959f;
+  --vscode-charts-blue: #0969da;
+  --vscode-charts-green: #1a7f37;
+  --vscode-charts-orange: #bc4c00;
+  --vscode-charts-yellow: #9a6700;
+  --vscode-charts-purple: #8250df;
+  --vscode-charts-red: #cf222e;
+  --vscode-charts-foreground: #1f2328;
+  --vscode-charts-lines: #8c959f;
+}
+
+:root[data-theme="dark"] {
+  --vscode-font-family: Arial, sans-serif;
+  --vscode-editor-font-family: monospace;
+  --vscode-editor-background: #0d1117;
+  --vscode-editor-foreground: #f0f6fc;
+  --vscode-sideBar-background: #161b22;
+  --vscode-editorWidget-background: #161b22;
+  --vscode-widget-border: #8b949e;
+  --vscode-textLink-foreground: #58a6ff;
+  --vscode-descriptionForeground: #c9d1d9;
+  --vscode-disabledForeground: #8b949e;
+  --vscode-focusBorder: #58a6ff;
+  --vscode-button-background: #1f6feb;
+  --vscode-button-foreground: #ffffff;
+  --vscode-toolbar-hoverBackground: #30363d;
+  --vscode-list-activeSelectionBackground: #1f6feb;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-input-background: #0d1117;
+  --vscode-input-foreground: #f0f6fc;
+  --vscode-input-border: #8b949e;
+  --vscode-charts-blue: #58a6ff;
+  --vscode-charts-green: #3fb950;
+  --vscode-charts-orange: #d29922;
+  --vscode-charts-yellow: #e3b341;
+  --vscode-charts-purple: #bc8cff;
+  --vscode-charts-red: #f85149;
+  --vscode-charts-foreground: #f0f6fc;
+  --vscode-charts-lines: #8b949e;
+}
+
+:root[data-theme="high-contrast"] {
+  --vscode-font-family: Arial, sans-serif;
+  --vscode-editor-font-family: monospace;
+  --vscode-editor-background: #000000;
+  --vscode-editor-foreground: #ffffff;
+  --vscode-sideBar-background: #000000;
+  --vscode-editorWidget-background: #000000;
+  --vscode-contrastBorder: #ffffff;
+  --vscode-widget-border: #ffffff;
+  --vscode-textLink-foreground: #75beff;
+  --vscode-descriptionForeground: #ffffff;
+  --vscode-disabledForeground: #c0c0c0;
+  --vscode-focusBorder: #f38518;
+  --vscode-button-background: #000000;
+  --vscode-button-foreground: #ffffff;
+  --vscode-toolbar-hoverBackground: #000000;
+  --vscode-list-activeSelectionBackground: #000000;
+  --vscode-list-activeSelectionForeground: #ffffff;
+  --vscode-input-background: #000000;
+  --vscode-input-foreground: #ffffff;
+  --vscode-input-border: #ffffff;
+  --vscode-charts-blue: #75beff;
+  --vscode-charts-green: #89d185;
+  --vscode-charts-orange: #f38518;
+  --vscode-charts-yellow: #cca700;
+  --vscode-charts-purple: #b180d7;
+  --vscode-charts-red: #f48771;
+  --vscode-charts-foreground: #ffffff;
+  --vscode-charts-lines: #ffffff;
+}

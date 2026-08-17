@@ -13,3 +13,5 @@ pnpm-debug.log*
 media/*.map
 coverage/
 .nyc_output/
+playwright-report/
+test-results/

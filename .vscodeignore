@@ -1,6 +1,11 @@
 .vscode/**
 .vscode-test/**
 out/**
+tests/**
+playwright.config.js
+playwright-report/**
+test-results/**
+scripts/webview-harness.js
 node_modules/**
 src/**
 webview/**

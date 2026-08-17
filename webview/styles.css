@@ -28,6 +28,7 @@
   --text-secondary: var(--vscode-descriptionForeground, CanvasText);
   --muted: var(--vscode-disabledForeground, GrayText);
   --focus-ring: var(--vscode-focusBorder, Highlight);
+  --button-bg: var(--vscode-button-background, var(--accent));
   --button-fg: var(--vscode-button-foreground, HighlightText);
   --success: var(--vscode-charts-green, CanvasText);
   --danger: var(--vscode-charts-red, CanvasText);
@@ -221,7 +222,7 @@ button {
   background: var(--vscode-toolbar-hoverBackground);
 }
 .tab-btn.active, .filter-btn.active {
-  background: var(--accent);
+  background: var(--button-bg);
   color: var(--button-fg);
   font-weight: var(--font-weight-medium);
 }
@@ -413,7 +414,7 @@ button {
   margin: var(--space-1) 0;
 }
 .focus-item code {
-  color: var(--muted);
+  color: var(--text-secondary);
   display: block;
   font-family: var(--font-family-mono);
   font-size: var(--font-size-caption);
@@ -661,11 +662,11 @@ tr:last-child td { border-bottom: 0; }
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
 }
-.heat-cell.heat-1 { background: color-mix(in srgb, var(--accent) 20%, var(--bg)); }
-.heat-cell.heat-2 { background: color-mix(in srgb, var(--accent) 36%, var(--bg)); }
-.heat-cell.heat-3 { background: color-mix(in srgb, var(--accent) 52%, var(--bg)); }
-.heat-cell.heat-4 { background: color-mix(in srgb, var(--accent) 68%, var(--bg)); }
-.heat-cell.heat-5 { background: color-mix(in srgb, var(--accent) 84%, var(--bg)); }
+.heat-cell.heat-1 { background: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+.heat-cell.heat-2 { background: color-mix(in srgb, var(--accent) 15%, var(--bg)); }
+.heat-cell.heat-3 { background: color-mix(in srgb, var(--accent) 22%, var(--bg)); }
+.heat-cell.heat-4 { background: color-mix(in srgb, var(--accent) 29%, var(--bg)); }
+.heat-cell.heat-5 { background: color-mix(in srgb, var(--accent) 36%, var(--bg)); }
 .heatmap-wrapper { max-height: 390px; }
 .trend-heatmap { min-width: 620px; }
 .trend-heatmap th,
@@ -677,11 +678,11 @@ tr:last-child td { border-bottom: 0; }
   min-width: 68px;
 }
 .trend-heat-cell.heat-0 { color: var(--text-secondary); }
-.trend-heat-cell.heat-1 { background: color-mix(in srgb, var(--accent) 20%, var(--card-bg)); }
-.trend-heat-cell.heat-2 { background: color-mix(in srgb, var(--accent) 36%, var(--card-bg)); }
-.trend-heat-cell.heat-3 { background: color-mix(in srgb, var(--accent) 52%, var(--card-bg)); }
-.trend-heat-cell.heat-4 { background: color-mix(in srgb, var(--accent) 68%, var(--card-bg)); }
-.trend-heat-cell.heat-5 { background: color-mix(in srgb, var(--accent) 84%, var(--card-bg)); }
+.trend-heat-cell.heat-1 { background: color-mix(in srgb, var(--accent) 8%, var(--card-bg)); }
+.trend-heat-cell.heat-2 { background: color-mix(in srgb, var(--accent) 15%, var(--card-bg)); }
+.trend-heat-cell.heat-3 { background: color-mix(in srgb, var(--accent) 22%, var(--card-bg)); }
+.trend-heat-cell.heat-4 { background: color-mix(in srgb, var(--accent) 29%, var(--card-bg)); }
+.trend-heat-cell.heat-5 { background: color-mix(in srgb, var(--accent) 36%, var(--card-bg)); }
 .empty-heat-cell { background: transparent; }
 .empty {
   color: var(--text-secondary);
@@ -846,6 +847,11 @@ body.vscode-high-contrast-light .filter-btn {
 .project-row[aria-selected="true"] td {
   background: var(--vscode-list-activeSelectionBackground);
   color: var(--vscode-list-activeSelectionForeground);
+}
+.project-row[aria-selected="true"] .badge,
+.project-row[aria-selected="true"] .project-name-cell small {
+  border-color: currentColor;
+  color: inherit;
 }
 .project-row[aria-selected="true"] { outline: 2px solid var(--accent); outline-offset: -3px; }
 .project-name-cell strong,
