@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx1b88a-j3gll3ab",
+  "type": "task_moved",
+  "message": "Moved \"T32 — Add CI and a complete validation gate\" from In Progress to Done",
+  "createdAt": 1786959102826,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x388-tz8fih2o",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

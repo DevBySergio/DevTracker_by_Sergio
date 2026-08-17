@@ -2,7 +2,7 @@
   "id": "task-msj9x388-tz8fih2o",
   "title": "T32 — Add CI and a complete validation gate",
   "description": "## Objective\n\nUnify type checking, linting, tests, builds, and package validation in a local and CI quality gate.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T32.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033783,
-  "updatedAt": 1786958369518,
+  "updatedAt": 1786959102826,
   "position": 1786127033783,
   "labelIds": [
     "label-msj9x37b-glb1mzea",
@@ -28,58 +28,58 @@
     {
       "id": "check-msj9x3nc-8ak5myc5",
       "text": "Add npm run validate",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033784,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102818
     },
     {
       "id": "check-msj9x3nd-5h17mfpb",
       "text": "Run strict type checking",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033785,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102819
     },
     {
       "id": "check-msj9x3ne-aja8w4hw",
       "text": "Turn relevant lint rules into errors",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033786,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102820
     },
     {
       "id": "check-msj9x3nf-73apgz09",
       "text": "Run unit and integration tests",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033787,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102821
     },
     {
       "id": "check-msj9x3ng-b6pmrrmb",
       "text": "Build the extension and webview for production",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033788,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102822
     },
     {
       "id": "check-msj9x3nh-mf2ra8oh",
       "text": "Validate VSIX structure and contents",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033789,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102823
     },
     {
       "id": "check-msj9x3ni-qfpyk6cd",
       "text": "Run CI for pull requests and master",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033790,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102824
     },
     {
       "id": "check-msj9x3nj-tmxu5gr0",
       "text": "Preserve test results and failed screenshots",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033791,
-      "updatedAt": 1786127326686
+      "updatedAt": 1786959102825
     }
   ],
   "relations": [
