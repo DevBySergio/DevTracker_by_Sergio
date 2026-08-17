@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswyrdk3-t25done",
+  "type": "task_moved",
+  "message": "Moved \"T25 — Implement the Workflow view\" from In Progress to Done",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786954817379,
+  "taskId": "task-msj9x381-6pxtwmej",
+  "metadata": {
+    "from": "in-progress",
+    "to": "done"
+  }
+}

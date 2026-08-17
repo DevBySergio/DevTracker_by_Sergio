@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswybjwh-t25start",
+  "type": "task_moved",
+  "message": "Moved \"T25 — Implement the Workflow view\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786954079105,
+  "taskId": "task-msj9x381-6pxtwmej",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswyxhwo-t26start",
+  "type": "task_moved",
+  "message": "Moved \"T26 — Complete accessibility, responsiveness and theme support\" from Backlog to In Progress",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1786955102952,
+  "taskId": "task-msj9x382-110rg3j5",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

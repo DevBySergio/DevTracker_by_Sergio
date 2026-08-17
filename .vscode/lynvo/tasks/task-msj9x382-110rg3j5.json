@@ -2,7 +2,7 @@
   "id": "task-msj9x382-110rg3j5",
   "title": "T26 — Complete accessibility, responsiveness and theme support",
   "description": "## Objective\n\nEnsure complete navigation, readability, and consistency across supported VS Code themes and sizes.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T26.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033649,
-  "updatedAt": 1786127326674,
+  "updatedAt": 1786955102952,
   "position": 1786127033649,
   "labelIds": [
     "label-msj9x378-ofqe4hvu",

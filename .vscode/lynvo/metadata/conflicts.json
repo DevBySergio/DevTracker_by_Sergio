@@ -628,5 +628,35 @@
     "remoteValue": "backlog",
     "createdAt": 1786827537097,
     "resolved": true
+  },
+  "task-task-msj9x380-gkrvze5x-status": {
+    "id": "task-task-msj9x380-gkrvze5x-status",
+    "entityType": "task",
+    "entityId": "task-msj9x380-gkrvze5x",
+    "field": "status",
+    "localValue": "done",
+    "remoteValue": "backlog",
+    "createdAt": 1786955345383,
+    "resolved": false
+  },
+  "task-task-msj9x381-6pxtwmej-status": {
+    "id": "task-task-msj9x381-6pxtwmej-status",
+    "entityType": "task",
+    "entityId": "task-msj9x381-6pxtwmej",
+    "field": "status",
+    "localValue": "done",
+    "remoteValue": "backlog",
+    "createdAt": 1786955345383,
+    "resolved": false
+  },
+  "task-task-msj9x382-110rg3j5-status": {
+    "id": "task-task-msj9x382-110rg3j5-status",
+    "entityType": "task",
+    "entityId": "task-msj9x382-110rg3j5",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786955345383,
+    "resolved": false
   }
 }
