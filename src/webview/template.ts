@@ -142,7 +142,7 @@ export function renderDashboardHtml(
       <div class="view-controls">${filters}${customRangeControls}</div>
     </div>
 
-    <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-overview">
+    <section id="view-today" class="view-section active" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
       <div id="overview-empty" class="card overview-empty" hidden>
         <div class="empty-mark" aria-hidden="true"></div>
         <h2>${EN.empty.overviewTitle}</h2>
@@ -177,7 +177,7 @@ export function renderDashboardHtml(
           </div>
         </div>
         <div class="grid-2">
-          ${ChartPanel({ title: EN.panels.todayTimeline, canvasId: "todayTrendChart", ariaLabel: EN.aria.activeHoursTodayChart, short: true })}
+          ${ChartPanel({ title: EN.panels.todayTimeline, canvasId: "todayTrendChart", ariaLabel: EN.aria.activeHoursTodayChart, short: true, describedBy: "overview-timeline-table-summary", tableAlternative: dataTable("overview-timeline-table", EN.tables.todayTimeline) })}
           ${Card(`<div class="card-title">${EN.panels.focusProfile}</div><div class="focus-profile">
             <div class="focus-item"><div class="focus-heading"><span>${EN.focusProfile.topThreeFiles}</span><strong id="focus-files-value">—</strong></div><p id="focus-files-description">${EN.focusProfile.topThreeFilesDescription}</p><code id="focus-files-formula"></code></div>
             <div class="focus-item"><div class="focus-heading"><span>${EN.focusProfile.fileSwitches}</span><strong id="focus-switches-value">—</strong></div><p id="focus-switches-description">${EN.focusProfile.fileSwitchesDescription}</p><code id="focus-switches-formula"></code></div>
@@ -191,7 +191,7 @@ export function renderDashboardHtml(
       </div>
     </section>
 
-    <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-trends" hidden>
+    <section id="view-project" class="view-section" role="tabpanel" aria-labelledby="tab-trends" tabindex="0" hidden>
       <div class="grid-4">
         ${Card(`<div class="card-title">${EN.metrics.activeTime}</div><div class="metric-row"><div class="metric-big" id="trend-active-time">0m</div><span class="delta" id="trend-active-time-delta">—</span></div><div class="metric-sub" id="trend-comparison-status">${EN.status.comparisonUnavailable}</div>`, "metric-card")}
         ${Metric({ id: "trend-active-days", title: EN.metrics.activeDays, value: "0", subtitle: EN.status.consistencyZero })}
@@ -199,16 +199,16 @@ export function renderDashboardHtml(
         ${Metric({ id: "trend-streak", title: EN.metrics.currentStreak, value: "0 days", subtitle: EN.status.longestZeroDays })}
       </div>
       <div class="grid-2">
-        ${Card(`<div class="card-title">${EN.panels.dailyActivity}</div><div class="chart-container"><canvas id="trendsActivityChart" role="img" aria-label="${EN.aria.dailyActivityChart}"></canvas></div>${dataTable("trends-activity-table", EN.tables.dailyActivity)}`)}
-        ${Card(`<div class="card-title">${EN.panels.flowAndSwitches}</div><div class="chart-container"><canvas id="trendsFlowChart" role="img" aria-label="${EN.aria.flowAndSwitchesChart}"></canvas></div>${dataTable("trends-flow-table", EN.tables.flowAndSwitches)}`)}
+        ${Card(`<div class="card-title">${EN.panels.dailyActivity}</div><div class="chart-container"><canvas id="trendsActivityChart" role="img" aria-label="${EN.aria.dailyActivityChart}" aria-describedby="trends-activity-table-summary"></canvas></div>${dataTable("trends-activity-table", EN.tables.dailyActivity)}`)}
+        ${Card(`<div class="card-title">${EN.panels.flowAndSwitches}</div><div class="chart-container"><canvas id="trendsFlowChart" role="img" aria-label="${EN.aria.flowAndSwitchesChart}" aria-describedby="trends-flow-table-summary"></canvas></div>${dataTable("trends-flow-table", EN.tables.flowAndSwitches)}`)}
       </div>
       <div class="grid-2">
         ${Card(`<div class="card-title">${EN.panels.activityHeatmap}</div><div class="table-wrapper heatmap-wrapper"><table id="trends-heatmap-table" class="trend-heatmap"></table></div>`)}
-        ${Card(`<div class="card-title">${EN.panels.languageEvolution}</div><div class="chart-container"><canvas id="trendsLanguageChart" role="img" aria-label="${EN.aria.languageEvolutionChart}"></canvas></div>${dataTable("trends-language-table", EN.tables.languageEvolution)}`)}
+        ${Card(`<div class="card-title">${EN.panels.languageEvolution}</div><div class="chart-container"><canvas id="trendsLanguageChart" role="img" aria-label="${EN.aria.languageEvolutionChart}" aria-describedby="trends-language-table-summary"></canvas></div>${dataTable("trends-language-table", EN.tables.languageEvolution)}`)}
       </div>
     </section>
 
-    <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-workflow" hidden>
+    <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-workflow" tabindex="0" hidden>
       <div class="grid-4">
         ${Metric({ id: "w-current", title: EN.metrics.currentDiagnostics, value: "0", subtitle: EN.workflow.currentDescription, tone: "danger" })}
         ${Metric({ id: "w-introduced", title: EN.metrics.introducedDiagnostics, value: "0", subtitle: EN.workflow.introducedDescription, tone: "warning" })}
@@ -226,7 +226,7 @@ export function renderDashboardHtml(
       </div>
     </section>
 
-    <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-projects" hidden>
+    <section id="view-global" class="view-section" role="tabpanel" aria-labelledby="tab-projects" tabindex="0" hidden>
       <div class="grid-4">
         ${Metric({ id: "g-time", title: EN.metrics.trackedTime, value: "0m", subtitle: EN.status.allTrackedActivity })}
         ${Metric({ id: "g-projects", title: EN.metrics.projects, value: "0", subtitle: EN.status.withActivity })}
@@ -262,5 +262,5 @@ export function renderDashboardHtml(
 }
 
 function dataTable(id: string, summary: string): string {
-  return `<details class="chart-data"><summary>${escapeHtml(summary)}</summary><div class="table-wrapper"><table id="${escapeAttribute(id)}"></table></div></details>`;
+  return `<details class="chart-data"><summary id="${escapeAttribute(id)}-summary">${escapeHtml(summary)}</summary><div class="table-wrapper"><table id="${escapeAttribute(id)}"></table></div></details>`;
 }

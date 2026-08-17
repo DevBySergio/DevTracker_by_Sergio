@@ -30,7 +30,7 @@ export function Metric(options: {
     : "";
   const suffix = options.valueSuffix ?? "";
   const primary = options.primary ? ' data-primary-metric="true"' : "";
-  return `<div class="card metric-card${tone}"${aria}${primary}><div class="card-title">${escapeHtml(options.title)}</div><div class="metric-big" id="${escapeAttribute(options.id)}" aria-live="polite">${escapeHtml(options.value)}</div><div class="metric-sub" id="${escapeAttribute(options.id)}-sub">${escapeHtml(options.subtitle)}</div>${suffix}</div>`;
+  return `<div class="card metric-card${tone}"${aria}${primary}><div class="card-title">${escapeHtml(options.title)}</div><div class="metric-big" id="${escapeAttribute(options.id)}">${escapeHtml(options.value)}</div><div class="metric-sub" id="${escapeAttribute(options.id)}-sub">${escapeHtml(options.subtitle)}</div>${suffix}</div>`;
 }
 
 export function Toolbar(options: {
@@ -47,9 +47,9 @@ export function Toolbar(options: {
     const active = item.active === true;
     const role = options.role === "tablist" ? ' role="tab"' : "";
     const selected = options.role === "tablist"
-      ? ` aria-selected="${String(active)}" aria-controls="view-${escapeAttribute(item.value)}"`
-      : "";
-    return `<button class="${escapeAttribute(options.buttonClassName)}${active ? " active" : ""}" data-${options.dataAttribute}="${escapeAttribute(item.value)}" id="${escapeAttribute(item.id)}"${role}${selected}>${escapeHtml(item.label)}</button>`;
+      ? ` aria-selected="${String(active)}" aria-controls="view-${escapeAttribute(item.value)}" tabindex="${active ? "0" : "-1"}"`
+      : ` aria-pressed="${String(active)}"`;
+    return `<button type="button" class="${escapeAttribute(options.buttonClassName)}${active ? " active" : ""}" data-${options.dataAttribute}="${escapeAttribute(item.value)}" id="${escapeAttribute(item.id)}"${role}${selected}>${escapeHtml(item.label)}</button>`;
   }).join("");
   const id = options.id ? ` id="${escapeAttribute(options.id)}"` : "";
   const hidden = options.hidden === true ? " hidden" : "";
@@ -66,12 +66,14 @@ export function ChartPanel(options: {
   ariaLabel: string;
   short?: boolean;
   accessory?: string;
+  tableAlternative?: string;
+  describedBy?: string;
 }): string {
   const heading = options.accessory
     ? `<div class="metric-row"><div class="card-title">${escapeHtml(options.title)}</div>${options.accessory}</div>`
     : `<div class="card-title">${escapeHtml(options.title)}</div>`;
   return Card(
-    `${heading}<div class="chart-container${options.short ? " chart-short" : ""}"><canvas id="${escapeAttribute(options.canvasId)}" role="img" aria-label="${escapeAttribute(options.ariaLabel)}"></canvas></div>`,
+    `${heading}<div class="chart-container${options.short ? " chart-short" : ""}"><canvas id="${escapeAttribute(options.canvasId)}" role="img" aria-label="${escapeAttribute(options.ariaLabel)}"${options.describedBy ? ` aria-describedby="${escapeAttribute(options.describedBy)}"` : ""}></canvas></div>${options.tableAlternative ?? ""}`,
   );
 }
 

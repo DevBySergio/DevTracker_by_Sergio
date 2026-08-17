@@ -32,6 +32,10 @@ import {
   WorkflowIntegrationState,
   buildWorkflowViewModel,
 } from "../src/webview/workflowModel";
+import {
+  isTabNavigationKey,
+  nextTabIndex,
+} from "../src/webview/accessibility";
 
 declare const Chart: any;
 interface VsCodeApi {
@@ -44,9 +48,14 @@ declare function acquireVsCodeApi(): VsCodeApi;
 
 const themeColor = (name: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-Chart.defaults.color = themeColor('--text-secondary');
-Chart.defaults.borderColor = themeColor('--card-border');
-Chart.defaults.font.family = themeColor('--font-family');
+
+function applyChartThemeDefaults() {
+  Chart.defaults.color = themeColor('--text-secondary');
+  Chart.defaults.borderColor = themeColor('--card-border');
+  Chart.defaults.font.family = themeColor('--font-family');
+}
+
+applyChartThemeDefaults();
 
 const initialData = JSON.parse(
   document.getElementById('initial-data')?.textContent ?? "{}",
@@ -96,13 +105,23 @@ let trendsFlowChart = null;
 let trendsLanguageChart = null;
 
 const dayNames = EN.dayNames;
-const colors = Array.from(
+let colors = Array.from(
   { length: 8 },
   (_value, index) => themeColor(`--chart-${index + 1}`),
 );
 
-document.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach(button => {
+const tabButtons = Array.from(
+  document.querySelectorAll<HTMLButtonElement>('.tab-btn'),
+);
+tabButtons.forEach((button, index) => {
   button.addEventListener('click', () => switchTab(button.dataset.tab as DashboardViewName));
+  button.addEventListener('keydown', event => {
+    if (!isTabNavigationKey(event.key)) { return; }
+    event.preventDefault();
+    const target = tabButtons[nextTabIndex(index, event.key, tabButtons.length)];
+    switchTab(target.dataset.tab as DashboardViewName);
+    target.focus();
+  });
 });
 document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
   button.addEventListener('click', () => setRange(button.dataset.range as DashboardRangeName));
@@ -157,6 +176,17 @@ document.getElementById('project-open-trends')?.addEventListener('click', () => 
   switchTab('project');
 });
 
+const forcedColors = window.matchMedia('(forced-colors: active)');
+forcedColors.addEventListener('change', () => {
+  updateForcedColorAlternatives();
+  refreshChartTheme();
+});
+const themeObserver = new MutationObserver(() => refreshChartTheme());
+themeObserver.observe(document.body, {
+  attributes: true,
+  attributeFilter: ['class', 'style'],
+});
+
 window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage>) => {
   const msg = event.data;
   if (!msg || msg.protocolVersion !== initialData.protocolVersion) {
@@ -206,6 +236,7 @@ window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage
 renderProjectOptions();
 applyShellState();
 renderTrackingStatus(initialData.trackingStatus, initialData.lastUpdatedAt);
+updateForcedColorAlternatives();
 persistDashboardState();
 requestView();
 
@@ -221,6 +252,7 @@ function applyShellState() {
     const active = (item as HTMLElement).dataset.tab === currentTab;
     item.classList.toggle('active', active);
     item.setAttribute('aria-selected', String(active));
+    (item as HTMLButtonElement).tabIndex = active ? 0 : -1;
   });
   document.querySelectorAll<HTMLElement>('.view-section').forEach(section => {
     const active = section.id === 'view-' + currentTab;
@@ -238,7 +270,9 @@ function applyShellState() {
   customStart.max = today;
   customEnd.max = today;
   document.querySelectorAll<HTMLButtonElement>('.filter-btn').forEach(button => {
-    button.classList.toggle('active', button.dataset.range === currentRange);
+    const active = button.dataset.range === currentRange;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
   });
   (document.getElementById('project-selector') as HTMLSelectElement).value = selectedProjectId ?? '';
   updateHeader();
@@ -380,6 +414,30 @@ function render() {
   if (currentTab === 'project') { renderProject(); }
   if (currentTab === 'quality') { renderQuality(); }
   if (currentTab === 'global') { renderGlobal(); }
+}
+
+function refreshChartTheme() {
+  applyChartThemeDefaults();
+  colors = Array.from(
+    { length: 8 },
+    (_value, index) => themeColor(`--chart-${index + 1}`),
+  );
+  [todayTrendChart, trendsActivityChart, trendsFlowChart, trendsLanguageChart]
+    .forEach(chart => chart?.destroy?.());
+  todayTrendChart = null;
+  trendsActivityChart = null;
+  trendsFlowChart = null;
+  trendsLanguageChart = null;
+  if (!dashboardData) { return; }
+  if (currentTab === 'today') { renderToday(); }
+  if (currentTab === 'project') { renderProject(); }
+}
+
+function updateForcedColorAlternatives() {
+  document.body.classList.toggle('forced-colors-active', forcedColors.matches);
+  document.querySelectorAll<HTMLDetailsElement>('.chart-data').forEach(details => {
+    if (forcedColors.matches) { details.open = true; }
+  });
 }
 
 function updateHeader() {
@@ -1319,6 +1377,16 @@ function renderOverviewTimeline(overview: OverviewViewModel) {
   const values = overview.timeline.map(bucket => bucket.activeTimeMs / 60000);
   const canvas = document.getElementById('todayTrendChart');
 
+  renderDataTable(
+    'overview-timeline-table',
+    'Active time in 15-minute buckets today',
+    ['Time', 'Active time'],
+    overview.timeline.map(bucket => [
+      bucket.label,
+      fmt(bucket.activeTimeMs / 1000),
+    ]),
+  );
+
   if (todayTrendChart) {
     todayTrendChart.data.labels = labels;
     todayTrendChart.data.datasets[0].data = values;
@@ -1539,19 +1607,25 @@ function renderFileTable(id, rows, touches, emptyText) {
 }
 
 function renderProjectTable(projects: ProjectsViewModel) {
-  const table = document.getElementById('global-projects-table')!;
+  const table = document.getElementById('global-projects-table') as HTMLTableElement;
   const rows = projects.visibleProjects;
   table.replaceChildren();
+  const caption = document.createElement('caption');
+  caption.textContent = 'Tracked projects in the selected range';
+  table.append(caption);
   if (!rows.length) {
+    const body = document.createElement('tbody');
     const row = document.createElement('tr');
     const cell = document.createElement('td');
     cell.colSpan = EN.tableHeaders.project.length;
     cell.className = 'empty';
     cell.textContent = EN.empty.noProjectsMatch;
     row.append(cell);
-    table.append(row);
+    body.append(row);
+    table.append(body);
     return;
   }
+  const head = document.createElement('thead');
   const header = document.createElement('tr');
   EN.tableHeaders.project.forEach(text => {
     const th = document.createElement('th');
@@ -1560,7 +1634,9 @@ function renderProjectTable(projects: ProjectsViewModel) {
     if (text !== EN.tableHeaders.project[0]) { th.className = 'text-right'; }
     header.append(th);
   });
-  table.append(header);
+  head.append(header);
+  table.append(head);
+  const body = document.createElement('tbody');
   rows.forEach(item => {
     const row = document.createElement('tr');
     row.className = 'project-row';
@@ -1607,8 +1683,9 @@ function renderProjectTable(projects: ProjectsViewModel) {
     });
     status.append(statuses);
     row.append(name, time, trend, lastActivity, status);
-    table.append(row);
+    body.append(row);
   });
+  table.append(body);
 }
 
 function renderProjectDetails(projects: ProjectsViewModel) {

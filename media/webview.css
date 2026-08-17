@@ -8,8 +8,8 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-pill: 999px;
-  --font-family: var(--vscode-font-family);
-  --font-family-mono: var(--vscode-editor-font-family);
+  --font-family: var(--vscode-font-family, system-ui, sans-serif);
+  --font-family-mono: var(--vscode-editor-font-family, ui-monospace, monospace);
   --font-size-caption: 0.76rem;
   --font-size-body-sm: 0.9rem;
   --font-size-body: 1rem;
@@ -18,33 +18,33 @@
   --font-weight-medium: 600;
   --font-weight-semibold: 650;
   --font-weight-bold: 700;
-  --bg: var(--vscode-editor-background);
-  --fg: var(--vscode-editor-foreground);
-  --surface: var(--vscode-sideBar-background);
-  --surface-raised: var(--vscode-editorWidget-background);
-  --card-bg: var(--vscode-sideBar-background);
-  --card-border: var(--vscode-widget-border);
-  --accent: var(--vscode-textLink-foreground);
-  --text-secondary: var(--vscode-descriptionForeground);
-  --muted: var(--vscode-disabledForeground);
-  --focus-ring: var(--vscode-focusBorder);
-  --button-fg: var(--vscode-button-foreground);
-  --success: var(--vscode-charts-green);
-  --danger: var(--vscode-charts-red);
-  --info: var(--vscode-charts-blue);
-  --warning: var(--vscode-charts-yellow);
-  --chart-1: var(--vscode-charts-blue);
-  --chart-2: var(--vscode-charts-green);
-  --chart-3: var(--vscode-charts-orange);
-  --chart-4: var(--vscode-charts-yellow);
-  --chart-5: var(--vscode-charts-purple);
-  --chart-6: var(--vscode-charts-foreground);
-  --chart-7: var(--vscode-charts-red);
-  --chart-8: var(--vscode-charts-lines);
+  --bg: var(--vscode-editor-background, Canvas);
+  --fg: var(--vscode-editor-foreground, CanvasText);
+  --surface: var(--vscode-sideBar-background, Canvas);
+  --surface-raised: var(--vscode-editorWidget-background, Canvas);
+  --card-bg: var(--vscode-sideBar-background, Canvas);
+  --card-border: var(--vscode-contrastBorder, var(--vscode-widget-border, GrayText));
+  --accent: var(--vscode-textLink-foreground, LinkText);
+  --text-secondary: var(--vscode-descriptionForeground, CanvasText);
+  --muted: var(--vscode-disabledForeground, GrayText);
+  --focus-ring: var(--vscode-focusBorder, Highlight);
+  --button-fg: var(--vscode-button-foreground, HighlightText);
+  --success: var(--vscode-charts-green, CanvasText);
+  --danger: var(--vscode-charts-red, CanvasText);
+  --info: var(--vscode-charts-blue, CanvasText);
+  --warning: var(--vscode-charts-yellow, CanvasText);
+  --chart-1: var(--vscode-charts-blue, CanvasText);
+  --chart-2: var(--vscode-charts-green, CanvasText);
+  --chart-3: var(--vscode-charts-orange, CanvasText);
+  --chart-4: var(--vscode-charts-yellow, CanvasText);
+  --chart-5: var(--vscode-charts-purple, CanvasText);
+  --chart-6: var(--vscode-charts-foreground, CanvasText);
+  --chart-7: var(--vscode-charts-red, CanvasText);
+  --chart-8: var(--vscode-charts-lines, GrayText);
 }
 
 * { box-sizing: border-box; }
-html { font-size: var(--vscode-font-size); }
+html { font-size: var(--vscode-font-size, 13px); }
 body {
   background: var(--bg);
   color: var(--fg);
@@ -206,7 +206,8 @@ button {
   cursor: pointer;
   font: inherit;
 }
-button:focus-visible, .skip-link:focus-visible {
+:where(button, input, select, summary, [tabindex="0"]):focus-visible,
+.skip-link:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
@@ -214,18 +215,15 @@ button:focus-visible, .skip-link:focus-visible {
   border-radius: var(--radius-md);
   color: var(--fg);
   min-height: 34px;
-  opacity: 0.86;
   padding: var(--space-2) var(--space-3);
 }
 .tab-btn:hover, .filter-btn:hover {
   background: var(--vscode-toolbar-hoverBackground);
-  opacity: 1;
 }
 .tab-btn.active, .filter-btn.active {
   background: var(--accent);
   color: var(--button-fg);
   font-weight: var(--font-weight-medium);
-  opacity: 1;
 }
 .container {
   flex: 1;
@@ -304,6 +302,7 @@ button:focus-visible, .skip-link:focus-visible {
 }
 .view-section { display: none; }
 .view-section.active { display: block; }
+.view-section:focus-visible { outline-offset: -2px; }
 .overview-empty {
   align-items: center;
   display: flex;
@@ -454,6 +453,13 @@ button:focus-visible, .skip-link:focus-visible {
   .tabs, .filters { flex-wrap: wrap; }
 }
 @media (max-width: 620px) {
+  .container { padding: var(--space-3); }
+  .tabs, .filters { width: 100%; }
+  .tab-btn { flex: 1 1 calc(50% - var(--space-1)); }
+  .filter-btn { flex: 1 1 calc(33.333% - var(--space-1)); }
+  .navbar-actions { flex-wrap: wrap; }
+  .custom-range-controls { justify-content: flex-start; width: 100%; }
+  .view-controls { align-items: stretch; width: 100%; }
   .overview-supporting-metrics { grid-template-columns: 1fr; }
   .overview-hero-heading { flex-direction: column; }
   .overview-runtime { align-items: flex-start; }
@@ -780,6 +786,15 @@ tr:last-child td { border-bottom: 0; }
   padding: var(--space-2) 0;
 }
 .workflow-integrations .task-row .value { text-align: left; }
+body.vscode-high-contrast .card,
+body.vscode-high-contrast-light .card,
+body.vscode-high-contrast .tabs,
+body.vscode-high-contrast-light .tabs,
+body.vscode-high-contrast .filter-btn,
+body.vscode-high-contrast-light .filter-btn {
+  border-color: var(--vscode-contrastBorder, CanvasText);
+  box-shadow: none;
+}
 .projects-layout {
   display: grid;
   gap: var(--space-3);
@@ -827,10 +842,12 @@ tr:last-child td { border-bottom: 0; }
 }
 .projects-table-wrapper { max-height: 520px; }
 .project-row { cursor: pointer; }
+.project-row:focus-visible { outline-offset: -3px; }
 .project-row[aria-selected="true"] td {
   background: var(--vscode-list-activeSelectionBackground);
   color: var(--vscode-list-activeSelectionForeground);
 }
+.project-row[aria-selected="true"] { outline: 2px solid var(--accent); outline-offset: -3px; }
 .project-name-cell strong,
 .project-name-cell small {
   display: block;
@@ -904,6 +921,14 @@ tr:last-child td { border-bottom: 0; }
   .projects-layout { grid-template-columns: 1fr; }
   .projects-toolbar { grid-template-columns: 1fr; }
 }
+@media (max-width: 420px) {
+  .integration-stats { grid-template-columns: 1fr; }
+  .project-identity div { grid-template-columns: 1fr; }
+  .project-preference-actions,
+  .project-detail-heading,
+  .project-detail-metrics { align-items: flex-start; flex-direction: column; }
+  .metric-big { font-size: clamp(1.55rem, 10vw, var(--font-size-metric)); }
+}
 @media (prefers-reduced-motion: reduce) {
   .container { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -911,4 +936,29 @@ tr:last-child td { border-bottom: 0; }
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
   }
+}
+@media (forced-colors: active) {
+  .card,
+  .tabs,
+  .filter-btn,
+  .actions-menu summary,
+  .table-wrapper,
+  .badge,
+  .integration-cta { border-color: CanvasText; box-shadow: none; }
+  .tab-btn.active,
+  .filter-btn.active,
+  .primary-button,
+  .custom-range-controls button {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+  .metric-card,
+  .metric-card.warning,
+  .metric-card.danger,
+  .metric-card.success { border-left-color: CanvasText; }
+  .chart-container { display: none; }
+  .trend-heat-cell,
+  .heat-cell { background: Canvas !important; border-color: CanvasText; color: CanvasText; }
+  .project-row[aria-selected="true"] { outline-color: Highlight; }
 }

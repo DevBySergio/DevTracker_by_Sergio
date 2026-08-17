@@ -143,6 +143,7 @@ export const ENGLISH_STRINGS = {
     diagnostics: ["Severity", "Current", "Introduced", "Resolved", "Peak"],
   },
   tables: {
+    todayTimeline: "View 15-minute activity data",
     dailyActivity: "View daily activity data",
     flowAndSwitches: "View flow and switch data",
     languageEvolution: "View language evolution data",

@@ -89,6 +89,8 @@ suite("WebviewFoundation", () => {
     ["Overview", "Trends", "Projects", "Workflow"].forEach((label) =>
       assert.match(html, new RegExp(`>${label}</button>`)),
     );
+    assert.match(html, /id="tab-overview"[^>]+aria-selected="true"[^>]+tabindex="0"/);
+    assert.match(html, /id="tab-trends"[^>]+aria-selected="false"[^>]+tabindex="-1"/);
     assert.match(html, /<select id="project-selector">/);
     assert.match(html, /value="project-alpha" selected>Alpha<\/option>/);
     assert.match(html, /id="tracking-status"[^>]+data-status="paused"/);
@@ -115,10 +117,18 @@ suite("WebviewFoundation", () => {
     ["7-days", "30-days", "90-days", "year", "custom"].forEach((range) =>
       assert.match(html, new RegExp(`data-range="${range}"`)),
     );
+    assert.match(html, /data-range="7-days"[^>]+aria-pressed="true"/);
+    assert.match(html, /data-range="30-days"[^>]+aria-pressed="false"/);
+    assert.ok(!html.includes('aria-live="polite"'));
+    assert.strictEqual(html.match(/role="tabpanel"/g)?.length, 4);
+    assert.strictEqual(html.match(/role="tabpanel"[^>]+tabindex="0"/g)?.length, 4);
     assert.match(html, /id="custom-range-controls"[^>]+hidden/);
     assert.match(html, /id="trendsActivityChart"/);
     assert.match(html, /id="trendsFlowChart"/);
     assert.match(html, /id="trendsLanguageChart"/);
+    assert.match(html, /id="todayTrendChart"[^>]+aria-describedby="overview-timeline-table-summary"/);
+    assert.match(html, /id="overview-timeline-table"/);
+    assert.match(html, /id="trendsActivityChart"[^>]+aria-describedby="trends-activity-table-summary"/);
     assert.match(html, /id="trends-heatmap-table"/);
     assert.match(html, /id="projects-search"/);
     assert.match(html, /id="projects-sort"/);
@@ -296,6 +306,12 @@ suite("WebviewFoundation", () => {
       }),
       /A &lt; B/,
     );
+    assert.ok(!Metric({
+      id: "quiet",
+      title: "Quiet metric",
+      value: "1",
+      subtitle: "Routine updates are not live",
+    }).includes("aria-live"));
     assert.match(EmptyState("No <data>"), /No &lt;data&gt;/);
     assert.match(
       ChartPanel({
@@ -329,8 +345,12 @@ suite("WebviewFoundation", () => {
     assert.match(stylesheet, /--space-1:/);
     assert.match(stylesheet, /--radius-lg:/);
     assert.match(stylesheet, /--font-size-metric:/);
-    assert.match(stylesheet, /--success: var\(--vscode-charts-green\)/);
-    assert.match(stylesheet, /--danger: var\(--vscode-charts-red\)/);
+    assert.match(stylesheet, /--success: var\(--vscode-charts-green,/);
+    assert.match(stylesheet, /--danger: var\(--vscode-charts-red,/);
+    assert.match(stylesheet, /@media \(forced-colors: active\)/);
+    assert.match(stylesheet, /@media \(prefers-reduced-motion: reduce\)/);
+    assert.match(stylesheet, /body\.vscode-high-contrast/);
+    assert.match(stylesheet, /@media \(max-width: 420px\)/);
     assert.ok(!/#[0-9a-f]{3,8}/i.test(stylesheet));
     assert.ok(!/rgba?\(/i.test(stylesheet));
 
