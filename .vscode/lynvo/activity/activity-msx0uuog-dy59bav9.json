@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx0uuog-dy59bav9",
+  "type": "task_moved",
+  "message": "Moved \"T32 — Add CI and a complete validation gate\" from Backlog to In Progress",
+  "createdAt": 1786958338768,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x388-tz8fih2o",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

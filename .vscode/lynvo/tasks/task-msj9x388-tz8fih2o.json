@@ -2,7 +2,7 @@
   "id": "task-msj9x388-tz8fih2o",
   "title": "T32 — Add CI and a complete validation gate",
   "description": "## Objective\n\nUnify type checking, linting, tests, builds, and package validation in a local and CI quality gate.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T32.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033783,
-  "updatedAt": 1786127326686,
+  "updatedAt": 1786958369518,
   "position": 1786127033783,
   "labelIds": [
     "label-msj9x37b-glb1mzea",
