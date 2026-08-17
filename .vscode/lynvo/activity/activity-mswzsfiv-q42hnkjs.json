@@ -1,0 +1,15 @@
+{
+  "id": "activity-mswzsfiv-q42hnkjs",
+  "type": "task_moved",
+  "message": "Moved \"T30 — Add webview accessibility and visual regression tests\" from Backlog to In Progress",
+  "createdAt": 1786956546199,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x386-phlzn1ks",
+  "metadata": {
+    "from": "backlog",
+    "to": "in-progress"
+  }
+}

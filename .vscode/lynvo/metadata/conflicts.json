@@ -658,5 +658,15 @@
     "remoteValue": "in-progress",
     "createdAt": 1786956185200,
     "resolved": true
+  },
+  "task-task-msj9x386-phlzn1ks-status": {
+    "id": "task-task-msj9x386-phlzn1ks-status",
+    "entityType": "task",
+    "entityId": "task-msj9x386-phlzn1ks",
+    "field": "status",
+    "localValue": "in-progress",
+    "remoteValue": "backlog",
+    "createdAt": 1786956664832,
+    "resolved": false
   }
 }

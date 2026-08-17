@@ -2,7 +2,7 @@
   "id": "task-msj9x386-phlzn1ks",
   "title": "T30 — Add webview accessibility and visual regression tests",
   "description": "## Objective\n\nPrevent visual and accessibility regressions across primary states, themes, and sizes.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T30.",
-  "status": "backlog",
+  "status": "in-progress",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033741,
-  "updatedAt": 1786127326682,
+  "updatedAt": 1786956546199,
   "position": 1786127033741,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
