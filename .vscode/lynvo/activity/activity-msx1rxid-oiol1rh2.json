@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx1rxid-oiol1rh2",
+  "type": "checklist_updated",
+  "message": "Completed \"Explain opt-in integrations\" in \"T33 — Rewrite documentation, privacy text and release artifacts\"",
+  "createdAt": 1786959882085,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x389-ckif110z",
+  "metadata": {
+    "checklistItemId": "check-msj9x3o2-q6vj7a3s",
+    "done": true
+  }
+}

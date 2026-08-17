@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx1rxif-56no67oe",
+  "type": "checklist_updated",
+  "message": "Completed \"Complete the changelog for previous versions\" in \"T33 — Rewrite documentation, privacy text and release artifacts\"",
+  "createdAt": 1786959882087,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x389-ckif110z",
+  "metadata": {
+    "checklistItemId": "check-msj9x3o4-3r5pppy1",
+    "done": true
+  }
+}

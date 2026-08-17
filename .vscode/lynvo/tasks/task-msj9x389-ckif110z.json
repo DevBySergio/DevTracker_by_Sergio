@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033805,
-  "updatedAt": 1786959484748,
+  "updatedAt": 1786959882089,
   "position": 1786127033805,
   "labelIds": [
     "label-msj9x37a-nsh60545",
@@ -28,65 +28,65 @@
     {
       "id": "check-msj9x3ny-bamcq6ea",
       "text": "Rewrite the README with accurate capabilities",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033806,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882081
     },
     {
       "id": "check-msj9x3nz-io3tmui0",
       "text": "Remove unsupported productivity claims",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033807,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882082
     },
     {
       "id": "check-msj9x3o0-eyra2ewl",
       "text": "Document every metric",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033808,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882083
     },
     {
       "id": "check-msj9x3o1-w2k3rxob",
       "text": "Document storage, retention, and exclusions",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033809,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882084
     },
     {
       "id": "check-msj9x3o2-q6vj7a3s",
       "text": "Explain opt-in integrations",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033810,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882085
     },
     {
       "id": "check-msj9x3o3-7oanq2fd",
       "text": "Update privacy and export documentation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033811,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882086
     },
     {
       "id": "check-msj9x3o4-3r5pppy1",
       "text": "Complete the changelog for previous versions",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033812,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882087
     },
     {
       "id": "check-msj9x3o5-4fws51lr",
       "text": "Generate current screenshots of all four views",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033813,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882088
     },
     {
       "id": "check-msj9x3o6-s3akdohl",
       "text": "Keep all product documentation in English",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033814,
-      "updatedAt": 1786127326688
+      "updatedAt": 1786959882089
     }
   ],
   "relations": [
