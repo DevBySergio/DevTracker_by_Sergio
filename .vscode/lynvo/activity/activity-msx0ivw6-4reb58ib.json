@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx0ivw6-4reb58ib",
+  "type": "checklist_updated",
+  "message": "Completed \"Capture widths of 600, 900, and 1400 pixels\" in \"T30 — Add webview accessibility and visual regression tests\"",
+  "createdAt": 1786957780470,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x386-phlzn1ks",
+  "metadata": {
+    "checklistItemId": "check-msj9x3ma-n9p16acr",
+    "done": true
+  }
+}

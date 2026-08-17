@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx0ivw0-jphao2ml",
+  "type": "checklist_updated",
+  "message": "Completed \"Create an isolated webview harness\" in \"T30 — Add webview accessibility and visual regression tests\"",
+  "createdAt": 1786957780464,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x386-phlzn1ks",
+  "metadata": {
+    "checklistItemId": "check-msj9x3m6-xfgay854",
+    "done": true
+  }
+}

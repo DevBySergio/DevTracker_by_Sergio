@@ -1,0 +1,15 @@
+{
+  "id": "activity-msx0ivw9-aygeumkd",
+  "type": "checklist_updated",
+  "message": "Completed \"Block significant visual regressions\" in \"T30 — Add webview accessibility and visual regression tests\"",
+  "createdAt": 1786957780473,
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "taskId": "task-msj9x386-phlzn1ks",
+  "metadata": {
+    "checklistItemId": "check-msj9x3md-pzseee2e",
+    "done": true
+  }
+}

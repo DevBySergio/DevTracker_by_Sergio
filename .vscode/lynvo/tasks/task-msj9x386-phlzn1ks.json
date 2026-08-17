@@ -2,7 +2,7 @@
   "id": "task-msj9x386-phlzn1ks",
   "title": "T30 — Add webview accessibility and visual regression tests",
   "description": "## Objective\n\nPrevent visual and accessibility regressions across primary states, themes, and sizes.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T30.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033741,
-  "updatedAt": 1786956546199,
+  "updatedAt": 1786957780474,
   "position": 1786127033741,
   "labelIds": [
     "label-msj9x379-b0gg52nk",
@@ -23,58 +23,58 @@
     {
       "id": "check-msj9x3m6-xfgay854",
       "text": "Create an isolated webview harness",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033742,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780464
     },
     {
       "id": "check-msj9x3m7-83l0p6cq",
       "text": "Test keyboard navigation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033743,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780466
     },
     {
       "id": "check-msj9x3m8-ghruycm0",
       "text": "Run an accessibility audit",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033744,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780468
     },
     {
       "id": "check-msj9x3m9-oz126cij",
       "text": "Capture dark, light, and high-contrast themes",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033745,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780469
     },
     {
       "id": "check-msj9x3ma-n9p16acr",
       "text": "Capture widths of 600, 900, and 1400 pixels",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033746,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780470
     },
     {
       "id": "check-msj9x3mb-ospcxz7e",
       "text": "Test empty, loading, error, and populated states",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033747,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780471
     },
     {
       "id": "check-msj9x3mc-ktorr9mg",
       "text": "Verify table alternatives for charts",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033748,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780472
     },
     {
       "id": "check-msj9x3md-pzseee2e",
       "text": "Block significant visual regressions",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033749,
-      "updatedAt": 1786127326682
+      "updatedAt": 1786957780473
     }
   ],
   "relations": [
