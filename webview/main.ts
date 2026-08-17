@@ -28,6 +28,10 @@ import {
   buildProjectsViewModel,
   normalizeProjectPreference,
 } from "../src/webview/projectsModel";
+import {
+  WorkflowIntegrationState,
+  buildWorkflowViewModel,
+} from "../src/webview/workflowModel";
 
 declare const Chart: any;
 interface VsCodeApi {
@@ -85,11 +89,11 @@ let rangeDays = [];
 let dailyGoal = initialData.dailyGoalSeconds;
 let runtimeLastUpdatedAt = initialData.lastUpdatedAt;
 let runtimeFileDetailAvailable = initialData.fileDetailAvailable;
+let runtimeIntegrationSettings = { ...initialData.integrationSettings };
 let todayTrendChart = null;
 let trendsActivityChart = null;
 let trendsFlowChart = null;
 let trendsLanguageChart = null;
-let qualityTrendChart = null;
 
 const dayNames = EN.dayNames;
 const colors = Array.from(
@@ -171,6 +175,11 @@ window.addEventListener('message', (event: MessageEvent<DashboardResponseMessage
     projectPreferences = { ...msg.preferences };
     renderProjectOptions();
     if (currentTab === 'global' && dashboardData) { renderGlobal(); }
+    return;
+  }
+  if (msg.type === 'dashboard/integration-settings') {
+    runtimeIntegrationSettings = { ...msg.settings };
+    if (currentTab === 'quality' && dashboardData) { renderQuality(); }
     return;
   }
   if (msg.requestId !== activeRequestId || msg.view !== currentTab) {
@@ -1071,33 +1080,128 @@ function renderDataTable(
 }
 
 function renderQuality() {
-  const days = getFilteredDays(daysForProject(rawProject));
-  const agg = aggregateDays(days);
-  const currentDiagnostics = rawSession.diagnosticsBySeverity;
+  if (!dashboardData) { return; }
+  const workflow = buildWorkflowViewModel(
+    dashboardData.current,
+    runtimeIntegrationSettings,
+    Boolean(selectedProjectId),
+  );
 
-  setText('q-errors', currentDiagnostics.error);
-  setText('q-warnings', currentDiagnostics.warning);
-  setText('q-saves', agg.saves);
-  setText('q-saves-sub', saveRhythm(agg));
-  setText('q-debug', fmt(agg.debugSeconds));
+  setText('w-current', workflow.diagnostics.totals.current);
+  setText('w-introduced', workflow.diagnostics.totals.introduced);
+  setText('w-resolved', workflow.diagnostics.totals.resolved);
+  setText('w-peak', workflow.diagnostics.totals.peak);
+  setText('w-edit-volume', compact(workflow.editVolume));
+  setText('w-saves', workflow.saveEvents);
+  setText(
+    'w-saves-sub',
+    workflow.savesPerActiveHour === null
+      ? EN.workflow.savesDescription
+      : `${formatDecimal(workflow.savesPerActiveHour)} ${EN.phrases.savesPerHour}`,
+  );
+  renderWorkflowDiagnostics(workflow.diagnostics.rows);
+  renderWorkflowGit(workflow.git);
+  renderWorkflowDebug(workflow.debug);
+  renderWorkflowTasks(workflow.tasks);
+}
 
-  renderDiagnosticsChart(days);
-  const gitEmpty = rawSession.gitStatus === 'disabled'
-    ? EN.empty.gitDisabled
-    : rawSession.gitStatus === 'no-repository'
-      ? EN.empty.noRepository
-      : rawSession.gitStatus === 'unavailable'
-        ? EN.empty.gitUnavailable
-        : EN.empty.noBranchActivity;
-  renderBarList('branch-list', rawSession.branches, fmt, gitEmpty);
-  renderTaskSummaries(rawSession.taskSummaries);
-  renderBarList('quality-breakdown', {
-    [EN.signals.errors]: currentDiagnostics.error,
-    [EN.signals.warnings]: currentDiagnostics.warning,
-    [EN.signals.info]: currentDiagnostics.info,
-    [EN.signals.hints]: currentDiagnostics.hint,
-    [EN.signals.dirtyFiles]: rawSession.gitDirtyFiles
-  }, compact, EN.empty.diagnosticsUnavailable);
+function renderWorkflowDiagnostics(rows) {
+  const labels = {
+    error: EN.signals.errors,
+    warning: EN.signals.warnings,
+    info: EN.signals.info,
+    hint: EN.signals.hints,
+  };
+  renderDataTable(
+    'workflow-diagnostics-table',
+    EN.panels.diagnosticSummary,
+    EN.tableHeaders.diagnostics,
+    rows.map(row => [
+      labels[row.severity],
+      String(row.current),
+      String(row.introduced),
+      String(row.resolved),
+      String(row.peak),
+    ]),
+  );
+}
+
+function renderWorkflowGit(git) {
+  setIntegrationState('workflow-git', git.state, workflowExplanation('git', git.state));
+  setText('workflow-git-dirty', git.dirtyFiles);
+  setText('workflow-git-branches', git.branchChanges);
+  setText('workflow-git-commits', git.detectedCommits);
+  renderBarList(
+    'branch-list',
+    Object.fromEntries(git.branches.map(branch => [branch.id, branch.activeTimeMs / 1000])),
+    fmt,
+    EN.empty.noBranchActivity,
+  );
+}
+
+function renderWorkflowDebug(debug) {
+  setIntegrationState('workflow-debug', debug.state, workflowExplanation('debug', debug.state));
+  setText('workflow-debug-elapsed', fmt(debug.elapsedMs / 1000));
+  setText('workflow-debug-active', fmt(debug.activeMs / 1000));
+}
+
+function renderWorkflowTasks(tasks) {
+  setIntegrationState('workflow-tasks', tasks.state, workflowExplanation('tasks', tasks.state));
+  setText('workflow-tasks-configured', tasks.configuredTaskCount);
+  renderTaskSummaries(tasks.summaries);
+}
+
+function setIntegrationState(
+  prefix: string,
+  state: WorkflowIntegrationState,
+  explanation: string,
+) {
+  const status = document.getElementById(`${prefix}-status`)!;
+  status.textContent = integrationStatusLabel(state);
+  status.dataset.state = state;
+  document.getElementById(`${prefix}-explanation`)!.textContent = explanation;
+  const data = document.getElementById(`${prefix}-data`) as HTMLElement;
+  data.hidden = state === 'disabled' || state === 'unavailable' || state === 'no-repository';
+}
+
+function integrationStatusLabel(state: WorkflowIntegrationState): string {
+  const labels = {
+    disabled: EN.workflow.disabled,
+    unavailable: EN.workflow.unavailable,
+    'no-repository': EN.workflow.noRepository,
+    'setup-required': EN.workflow.setupRequired,
+    'no-data': EN.workflow.noData,
+    available: EN.workflow.available,
+  };
+  return labels[state];
+}
+
+function workflowExplanation(
+  integration: 'git' | 'debug' | 'tasks',
+  state: WorkflowIntegrationState,
+): string {
+  if (state === 'disabled') {
+    return integration === 'git'
+      ? EN.workflow.gitDisabled
+      : integration === 'debug'
+        ? EN.workflow.debugDisabled
+        : EN.workflow.tasksDisabled;
+  }
+  if (state === 'unavailable') { return EN.empty.integrationUnavailable; }
+  if (state === 'no-repository') { return EN.empty.noRepository; }
+  if (state === 'setup-required') { return EN.empty.tasksSetupRequired; }
+  if (state === 'no-data') {
+    return integration === 'git'
+      ? EN.empty.gitNoData
+      : integration === 'debug'
+        ? EN.empty.debugNoData
+        : EN.empty.tasksNoData;
+  }
+  return integration === 'git'
+    ? EN.workflow.gitAvailable
+    : integration === 'debug'
+      ? EN.workflow.debugAvailable
+      : EN.workflow.tasksAvailable;
 }
 
 function renderTaskSummaries(tasks) {
@@ -1195,12 +1299,6 @@ function editIntensity(agg) {
 function churnRatio(agg) {
   const lineActivity = agg.insertedLineBreaksApprox + agg.removedLineBreaksApprox;
   return lineActivity > 0 ? Math.round((agg.removedLineBreaksApprox / lineActivity) * 100) : 0;
-}
-
-function saveRhythm(agg) {
-  const hours = agg.seconds / 3600;
-  const value = hours > 0 ? agg.saves / hours : 0;
-  return `${value.toFixed(value >= 10 ? 0 : 1)} ${EN.phrases.savesPerHour}`;
 }
 
 function deltaPct(current, previous) {
@@ -1366,41 +1464,6 @@ function renderTimeline(chart, canvasId, days, assign) {
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: item => fmt(Number(item.raw) * 3600) } } }
     }
   }));
-}
-
-function renderDiagnosticsChart(days) {
-  const labels = days.map(day => day.date.slice(5));
-  const errors = days.map(day => day.diagnosticsBySeverity.error);
-  const warnings = days.map(day => day.diagnosticsBySeverity.warning);
-  const infos = days.map(day => day.diagnosticsBySeverity.info + day.diagnosticsBySeverity.hint);
-  const canvas = document.getElementById('qualityTrendChart');
-
-  if (qualityTrendChart) {
-    qualityTrendChart.data.labels = labels;
-    qualityTrendChart.data.datasets[0].data = errors;
-    qualityTrendChart.data.datasets[1].data = warnings;
-    qualityTrendChart.data.datasets[2].data = infos;
-    qualityTrendChart.update('none');
-    return;
-  }
-
-  qualityTrendChart = new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: EN.chartLabels.errors, data: errors, backgroundColor: colors[6], borderRadius: 3 },
-        { label: EN.chartLabels.warnings, data: warnings, backgroundColor: colors[3], borderRadius: 3 },
-        { label: EN.chartLabels.info, data: infos, backgroundColor: colors[0], borderRadius: 3 }
-      ]
-    },
-    options: {
-      maintainAspectRatio: false,
-      responsive: true,
-      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true } },
-      plugins: { legend: { position: 'bottom' } }
-    }
-  });
 }
 
 function renderBarList(id, dataMap, formatter, emptyText) {

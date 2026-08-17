@@ -9,6 +9,7 @@ import {
 } from "./components";
 import { ENGLISH_STRINGS as EN } from "./strings";
 import { ProjectPreferences } from "./projectsModel";
+import { DashboardIntegrationSettings } from "./workflowModel";
 
 export type DashboardTrackingStatus =
   | "active"
@@ -30,6 +31,7 @@ export interface DashboardInitialData {
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
   projectPreferences: ProjectPreferences;
+  integrationSettings: DashboardIntegrationSettings;
 }
 
 export interface DashboardResources {
@@ -208,18 +210,19 @@ export function renderDashboardHtml(
 
     <section id="view-quality" class="view-section" role="tabpanel" aria-labelledby="tab-workflow" hidden>
       <div class="grid-4">
-        ${Metric({ id: "q-errors", title: EN.metrics.errors, value: "0", subtitle: EN.status.currentSnapshot, tone: "danger" })}
-        ${Metric({ id: "q-warnings", title: EN.metrics.warnings, value: "0", subtitle: EN.status.currentSnapshot, tone: "warning" })}
-        ${Metric({ id: "q-saves", title: EN.metrics.saves, value: "0", subtitle: EN.initial.zeroSavesPerHour })}
-        ${Metric({ id: "q-debug", title: EN.metrics.debugTime, value: "0m", subtitle: EN.status.selectedRange })}
+        ${Metric({ id: "w-current", title: EN.metrics.currentDiagnostics, value: "0", subtitle: EN.workflow.currentDescription, tone: "danger" })}
+        ${Metric({ id: "w-introduced", title: EN.metrics.introducedDiagnostics, value: "0", subtitle: EN.workflow.introducedDescription, tone: "warning" })}
+        ${Metric({ id: "w-resolved", title: EN.metrics.resolvedDiagnostics, value: "0", subtitle: EN.workflow.resolvedDescription, tone: "success" })}
+        ${Metric({ id: "w-peak", title: EN.metrics.peakDiagnostics, value: "0", subtitle: EN.workflow.peakDescription })}
       </div>
       <div class="grid-2">
-        ${ChartPanel({ title: EN.panels.diagnosticsTrend, canvasId: "qualityTrendChart", ariaLabel: EN.aria.diagnosticsChart })}
-        ${Card(`<div class="card-title">${EN.panels.branchMix}</div><div class="list" id="branch-list">${EmptyState(EN.empty.gitUnavailable)}</div>`)}
+        ${Card(`<div class="card-title">${EN.panels.diagnosticSummary}</div><p class="workflow-note">${EN.workflow.diagnosticsNote}</p><div class="table-wrapper"><table id="workflow-diagnostics-table"></table></div>`)}
+        ${Card(`<div class="workflow-descriptive-metrics"><div><span>${EN.metrics.editVolume}</span><strong id="w-edit-volume">0</strong><small>${EN.workflow.editVolumeDescription}</small></div><div><span>${EN.metrics.saves}</span><strong id="w-saves">0</strong><small id="w-saves-sub">${EN.workflow.savesDescription}</small></div></div>`)}
       </div>
-      <div class="grid-2">
-        ${Card(`<div class="card-title">${EN.panels.currentSignals}</div><div class="list" id="quality-breakdown">${EmptyState(EN.empty.diagnosticsUnavailable)}</div>`)}
-        ${Card(`<div class="card-title">${EN.panels.taskRuns}</div><div class="list" id="task-runs">${EmptyState(EN.empty.noTrackedTaskRuns)}</div>`)}
+      <div class="grid-3 workflow-integrations" aria-label="${EN.panels.optionalIntegrations}">
+        ${Card(`<div class="integration-heading"><div class="card-title">${EN.workflow.gitTitle}</div><span id="workflow-git-status" class="badge">${EN.workflow.disabled}</span></div><p id="workflow-git-explanation" class="integration-explanation">${EN.workflow.gitDisabled}</p><div id="workflow-git-data" class="integration-data" hidden><dl class="integration-stats"><div><dt>${EN.workflow.dirtyFiles}</dt><dd id="workflow-git-dirty">0</dd></div><div><dt>${EN.workflow.branchChanges}</dt><dd id="workflow-git-branches">0</dd></div><div><dt>${EN.workflow.detectedCommits}</dt><dd id="workflow-git-commits">0</dd></div></dl><div class="card-title">${EN.workflow.branchActivity}</div><div class="list" id="branch-list">${EmptyState(EN.empty.noBranchActivity)}</div></div><button type="button" class="integration-cta" data-action="settings-git">${EN.workflow.reviewGitSetting}</button>`, "integration-card")}
+        ${Card(`<div class="integration-heading"><div class="card-title">${EN.workflow.debugTitle}</div><span id="workflow-debug-status" class="badge">${EN.workflow.disabled}</span></div><p id="workflow-debug-explanation" class="integration-explanation">${EN.workflow.debugDisabled}</p><div id="workflow-debug-data" class="integration-data" hidden><dl class="integration-stats"><div><dt>${EN.workflow.elapsedDebug}</dt><dd id="workflow-debug-elapsed">0m</dd></div><div><dt>${EN.workflow.activeDebug}</dt><dd id="workflow-debug-active">0m</dd></div></dl></div><button type="button" class="integration-cta" data-action="settings-debug">${EN.workflow.reviewDebugSetting}</button>`, "integration-card")}
+        ${Card(`<div class="integration-heading"><div class="card-title">${EN.workflow.tasksTitle}</div><span id="workflow-tasks-status" class="badge">${EN.workflow.disabled}</span></div><p id="workflow-tasks-explanation" class="integration-explanation">${EN.workflow.tasksDisabled}</p><div id="workflow-tasks-data" class="integration-data" hidden><div class="integration-configured"><span>${EN.workflow.configuredTasks}</span><strong id="workflow-tasks-configured">0</strong></div><div class="card-title">${EN.panels.taskRuns}</div><div class="list" id="task-runs">${EmptyState(EN.empty.noTrackedTaskRuns)}</div></div><button type="button" class="integration-cta" data-action="settings-tasks">${EN.workflow.reviewTaskSettings}</button>`, "integration-card")}
       </div>
     </section>
 

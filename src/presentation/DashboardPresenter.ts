@@ -8,6 +8,7 @@ import { Clock } from "../platform/ports";
 import { ReportPanel } from "../ReportPanel";
 import { buildDashboardShellModel } from "./DashboardShellModel";
 import { ProjectPreferencesStore } from "./ProjectPreferences";
+import { DashboardIntegrationSettings } from "../webview/workflowModel";
 
 const DEFAULT_DAILY_GOAL_SECONDS = 14400;
 
@@ -18,6 +19,7 @@ export interface DashboardPresenterOptions {
   projectPreferences: ProjectPreferencesStore;
   resolveProjectId(projectPath: string): string | undefined;
   fileDetailAvailable(): boolean;
+  integrationSettings(): DashboardIntegrationSettings;
 }
 
 export class DashboardPresenter implements DashboardPresentation {
@@ -89,7 +91,14 @@ export class DashboardPresenter implements DashboardPresentation {
       lastUpdatedAt: snapshot.lastUpdatedAt,
       fileDetailAvailable: this.options.fileDetailAvailable(),
       projectPreferences: this.options.projectPreferences,
+      integrationSettings: this.options.integrationSettings(),
     });
+  }
+
+  public refreshIntegrationSettings(): void {
+    ReportPanel.currentPanel?.updateIntegrationSettings(
+      this.options.integrationSettings(),
+    );
   }
 
   public dispose(): void {

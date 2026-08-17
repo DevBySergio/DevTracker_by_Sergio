@@ -22,6 +22,14 @@ export interface DashboardInitialData {
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
   projectPreferences: Record<string, ProjectPreference>;
+  integrationSettings: DashboardIntegrationSettings;
+}
+
+export interface DashboardIntegrationSettings {
+  gitTrackingEnabled: boolean;
+  debugTrackingEnabled: boolean;
+  taskTrackingEnabled: boolean;
+  configuredTaskCount: number;
 }
 
 export interface ProjectPreference {
@@ -43,6 +51,12 @@ export interface DashboardProjectPreferencesMessage {
   type: "dashboard/project-preferences";
   protocolVersion: number;
   preferences: Record<string, ProjectPreference>;
+}
+
+export interface DashboardIntegrationSettingsMessage {
+  type: "dashboard/integration-settings";
+  protocolVersion: number;
+  settings: DashboardIntegrationSettings;
 }
 
 export interface SeverityCounts {
@@ -211,4 +225,5 @@ export type DashboardResponseMessage =
   | DashboardLiveDeltaMessage
   | DashboardErrorMessage
   | DashboardTrackingStatusMessage
-  | DashboardProjectPreferencesMessage;
+  | DashboardProjectPreferencesMessage
+  | DashboardIntegrationSettingsMessage;

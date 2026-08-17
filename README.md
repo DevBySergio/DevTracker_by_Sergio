@@ -12,7 +12,7 @@ Visualize descriptive activity metrics in four views:
 
 - **Today:** Review active time, goal progress, activity concentration, current flow, character edit volume, approximate line activity, diagnostics, and Git context.
 - **Trends:** Analyze a selected project's daily activity, consistency, flow, and language evolution with preset or custom calendar ranges.
-- **Workflow:** Track diagnostics, save rhythm, debug time, branch mix, and dirty files without leaving the IDE.
+- **Workflow:** Review current, introduced, resolved, and peak diagnostics alongside descriptive edit/save activity, then inspect independently opt-in Git, Debug, and configured Task outcomes with explicit disabled, unavailable, setup, and no-data states.
 - **Projects:** Search and sort every historical project, inspect retained files, languages, and edit volume, and manage local aliases or archive/exclude preferences without deleting history.
 
 ### 2. 📈 Detailed Metrics
@@ -29,7 +29,7 @@ DevTracker describes observed editor activity without rating productivity, code 
 - **Git Context:** Displays branch activity and dirty file counts only after the Git integration is enabled.
 - **Languages & Files:** Shows language distribution and most active files with dense, scannable bars and tables.
 
-The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [Git tracking guide](docs/git-tracking.md) explains the opt-in repository integration and stored fields. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
+The [DevTracker v2 metric contract](docs/metric-contract.md) documents every name, unit, source, scope, precision rule, legacy approximation, formula, and zero-data behavior. The [Workflow dashboard guide](docs/dashboard-workflow.md) explains its descriptive metrics, integration states, and opt-in controls. The [Git tracking guide](docs/git-tracking.md) explains the opt-in repository integration and stored fields. The [architecture boundaries](docs/architecture.md) define how tracking, storage, queries, integrations, and presentation remain separated, and the [schema v2 storage guide](docs/storage-v2.md) defines the versioned local layout.
 
 The [Extension Host integration testing guide](docs/integration-testing.md) documents the isolated real-VS Code lifecycle and event suite used to validate activation, tracking, optional integrations, and shutdown persistence. The [Trends dashboard guide](docs/dashboard-trends.md) explains ranges, fair comparisons, streaks, language evolution, accessible tables, and the view's privacy boundary. The [Projects dashboard guide](docs/dashboard-projects.md) documents project discovery, trend semantics, local preferences, and non-destructive history management.
 

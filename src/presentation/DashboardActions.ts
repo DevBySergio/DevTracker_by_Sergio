@@ -1,6 +1,9 @@
 export type DashboardActionName =
   | "export"
   | "settings"
+  | "settings-git"
+  | "settings-debug"
+  | "settings-tasks"
   | "open-data"
   | "reset";
 
@@ -15,6 +18,18 @@ const ACTION_COMMANDS: Readonly<Record<DashboardActionName, DashboardActionComma
     settings: {
       command: "workbench.action.openSettings",
       args: Object.freeze(["@ext:DevBySergio.DevTrackerBySergio"]),
+    },
+    "settings-git": {
+      command: "workbench.action.openSettings",
+      args: Object.freeze(["@ext:DevBySergio.DevTrackerBySergio devtracker.gitTrackingEnabled"]),
+    },
+    "settings-debug": {
+      command: "workbench.action.openSettings",
+      args: Object.freeze(["@ext:DevBySergio.DevTrackerBySergio devtracker.debugTrackingEnabled"]),
+    },
+    "settings-tasks": {
+      command: "workbench.action.openSettings",
+      args: Object.freeze(["@ext:DevBySergio.DevTrackerBySergio devtracker.taskTrackingEnabled devtracker.trackedTasks"]),
     },
     "open-data": {
       command: "devtracker.openDataFolder",

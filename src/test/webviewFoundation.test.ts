@@ -29,6 +29,12 @@ suite("WebviewFoundation", () => {
         lastUpdatedAt: Date.UTC(2026, 7, 11),
         fileDetailAvailable: true,
         projectPreferences: {},
+        integrationSettings: {
+          gitTrackingEnabled: false,
+          debugTrackingEnabled: false,
+          taskTrackingEnabled: false,
+          configuredTaskCount: 0,
+        },
       },
       {
         nonce: "test-nonce",
@@ -64,6 +70,12 @@ suite("WebviewFoundation", () => {
         lastUpdatedAt: Date.UTC(2026, 7, 11),
         fileDetailAvailable: true,
         projectPreferences: {},
+        integrationSettings: {
+          gitTrackingEnabled: false,
+          debugTrackingEnabled: false,
+          taskTrackingEnabled: false,
+          configuredTaskCount: 0,
+        },
       },
       {
         nonce: "test-nonce",
@@ -96,6 +108,10 @@ suite("WebviewFoundation", () => {
     assert.match(html, /id="overview-empty"[^>]+hidden/);
     assert.match(html, /id="task-runs"/);
     assert.match(html, /Task Outcomes/);
+    assert.match(html, /id="workflow-diagnostics-table"/);
+    assert.match(html, /id="workflow-git-status"/);
+    assert.match(html, /id="workflow-debug-status"/);
+    assert.match(html, /id="workflow-tasks-status"/);
     ["7-days", "30-days", "90-days", "year", "custom"].forEach((range) =>
       assert.match(html, new RegExp(`data-range="${range}"`)),
     );
@@ -114,7 +130,15 @@ suite("WebviewFoundation", () => {
       "trends-flow-table",
       "trends-language-table",
     ].forEach((id) => assert.match(html, new RegExp(`id="${id}"`)));
-    ["export", "settings", "open-data", "reset"].forEach((action) =>
+    [
+      "export",
+      "settings",
+      "settings-git",
+      "settings-debug",
+      "settings-tasks",
+      "open-data",
+      "reset",
+    ].forEach((action) =>
       assert.match(html, new RegExp(`data-action="${action}"`)),
     );
   });
@@ -129,6 +153,42 @@ suite("WebviewFoundation", () => {
       {
         command: "workbench.action.openSettings",
         args: ["@ext:DevBySergio.DevTrackerBySergio"],
+      },
+    );
+    assert.deepStrictEqual(
+      dashboardActionCommand({
+        type: "dashboard/action",
+        action: "settings-git",
+      }),
+      {
+        command: "workbench.action.openSettings",
+        args: [
+          "@ext:DevBySergio.DevTrackerBySergio devtracker.gitTrackingEnabled",
+        ],
+      },
+    );
+    assert.deepStrictEqual(
+      dashboardActionCommand({
+        type: "dashboard/action",
+        action: "settings-debug",
+      }),
+      {
+        command: "workbench.action.openSettings",
+        args: [
+          "@ext:DevBySergio.DevTrackerBySergio devtracker.debugTrackingEnabled",
+        ],
+      },
+    );
+    assert.deepStrictEqual(
+      dashboardActionCommand({
+        type: "dashboard/action",
+        action: "settings-tasks",
+      }),
+      {
+        command: "workbench.action.openSettings",
+        args: [
+          "@ext:DevBySergio.DevTrackerBySergio devtracker.taskTrackingEnabled devtracker.trackedTasks",
+        ],
       },
     );
     assert.strictEqual(

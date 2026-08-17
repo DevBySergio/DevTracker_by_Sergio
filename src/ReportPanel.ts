@@ -14,6 +14,7 @@ import {
   ProjectPreferencesStore,
   parseSetProjectPreferenceMessage,
 } from "./presentation/ProjectPreferences";
+import { DashboardIntegrationSettings } from "./webview/workflowModel";
 
 export interface ReportPanelOptions {
   extensionUri: vscode.Uri;
@@ -26,6 +27,7 @@ export interface ReportPanelOptions {
   lastUpdatedAt: number;
   fileDetailAvailable: boolean;
   projectPreferences: ProjectPreferencesStore;
+  integrationSettings: DashboardIntegrationSettings;
 }
 
 export class ReportPanel {
@@ -125,6 +127,7 @@ export class ReportPanel {
       options.lastUpdatedAt,
       options.fileDetailAvailable,
       options.projectPreferences.getAll(),
+      options.integrationSettings,
     );
   }
 
@@ -148,6 +151,16 @@ export class ReportPanel {
     });
   }
 
+  public updateIntegrationSettings(
+    settings: DashboardIntegrationSettings,
+  ): void {
+    void this._panel.webview.postMessage({
+      type: "dashboard/integration-settings",
+      protocolVersion: DASHBOARD_PROTOCOL_VERSION,
+      settings,
+    });
+  }
+
   public dispose() {
     ReportPanel.currentPanel = undefined;
     this.protocol.dispose();
@@ -167,6 +180,7 @@ export class ReportPanel {
     lastUpdatedAt: number,
     fileDetailAvailable: boolean,
     projectPreferences: ReturnType<ProjectPreferencesStore["getAll"]>,
+    integrationSettings: DashboardIntegrationSettings,
   ): string {
     const webview = this._panel.webview;
     const nonce = getNonce();
@@ -182,6 +196,7 @@ export class ReportPanel {
         lastUpdatedAt,
         fileDetailAvailable,
         projectPreferences,
+        integrationSettings,
       },
       {
         nonce,

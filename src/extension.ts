@@ -156,6 +156,12 @@ export async function activate(
       ).id;
     },
     fileDetailAvailable: () => privacy.isFileDetailAvailable(),
+    integrationSettings: () => ({
+      gitTrackingEnabled: privacy.isGitTrackingEnabled(),
+      debugTrackingEnabled: privacy.isDebugTrackingEnabled(),
+      taskTrackingEnabled: privacy.isTaskTrackingEnabled(),
+      configuredTaskCount: privacy.getTrackedTasks().length,
+    }),
   });
   const activeSession = await sessionStore.startSession();
   const activityIntervals = new SessionActivityRecorder({
@@ -255,6 +261,7 @@ export async function activate(
         return;
       }
       privacy.reload();
+      presentation.refreshIntegrationSettings();
       controller.refreshPrivacy();
       void compactDetailedSessionData().catch((error) => {
         console.error("DevTracker retention update failed:", error);
