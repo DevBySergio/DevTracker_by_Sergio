@@ -3,7 +3,13 @@ import type {
   DashboardRangeName,
   DashboardResponseMessage,
   DashboardViewName,
+  CollectionDelta,
+  RangeMetrics,
+  RangePeriodDelta,
+  RangePeriodViewModel,
+  RangeProjectViewModel,
   RangeQueryViewModel,
+  RangeTaskSummary,
   RangeViewModelDelta,
   ProjectPreference,
 } from "./types";
@@ -29,15 +35,61 @@ import {
   normalizeProjectPreference,
 } from "../src/webview/projectsModel";
 import {
+  WorkflowDiagnosticsRow,
   WorkflowIntegrationState,
+  WorkflowViewModel,
   buildWorkflowViewModel,
 } from "../src/webview/workflowModel";
+import type { Insight } from "../src/queries/PersonalInsights";
 import {
   isTabNavigationKey,
   nextTabIndex,
 } from "../src/webview/accessibility";
 
-declare const Chart: any;
+interface ChartInstance {
+  data: {
+    labels: string[];
+    datasets: Array<Record<string, any>>;
+  };
+  options: { scales?: Record<string, unknown> };
+  destroy(): void;
+  update(mode?: string): void;
+}
+
+declare const Chart: {
+  defaults: {
+    color: string;
+    borderColor: string;
+    font: { family: string };
+  };
+  new (canvas: HTMLElement | null, config: unknown): ChartInstance;
+};
+
+interface LegacyDay {
+  date: string;
+  seconds: number;
+  hours: Record<string, number>;
+  languages: Record<string, any>;
+  activeTimeByDocumentMs: Record<string, number>;
+  [key: string]: any;
+}
+interface LegacyProject {
+  name: string;
+  path: string;
+  days: Record<string, LegacyDay>;
+}
+type LegacyAggregate = ReturnType<typeof emptyAgg>;
+interface LegacyPeriod {
+  range: {
+    localDates: string[];
+    endLocalDate?: string;
+  };
+  languages: RangePeriodViewModel['languages'];
+  files: RangePeriodViewModel['files'];
+  branches: RangePeriodViewModel['branches'];
+  tasks?: RangePeriodViewModel['tasks'];
+  quarterHours?: RangePeriodViewModel['quarterHours'];
+}
 interface VsCodeApi {
   postMessage(message: unknown): void;
   getState(): unknown;
@@ -91,18 +143,18 @@ let requestSequence = 0;
 let activeRequestId = '';
 let dashboardData: RangeQueryViewModel | null = null;
 let rawSession = normalizeSession();
-let rawProject = { name: EN.status.currentProject, path: '', days: {} };
-let rawComparisonProject = null;
-let rawAll = [];
-let rangeDays = [];
+let rawProject: LegacyProject = { name: EN.status.currentProject, path: '', days: {} };
+let rawComparisonProject: LegacyProject | null = null;
+let rawAll: LegacyProject[] = [];
+let rangeDays: LegacyDay[] = [];
 let dailyGoal = initialData.dailyGoalSeconds;
 let runtimeLastUpdatedAt = initialData.lastUpdatedAt;
 let runtimeFileDetailAvailable = initialData.fileDetailAvailable;
 let runtimeIntegrationSettings = { ...initialData.integrationSettings };
-let todayTrendChart = null;
-let trendsActivityChart = null;
-let trendsFlowChart = null;
-let trendsLanguageChart = null;
+let todayTrendChart: ChartInstance | null = null;
+let trendsActivityChart: ChartInstance | null = null;
+let trendsFlowChart: ChartInstance | null = null;
+let trendsLanguageChart: ChartInstance | null = null;
 
 const dayNames = EN.dayNames;
 let colors = Array.from(
@@ -441,8 +493,8 @@ function updateForcedColorAlternatives() {
 }
 
 function updateHeader() {
-  const title = document.getElementById('page-title');
-  const subtitle = document.getElementById('page-subtitle');
+  const title = document.getElementById('page-title')!;
+  const subtitle = document.getElementById('page-subtitle')!;
   const projectName = rawProject && rawProject.name ? rawProject.name : EN.status.currentProject;
   if (currentTab === 'today') {
     title.textContent = EN.views.today;
@@ -463,6 +515,7 @@ function updateHeader() {
 }
 
 function adaptDashboardData() {
+  if (!dashboardData) { return; }
   const current = dashboardData.current;
   rangeDays = periodDays(current, true);
   rawSession = normalizeSession(metricsAsLegacy(current.metrics, current));
@@ -476,7 +529,7 @@ function adaptDashboardData() {
   }
 }
 
-function periodAsLegacyProject(period) {
+function periodAsLegacyProject(period: RangePeriodViewModel): LegacyProject {
   const project = period.projects[0];
   const days = periodDays(period, true);
   return {
@@ -486,7 +539,10 @@ function periodAsLegacyProject(period) {
   };
 }
 
-function projectAsLegacy(project, localDate) {
+function projectAsLegacy(
+  project: RangeProjectViewModel,
+  localDate: string,
+): LegacyProject {
   const day = metricsAsLegacy(project.metrics, {
     range: { localDates: [localDate] },
     languages: project.languages,
@@ -501,9 +557,12 @@ function projectAsLegacy(project, localDate) {
   };
 }
 
-function periodDays(period, includeDistributions) {
+function periodDays(
+  period: RangePeriodViewModel,
+  includeDistributions: boolean,
+): LegacyDay[] {
   const byDate = new Map(period.days.map(day => [day.localDate, day.metrics]));
-  const hoursByDate = {};
+  const hoursByDate: Record<string, Record<string, number>> = {};
   (period.quarterHours || []).forEach(bucket => {
     const hour = String(bucket.label || '').slice(0, 2);
     const target = hoursByDate[bucket.localDate] || (hoursByDate[bucket.localDate] = {});
@@ -520,7 +579,11 @@ function periodDays(period, includeDistributions) {
   });
 }
 
-function metricsAsLegacy(metrics, period, localDate = undefined) {
+function metricsAsLegacy(
+  metrics: Partial<RangeMetrics> | undefined,
+  period: LegacyPeriod,
+  localDate?: string,
+): LegacyDay {
   const safe = metrics || emptyRangeMetrics();
   const languages = Object.fromEntries((period.languages || []).map(item => [item.id, {
     name: item.id,
@@ -557,13 +620,15 @@ function metricsAsLegacy(metrics, period, localDate = undefined) {
   };
 }
 
-function emptyRangeMetrics() {
-  return {
-    diagnostics: { current: {} }
-  };
+function emptyRangeMetrics(): Partial<RangeMetrics> {
+  return {};
 }
 
-function applyViewModelDelta(target, delta, revision) {
+function applyViewModelDelta(
+  target: RangeQueryViewModel,
+  delta: RangeViewModelDelta,
+  revision: number,
+): void {
   applyPeriodDelta(target.current, delta.current);
   if (delta.comparison.kind === 'replace') {
     target.comparison = delta.comparison.value;
@@ -577,7 +642,10 @@ function applyViewModelDelta(target, delta, revision) {
   target.revision = revision;
 }
 
-function applyPeriodDelta(target, delta) {
+function applyPeriodDelta(
+  target: RangePeriodViewModel,
+  delta: RangePeriodDelta,
+): void {
   if (delta.range !== null) { target.range = delta.range; }
   if (delta.metrics !== null) { target.metrics = delta.metrics; }
   if (delta.days !== null) { target.days = patchCollection(target.days, delta.days, item => item.localDate); }
@@ -589,7 +657,11 @@ function applyPeriodDelta(target, delta) {
   if (delta.quarterHours !== null) { target.quarterHours = patchCollection(target.quarterHours, delta.quarterHours, item => item.key); }
 }
 
-function patchCollection(current, delta, keyOf) {
+function patchCollection<T>(
+  current: T[],
+  delta: CollectionDelta<T>,
+  keyOf: (item: T) => string,
+): T[] {
   const values = new Map(current.map(item => [keyOf(item), item]));
   delta.remove.forEach(key => values.delete(key));
   delta.upsert.forEach(item => values.set(keyOf(item), item));
@@ -625,7 +697,7 @@ function normalizeSession(session: Record<string, any> = {}) {
   };
 }
 
-function normalizeDay(day) {
+function normalizeDay(day: Record<string, any> = {}) {
   const safe = day || {};
   return {
     date: safe.date || getLocalDateKey(),
@@ -654,7 +726,9 @@ function normalizeDay(day) {
   };
 }
 
-function normalizeDiagnostics(value: Record<string, number> = {}) {
+function normalizeDiagnostics(
+  value: Partial<Record<'error' | 'warning' | 'info' | 'hint', number>> = {},
+) {
   const safe = value || {};
   return {
     error: safe.error || 0,
@@ -664,7 +738,7 @@ function normalizeDiagnostics(value: Record<string, number> = {}) {
   };
 }
 
-function activeFileSeconds(value) {
+function activeFileSeconds(value: Record<string, any> = {}): Record<string, number> {
   const safe = value || {};
   const exact = safe.activeTimeByDocumentMs || {};
   if (Object.keys(exact).length > 0) {
@@ -673,7 +747,7 @@ function activeFileSeconds(value) {
   return safe.files || {};
 }
 
-function activeFileCounts(value) {
+function activeFileCounts(value: Record<string, any> = {}): Record<string, number> {
   return Object.fromEntries(Object.keys(activeFileSeconds(value)).map(id => [id, 1]));
 }
 
@@ -691,29 +765,29 @@ function getLocalDateKey() {
   return localDateKey(new Date());
 }
 
-function daysForProject(project) {
+function daysForProject(project: LegacyProject | null): LegacyDay[] {
   if (!project || !project.days) { return []; }
   return Object.values(project.days).map(normalizeDay);
 }
 
 function allDays() {
-  const result = [];
+  const result: LegacyDay[] = [];
   rawAll.forEach(project => result.push(...daysForProject(project)));
   return result;
 }
 
-function getFilteredDays(days) {
+function getFilteredDays(days: LegacyDay[]): LegacyDay[] {
   return [...days].sort((left, right) => left.date.localeCompare(right.date));
 }
 
-function dateFromKey(key) {
+function dateFromKey(key: string): Date {
   const parts = key.split('-').map(Number);
   const date = new Date(parts[0], parts[1] - 1, parts[2]);
   date.setHours(0,0,0,0);
   return date;
 }
 
-function aggregateDays(days) {
+function aggregateDays(days: LegacyDay[]): LegacyAggregate {
   const agg = emptyAgg();
   days.forEach(day => {
     agg.seconds += day.seconds;
@@ -762,22 +836,28 @@ function emptyAgg() {
     gitDirtyFiles: 0,
     diagnosticsBySeverity: normalizeDiagnostics(),
     flow: normalizeFlow(),
-    languages: {},
-    files: {},
-    activeTimeByDocumentMs: {},
-    activeFileCounts: {},
-    branches: {},
-    hours: {}
+    languages: {} as Record<string, number>,
+    files: {} as Record<string, number>,
+    activeTimeByDocumentMs: {} as Record<string, number>,
+    activeFileCounts: {} as Record<string, number>,
+    branches: {} as Record<string, number>,
+    hours: {} as Record<string, number>
   };
 }
 
-function addMap(target, source) {
+function addMap(
+  target: Record<string, number>,
+  source: Record<string, unknown>,
+): void {
   Object.entries(source || {}).forEach(([key, value]) => {
     target[key] = (target[key] || 0) + Number(value || 0);
   });
 }
 
-function addDiagnostics(target, source) {
+function addDiagnostics(
+  target: ReturnType<typeof normalizeDiagnostics>,
+  source: Record<string, number>,
+): void {
   const diagnostics = normalizeDiagnostics(source);
   target.error += diagnostics.error;
   target.warning += diagnostics.warning;
@@ -976,7 +1056,7 @@ function renderTrendsLanguages(trends: TrendsViewModel) {
       tension: 0.2,
     })),
   );
-  const rows = [];
+  const rows: string[][] = [];
   trends.days.forEach((day, dayIndex) => {
     trends.languages.forEach(language => {
       rows.push([
@@ -1060,7 +1140,13 @@ function emptyHeatCell() {
   return cell;
 }
 
-function renderLineChart(chart, canvasId, labels, datasets, extraScales = {}) {
+function renderLineChart(
+  chart: ChartInstance | null,
+  canvasId: string,
+  labels: string[],
+  datasets: Array<Record<string, any>>,
+  extraScales: Record<string, unknown> = {},
+): ChartInstance {
   const canvas = document.getElementById(canvasId);
   if (chart) {
     chart.data.labels = labels;
@@ -1091,10 +1177,10 @@ function renderLineChart(chart, canvasId, labels, datasets, extraScales = {}) {
 }
 
 function renderDataTable(
-  id,
-  captionText,
-  headers,
-  rows,
+  id: string,
+  captionText: string,
+  headers: readonly string[],
+  rows: readonly (readonly string[])[],
   emptyText: string = EN.empty.noActivityInRange,
 ) {
   const table = document.getElementById(id) as HTMLTableElement;
@@ -1163,7 +1249,7 @@ function renderQuality() {
   renderWorkflowTasks(workflow.tasks);
 }
 
-function renderWorkflowDiagnostics(rows) {
+function renderWorkflowDiagnostics(rows: WorkflowDiagnosticsRow[]): void {
   const labels = {
     error: EN.signals.errors,
     warning: EN.signals.warnings,
@@ -1184,7 +1270,7 @@ function renderWorkflowDiagnostics(rows) {
   );
 }
 
-function renderWorkflowGit(git) {
+function renderWorkflowGit(git: WorkflowViewModel['git']): void {
   setIntegrationState('workflow-git', git.state, workflowExplanation('git', git.state));
   setText('workflow-git-dirty', git.dirtyFiles);
   setText('workflow-git-branches', git.branchChanges);
@@ -1197,13 +1283,13 @@ function renderWorkflowGit(git) {
   );
 }
 
-function renderWorkflowDebug(debug) {
+function renderWorkflowDebug(debug: WorkflowViewModel['debug']): void {
   setIntegrationState('workflow-debug', debug.state, workflowExplanation('debug', debug.state));
   setText('workflow-debug-elapsed', fmt(debug.elapsedMs / 1000));
   setText('workflow-debug-active', fmt(debug.activeMs / 1000));
 }
 
-function renderWorkflowTasks(tasks) {
+function renderWorkflowTasks(tasks: WorkflowViewModel['tasks']): void {
   setIntegrationState('workflow-tasks', tasks.state, workflowExplanation('tasks', tasks.state));
   setText('workflow-tasks-configured', tasks.configuredTaskCount);
   renderTaskSummaries(tasks.summaries);
@@ -1262,8 +1348,8 @@ function workflowExplanation(
       : EN.workflow.tasksAvailable;
 }
 
-function renderTaskSummaries(tasks) {
-  const target = document.getElementById('task-runs');
+function renderTaskSummaries(tasks: readonly RangeTaskSummary[]): void {
+  const target = document.getElementById('task-runs')!;
   target.replaceChildren();
   if (!tasks.length) {
     const empty = document.createElement('div');
@@ -1343,31 +1429,34 @@ function sessionAsAgg() {
   return agg;
 }
 
-function topThreeFileShare(agg) {
+function topThreeFileShare(agg: LegacyAggregate): number {
   if (!agg.seconds) { return 0; }
   const topFiles = mapToRows(agg.files).slice(0, 3).reduce((total, item) => total + item.value, 0);
   return Math.max(0, Math.min(100, Math.round((topFiles / agg.seconds) * 100)));
 }
 
-function editIntensity(agg) {
+function editIntensity(agg: LegacyAggregate): number {
   const hours = agg.seconds / 3600;
   return hours > 0 ? Math.round((agg.insertedCharacters + agg.removedCharacters) / hours) : 0;
 }
 
-function churnRatio(agg) {
+function churnRatio(agg: LegacyAggregate): number {
   const lineActivity = agg.insertedLineBreaksApprox + agg.removedLineBreaksApprox;
   return lineActivity > 0 ? Math.round((agg.removedLineBreaksApprox / lineActivity) * 100) : 0;
 }
 
-function deltaPct(current, previous) {
+function deltaPct(current: number, previous: number): { label: string; value: number } {
   if (!previous && !current) { return { label: '0%', value: 0 }; }
   if (!previous) { return { label: '+100%', value: 100 }; }
   const value = Math.round(((current - previous) / previous) * 100);
   return { label: (value > 0 ? '+' : '') + value + '%', value };
 }
 
-function setDelta(id, delta) {
-  const el = document.getElementById(id);
+function setDelta(
+  id: string,
+  delta: { label: string; value: number },
+): void {
+  const el = document.getElementById(id)!;
   el.textContent = delta.label;
   el.className = 'delta ' + (delta.value > 0 ? 'good' : delta.value < 0 ? 'bad' : '');
 }
@@ -1421,7 +1510,7 @@ function renderOverviewTimeline(overview: OverviewViewModel) {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: item => fmt(Number(item.raw) * 60)
+            label: (item: { raw: unknown }) => fmt(Number(item.raw) * 60)
           }
         }
       }
@@ -1450,7 +1539,12 @@ function renderFocusProfile(overview: OverviewViewModel) {
   );
 }
 
-function renderFocusMetric(prefix, insight, formatter, description) {
+function renderFocusMetric(
+  prefix: string,
+  insight: Insight<number>,
+  formatter: (value: number) => string,
+  description: string,
+): void {
   const available = insight.value !== null;
   setText(
     `${prefix}-value`,
@@ -1505,8 +1599,13 @@ function formatDecimal(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-function renderTimeline(chart, canvasId, days, assign) {
-  const byDate = {};
+function renderTimeline(
+  chart: ChartInstance | null,
+  canvasId: string,
+  days: LegacyDay[],
+  assign: (chart: ChartInstance) => void,
+): void {
+  const byDate: Record<string, number> = {};
   days.forEach(day => byDate[day.date] = (byDate[day.date] || 0) + day.seconds);
   const labels = Object.keys(byDate).sort();
   const values = labels.map(date => Math.round((byDate[date] / 3600) * 100) / 100);
@@ -1529,13 +1628,18 @@ function renderTimeline(chart, canvasId, days, assign) {
       maintainAspectRatio: false,
       responsive: true,
       scales: { y: { beginAtZero: true }, x: { grid: { display: false } } },
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: item => fmt(Number(item.raw) * 3600) } } }
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item: { raw: unknown }) => fmt(Number(item.raw) * 3600) } } }
     }
   }));
 }
 
-function renderBarList(id, dataMap, formatter, emptyText) {
-  const target = document.getElementById(id);
+function renderBarList(
+  id: string,
+  dataMap: Record<string, unknown>,
+  formatter: (value: number) => string,
+  emptyText: string,
+): void {
+  const target = document.getElementById(id)!;
   const rows = mapToRows(dataMap).slice(0, 8);
   target.replaceChildren();
   if (!rows.length) {
@@ -1567,8 +1671,13 @@ function renderBarList(id, dataMap, formatter, emptyText) {
   });
 }
 
-function renderFileTable(id, rows, touches, emptyText) {
-  const table = document.getElementById(id);
+function renderFileTable(
+  id: string,
+  rows: Array<{ name: string; value: number }>,
+  touches: Record<string, number> | null,
+  emptyText: string,
+): void {
+  const table = document.getElementById(id)!;
   table.replaceChildren();
   if (!rows.length) {
     const row = document.createElement('tr');
@@ -1780,9 +1889,9 @@ function shortProjectId(projectId: string): string {
     : `${projectId.slice(0, 4)}…${projectId.slice(-4)}`;
 }
 
-function renderHeatmap(days) {
-  const target = document.getElementById('heatmap');
-  const matrix = Array.from({ length: 7 }, () => new Array(24).fill(0));
+function renderHeatmap(days: LegacyDay[]): void {
+  const target = document.getElementById('heatmap')!;
+  const matrix = Array.from({ length: 7 }, () => new Array<number>(24).fill(0));
   let max = 0;
   days.forEach(day => {
     const dow = dateFromKey(day.date).getDay();
@@ -1820,8 +1929,8 @@ function renderHeatmap(days) {
   });
 }
 
-function bestHourFromDays(days) {
-  const hours = new Array(24).fill(0);
+function bestHourFromDays(days: LegacyDay[]): { label: string; value: number } {
+  const hours = new Array<number>(24).fill(0);
   days.forEach(day => {
     Object.entries(day.hours).forEach(([hour, seconds]) => {
       const hourIndex = Number(hour);
@@ -1838,30 +1947,33 @@ function bestHourFromDays(days) {
   };
 }
 
-function mapToRows(map) {
+function mapToRows(map: Record<string, unknown> | null | undefined) {
   return Object.entries(map || {})
     .map(([name, value]) => ({ name, value: Number(value || 0) }))
     .filter(item => item.value > 0)
     .sort((a,b) => b.value - a.value);
 }
 
-function topLabel(map, fallback) {
+function topLabel(
+  map: Record<string, unknown> | null | undefined,
+  fallback: string,
+): string {
   const rows = mapToRows(map);
   return rows.length ? rows[0].name : fallback;
 }
 
-function setText(id, value) {
-  document.getElementById(id).textContent = String(value);
+function setText(id: string, value: unknown): void {
+  document.getElementById(id)!.textContent = String(value);
 }
 
-function compact(value) {
+function compact(value: unknown): string {
   const num = Number(value || 0);
   if (Math.abs(num) >= 1000000) { return (num / 1000000).toFixed(1) + 'M'; }
   if (Math.abs(num) >= 1000) { return (num / 1000).toFixed(1) + 'k'; }
   return String(num);
 }
 
-function fmt(seconds) {
+function fmt(seconds: unknown): string {
   const safeSeconds = Math.max(0, Number(seconds || 0));
   const h = Math.floor(safeSeconds / 3600);
   const m = Math.floor((safeSeconds % 3600) / 60);
@@ -1869,28 +1981,28 @@ function fmt(seconds) {
   return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
 }
 
-function localDateKey(date) {
+function localDateKey(date: Date): string {
   return date.getFullYear() + '-' +
     String(date.getMonth() + 1).padStart(2, '0') + '-' +
     String(date.getDate()).padStart(2, '0');
 }
 
-function addLocalDays(localDate, offset) {
+function addLocalDays(localDate: string, offset: number): string {
   const date = dateFromKey(localDate);
   date.setDate(date.getDate() + offset);
   return localDateKey(date);
 }
 
-function isLocalDate(value) {
+function isLocalDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) { return false; }
   return localDateKey(dateFromKey(value)) === value;
 }
 
-function signedPercent(value) {
+function signedPercent(value: number): string {
   const rounded = Math.round(value * 10) / 10;
   return `${rounded > 0 ? '+' : ''}${formatDecimal(rounded)}%`;
 }
 
-function dayWord(value) {
+function dayWord(value: number): string {
   return value === 1 ? 'day' : 'days';
 }

@@ -1,11 +1,13 @@
 .vscode/**
+.github/**
 .vscode-test/**
 out/**
 tests/**
 playwright.config.js
 playwright-report/**
 test-results/**
-scripts/webview-harness.js
+scripts/**
+artifacts/**
 node_modules/**
 src/**
 webview/**
@@ -13,6 +15,7 @@ webview/**
 .yarnrc
 webpack.config.js
 vsc-extension-quickstart.md
+tsconfig*.json
 **/tsconfig.json
 **/eslint.config.mjs
 **/*.map

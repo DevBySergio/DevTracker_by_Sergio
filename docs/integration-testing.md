@@ -6,10 +6,13 @@ Run the real VS Code integration suite with:
 npm run test:integration
 ```
 
-The command requires a local Visual Studio Code or Visual Studio Code Insiders
-installation. It creates isolated temporary workspaces, user-data directories,
+The command uses a local Visual Studio Code or Visual Studio Code Insiders
+installation when one is available and downloads the stable test runtime on CI
+or other hosts. It creates isolated temporary workspaces, user-data directories,
 extension directories, and home directories, then removes them after the run.
-It never reads or modifies the developer's normal VS Code profile.
+The test host uses the basic password store inside that disposable profile so it
+does not access the developer's normal keychain. It never reads or modifies the
+developer's normal VS Code profile.
 
 The suite launches three extension-host phases:
 

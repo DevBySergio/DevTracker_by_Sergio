@@ -24,7 +24,9 @@ module.exports = defineConfig({
     deviceScaleFactor: 1,
     locale: "en-US",
     reducedMotion: "reduce",
+    screenshot: "only-on-failure",
     timezoneId: "Europe/Madrid",
+    trace: "retain-on-failure",
   },
   webServer: {
     command: "node scripts/webview-harness.js",

@@ -9,9 +9,6 @@ async function main() {
     "/Applications/Visual Studio Code.app/Contents/MacOS/Code",
     "/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Electron",
   ].find((candidate) => fs.existsSync(candidate));
-  if (!vscodeExecutablePath) {
-    throw new Error("A local Visual Studio Code executable was not found");
-  }
 
   const sandbox = fs.mkdtempSync(path.join("/tmp", "dt-it-"));
   const emptyWorkspace = path.join(sandbox, "empty-workspace");
@@ -121,7 +118,9 @@ function testOptions({
   disableGit = false,
 }) {
   return {
-    vscodeExecutablePath,
+    ...(vscodeExecutablePath
+      ? { vscodeExecutablePath }
+      : { version: "stable" }),
     extensionDevelopmentPath,
     extensionTestsPath: path.join(
       extensionDevelopmentPath,
@@ -139,6 +138,7 @@ function testOptions({
       "--disable-extensions",
       ...(disableGit ? ["--disable-extension", "vscode.git"] : []),
       "--disable-workspace-trust",
+      "--password-store=basic",
       "--skip-welcome",
       "--skip-release-notes",
       "--user-data-dir",
