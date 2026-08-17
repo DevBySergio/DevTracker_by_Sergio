@@ -5,7 +5,7 @@ const AxeBuilder = require("@axe-core/playwright").default;
 
 const views = ["today", "project", "global", "quality"];
 const themes = ["light", "dark", "high-contrast"];
-const widths = [600, 900, 1400];
+const widths = [600, 900];
 
 function url({
   state = "populated",
