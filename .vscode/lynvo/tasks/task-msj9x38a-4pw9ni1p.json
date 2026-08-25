@@ -2,7 +2,7 @@
   "id": "task-msj9x38a-4pw9ni1p",
   "title": "T34 — Package and verify DevTracker 2.0.0",
   "description": "## Objective\n\nProduce a reproducible, validated DevTracker 2.0.0 VSIX without publishing until explicitly authorized.\n\n## Definition of done\n\nAll checklist items are completed, relevant automated tests pass, documentation is updated where behavior changes, and no unrelated workspace changes are introduced.\n\n> DevTracker 2.0 backlog item T34.",
-  "status": "in-progress",
+  "status": "done",
   "createdBy": {
     "githubId": "unknown",
     "username": "Lynvo - Agent"
@@ -12,7 +12,7 @@
     "username": "Lynvo - Agent"
   },
   "createdAt": 1786127033832,
-  "updatedAt": 1787663256993,
+  "updatedAt": 1787664666828,
   "position": 1786127033832,
   "labelIds": [
     "label-msj9x37b-glb1mzea",
@@ -28,79 +28,79 @@
     {
       "id": "check-msj9x3op-9i8kquz4",
       "text": "Update the version to 2.0.0",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033833,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3oq-hj4hxv4c",
       "text": "Align package.json and the lockfile",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033834,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3or-sf47s8zk",
       "text": "Set the minimum VS Code version to ^1.109.0",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033835,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3os-dhl1xu1t",
       "text": "Run a clean installation",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033836,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3ot-rbggih6p",
       "text": "Run npm run validate",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033837,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3ou-4821wyga",
       "text": "Create the production VSIX",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033838,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3ov-a14y3qrc",
       "text": "Inspect the payload and manifest",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033839,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3ow-ez97zbrl",
       "text": "Verify third-party licenses",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033840,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3ox-brqnipuz",
       "text": "Scan for secrets and local data",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033841,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3oy-lwu2rd1h",
       "text": "Install and run a VS Code smoke test",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033842,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     },
     {
       "id": "check-msj9x3oz-48pe83rt",
       "text": "Do not publish without explicit authorization",
-      "done": false,
+      "done": true,
       "createdAt": 1786127033843,
-      "updatedAt": 1786127326690
+      "updatedAt": 1787664666828
     }
   ],
   "relations": [

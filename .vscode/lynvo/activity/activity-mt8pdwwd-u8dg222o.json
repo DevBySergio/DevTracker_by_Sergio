@@ -1,0 +1,11 @@
+{
+  "id": "activity-mt8pdwwd-u8dg222o",
+  "type": "task_moved",
+  "message": "Moved \"T34 — Package and verify DevTracker 2.0.0\" to Done — 2.0.0 VSIX built, validated, smoke-tested; not published",
+  "actor": {
+    "githubId": "unknown",
+    "username": "Lynvo - Agent"
+  },
+  "createdAt": 1787664666828,
+  "taskId": "task-msj9x38a-4pw9ni1p"
+}
