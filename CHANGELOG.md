@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Thi
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-08-25
+
 ### Added
 
 - Versioned schema-v2 storage with strict legacy migration, corruption backups, queued writes, local-day rollups, configurable detail retention, and URI-safe project identity.
